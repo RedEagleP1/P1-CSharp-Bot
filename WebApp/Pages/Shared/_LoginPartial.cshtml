@@ -1,0 +1,9 @@
+﻿@if (User.Identity.IsAuthenticated)
+{
+    <h4 class="text-dark">Hello @User.Identity?.Name!&nbsp;<a class="link-dark" asp-page="/Authentication/Logout">Logout</a></h4>
+    
+}
+else
+{
+    <h4><a class="link-dark" asp-page="/Authentication/Login">Login With Discord</a></h4>
+}

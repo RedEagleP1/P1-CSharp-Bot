@@ -1,0 +1,30 @@
+﻿@using Models
+@model Role
+@{
+}
+<tr id="@Model.Id">
+	<td width="50%">@Model.Name</td>
+	<td width="50%">
+		<p id="RoleMessageText" style="white-space: pre-line;">@Model.Message</p>
+	</td>
+	<td width="30%">
+		@if (Model.HasSurvey)
+		{
+			<h6 class="card-text text-success">Yes</h6>
+		}
+		else
+		{
+			<h6 class="card-text text-danger">No</h6>
+		}
+	</td>
+	<td>
+		<div id="ButtonGroup" class="w-75 btn-group" role="group">
+			<a asp-page="Select" asp-route-guildID="@Model.GuildId" asp-route-roleID="@Model.Id" class="btn btn-primary mx-2">
+				Select
+			</a>
+			<button type="button" id="DeleteInteractionButton" value="@Model.Id" class="btn btn-danger mx-2">
+				Delete
+			</button>
+		</div>
+	</td>
+</tr>

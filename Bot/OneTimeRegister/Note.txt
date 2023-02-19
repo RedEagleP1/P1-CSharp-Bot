@@ -1,0 +1,2 @@
+﻿The classes here are used for registering certain things that only need to be registered once.
+For example, Registering a slash command only needs to be done once and not on every startup or connnection.

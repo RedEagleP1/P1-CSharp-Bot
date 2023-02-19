@@ -1,0 +1,99 @@
+﻿@page
+@model WebApp.Pages.Modules.RoleCosts.IndexModel
+@{
+}
+@Html.AntiForgeryToken()
+<nav class="nav">
+    <a class="nav-link active" aria-current="page" asp-page="/Home/Guilds">Guilds</a>
+	<a class="nav-link active" aria-current="page" asp-page="/Home/Modules" asp-route-id="@Model.Guild.Id" asp-route-name="@Model.Guild.Name">Modules</a>
+</nav>
+<br />
+<div class="container p-3">
+	<table class="table table-bordered table-striped" style="width:100%">
+		<thead>
+			<tr>
+				<th>
+					Role Name
+				</th>
+				<th>
+					Role Cost
+				</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach(var role in Model.Guild.Roles)
+			{
+				<tr id="@role.Id">
+					<td width="50%">@role.Name</td>
+					<td width="30%" id="RoleCost">
+						<p id="RoleCostText" style="white-space: pre-line;">@role.Cost</p>						
+					</td>
+					<td>
+						<div id="ButtonGroup" class="w-75 btn-group" role="group">
+							<button type="button" id= "EditButton" class="btn btn-primary mx-2" value="@role.Id">
+								<i class="bi bi-pencil-square"></i>
+							</button>
+						</div>
+					</td>
+				</tr>
+			}			
+		</tbody>
+	</table>
+</div>
+
+@section Scripts
+{
+	<script>
+		$(document).on("click", "#EditButton", function(){
+
+			var roleId = $(this).val();
+			var element = $(`#${roleId}`);
+			var roleCostElement = element.find("#RoleCost");
+			var roleCost = roleCostElement.find("#RoleCostText").text();
+			roleCostElement.html(`<input type="text" id="TextInput" value="${roleCost}">`);
+
+			var buttonGroupElement = element.find("#ButtonGroup");
+			buttonGroupElement.html(
+				`<button type="button" id="SaveButton" class="btn btn-primary mx-2" value="${roleId}">
+					<i class="bi bi-save"></i>
+				</button>
+				<button type="button" id="CancelButton" class="btn mx-2" value="${roleId}">
+					<i class="bi bi-x-lg"></i>
+				</button>`);
+
+			buttonGroupElement.find("#SaveButton").click(function()
+			{
+				var newRoleCost = roleCostElement.find("#TextInput").val();
+				$.ajax({
+					type: "POST",
+					url: '?handler=ChangeRoleCost',
+					data: {guildId: "@Model.Guild.Id", roleId: roleId, roleCost: newRoleCost},
+					headers: {
+						RequestVerificationToken:
+							$('input:hidden[name="__RequestVerificationToken"]').val()
+					},
+					success: function(result){
+						roleCostElement.html(`<p id="RoleCostText" style="white-space: pre-line;">${newRoleCost}</p>`);
+						buttonGroupElement.html(
+							`<button type="button" id= "EditButton" class="btn btn-primary mx-2" value="${roleId}">
+								<i class="bi bi-pencil-square"></i>
+							</button>`);
+					},
+					error: function(req, status, error){
+						console.log(status);
+					}
+				});
+			});
+			buttonGroupElement.find("#CancelButton").click(function()
+			{
+				roleCostElement.html(`<p id="RoleCostText" style="white-space: pre-line;">${roleCost}</p>`);
+				buttonGroupElement.html(
+					`<button type="button" id= "EditButton" class="btn btn-primary mx-2" value="${roleId}">
+						<i class="bi bi-pencil-square"></i>
+					</button>`);
+			});
+			
+		});
+	</script>
+}							

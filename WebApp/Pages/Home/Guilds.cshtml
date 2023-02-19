@@ -1,0 +1,19 @@
+﻿@page
+@model WebApp.Pages.Home.GuildsModel
+@{
+}
+
+<br />
+<h1>List of Guilds</h1>
+    <div>
+        @foreach (var guild in Model.Guilds)
+        {
+            <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">@guild.Name</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">@guild.Id</h6>
+                    <a class="btn btn-primary" asp-page="/Home/Modules" asp-route-id="@guild.Id" asp-route-name="@guild.Name">Select Guild</a>
+                </div>
+            </div>
+        }
+    </div>

@@ -1,0 +1,24 @@
+﻿@page
+@model WebApp.Pages.Home.ModulesModel
+@{
+}
+<nav class="nav">
+    <a class="nav-link active" aria-current="page" asp-page="/Home/Guilds">Guilds</a>
+</nav>
+<br />
+<h1>Modules</h1>
+<h3>Guild Name : @Model.GuildName</h3>
+<h3>Guild ID : @Model.GuildID</h3>
+<br />
+    <div>
+        @foreach (var module in Model.Modules)
+        {
+            <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">@module.Name</h5>
+                    <p class="card-text">@module.Description</p>
+                    <a class="btn btn-primary" asp-page="/Modules/@module.PageName/Index" asp-route-guildID="@Model.GuildID">Select Module</a>
+                </div>
+            </div>
+        }
+    </div>

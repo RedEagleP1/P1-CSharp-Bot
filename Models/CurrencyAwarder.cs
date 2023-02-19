@@ -3,15 +3,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Models
 {
-    public class Guild
+    public class CurrencyAwarder
     {
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public ulong Id { get; set; }
-        [Required]
-        public string Name { get; set; }
-        public bool IsCurrentlyJoined { get; set; }
-
-        //Relations
-        public List<Role> Roles { get; set; }
+        public float OCH { get; set; }
+        public float SJH { get; set; }
     }
 }

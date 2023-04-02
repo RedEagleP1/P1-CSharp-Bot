@@ -1,0 +1,39 @@
+﻿@using Models
+@using WebApp.Pages.Partials
+@model RoleMessageRowPartialModel
+@{
+}
+<form method="post" asp-page-handler="Save">
+<input type="hidden" name="roleId" value="@Model.RoleMessage_HM.MainInstance.RoleId" />
+<tr id="@Model.RoleMessage_HM.MainInstance.RoleId">
+	<td width="50%">@Model.RoleMessage_HM.RoleName</td>
+	<td width="50%">
+		@if (Model.IsEditMode)
+		{
+			
+				<textarea class="RoleMessageTextArea" name="message" rows="5" cols="50">@Model.RoleMessage_HM.MainInstance.Message</textarea>
+			
+		}
+		else
+		{
+			<p class="RoleMessageText" style="white-space: pre-line;">@Model.RoleMessage_HM.MainInstance.Message</p>
+		}
+	</td>
+	<td>
+		<div id="ButtonGroup" class="w-75 btn-group" role="group">
+			@if (Model.IsEditMode)
+			{
+				<button type="submit" class="btn btn-primary mx-2 RoleMessageSave">
+					Save
+				</button>
+				<a asp-route-guildId="@Model.GuildId" class="btn btn-secondary mx-2">Cancel</a>
+			}
+			else
+			{
+				<a asp-page-handler="Edit" asp-route-roleId="@Model.RoleMessage_HM.MainInstance.RoleId" class="btn btn-primary mx-2">Edit</a>
+				<a asp-page-handler="Delete" asp-route-roleId="@Model.RoleMessage_HM.MainInstance.RoleId" class="btn btn-danger mx-2">Delete</a>
+			}
+		</div>
+	</td>
+</tr>
+</form>

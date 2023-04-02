@@ -1,0 +1,16 @@
+﻿@using Models
+@using WebApp.Pages.Partials
+@model RoleSurveyTriggersDropdownPartialModel
+@{
+}
+<div class="dropdown">
+	<button class="btn btn-success dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+		@Model.ButtonName
+	</button>
+	<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+		@foreach (var trigger in Model.Triggers)
+		{
+			<button type="button" class="dropdown-item" id="DropdownSelectedTrigger" value="@trigger.Id">@trigger.Text</button>
+		}
+	</div>
+</div>

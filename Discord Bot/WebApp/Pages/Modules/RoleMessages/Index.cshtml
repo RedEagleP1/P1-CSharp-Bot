@@ -1,0 +1,71 @@
+﻿@page
+@using WebApp.Pages.Partials
+@model WebApp.Pages.Modules.RoleMessages.IndexModel
+@{
+}
+@Html.AntiForgeryToken()
+<nav class="nav">
+    <a class="nav-link active" aria-current="page" asp-page="/Home/Guilds">Guilds</a>
+	<a class="nav-link active" aria-current="page" asp-page="/Home/Modules" asp-route-id="@Model.Guild.Id" asp-route-name="@Model.Guild.Name">Modules</a>
+</nav>
+<br />
+<div>
+	<h2 class="text-primary">Role Messages</h2>
+	<div class="float-end">
+		@await Html.PartialAsync("/Pages/Partials/_RolesDropdown.cshtml", new RolesDropdownPartialModel(){ButtonName="Add Role", Roles=Model.AvailableRoles, AddNoneOption=false})
+	</div>
+</div>
+<br /><br />
+<div class="container p-3">
+	<table class="table table-bordered table-striped" style="width:100%">
+		<thead>
+			<tr>
+				<th>
+					Role Name
+				</th>
+				<th>
+					Message
+				</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody id="TableRows">
+			@foreach (var roleMessage_HM in Model.RoleMessage_HMs)
+			{
+				@if(Model.IsEditMode && Model.EditRoleId == roleMessage_HM.MainInstance.RoleId)
+				{
+					@await Html.PartialAsync("/Pages/Partials/_RoleMessageRow.cshtml", new RoleMessageRowPartialModel(){ RoleMessage_HM = roleMessage_HM, IsEditMode = true, GuildId = Model.Guild.Id})
+				}
+				else
+				{
+					@await Html.PartialAsync("/Pages/Partials/_RoleMessageRow.cshtml", new RoleMessageRowPartialModel(){ RoleMessage_HM = roleMessage_HM, IsEditMode = false, GuildId = Model.Guild.Id})
+				}				
+			}
+		</tbody>
+	</table>
+</div>
+
+
+@section Scripts
+{
+	<script>
+		$(document).on("click", "#DropdownSelectedRole", function () {
+			var roleId = $(this).val();
+			$.ajax({
+				type: "POST",
+				url: '?handler=AddRoleMessage',
+				data: { roleId: roleId },
+				headers: {
+					RequestVerificationToken:
+						$('input:hidden[name="__RequestVerificationToken"]').val()
+				},
+				success: function (result) {
+					location.reload();
+				},
+				error: function (req, status, error) {
+					console.log(status);
+				}
+			});
+		})
+	</script>
+}

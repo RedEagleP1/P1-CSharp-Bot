@@ -1,0 +1,72 @@
+﻿@page
+@using WebApp.Pages.Partials
+@model WebApp.Pages.Modules.RoleCostsAndRewards.IndexModel
+@{
+}
+@Html.AntiForgeryToken()
+<nav class="nav">
+    <a class="nav-link active" aria-current="page" asp-page="/Home/Guilds">Guilds</a>
+	<a class="nav-link active" aria-current="page" asp-page="/Home/Modules" asp-route-id="@Model.Guild.Id" asp-route-name="@Model.Guild.Name">Modules</a>
+</nav>
+<br />
+<div class="container p-3">
+	<table class="table table-bordered table-striped" style="width:100%">
+		<thead>
+			<tr>
+				<th>
+					Role Name
+				</th>
+				<th>
+					Role Cost
+				</th>
+				<th>
+					Cost Currency
+				</th>
+				<th>
+					Role Reward
+				</th>
+				<th>
+					Reward Currency
+				</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach(var roleCostAndReward_HM in Model.RoleCostAndReward_HMs)
+			{
+				@if(Model.IsEditMode && Model.EditRoleId == roleCostAndReward_HM.MainInstance.RoleId)
+				{
+					@await Html.PartialAsync("/Pages/Partials/_RoleCostAndRewardRow.cshtml", new RoleCostAndRewardRowPartialModel(){RoleCostAndReward_HM = roleCostAndReward_HM, IsEditMode = true, CurrencyDropdown = new CurrencyDropdownPartialModel(){ButtonName = "Select Currency", Currencies = Model.AllCurrencies, AddNoneOption = true}, GuildId = Model.Guild.Id})
+				}
+				else
+				{
+					@await Html.PartialAsync("/Pages/Partials/_RoleCostAndRewardRow.cshtml", new RoleCostAndRewardRowPartialModel(){RoleCostAndReward_HM = roleCostAndReward_HM, IsEditMode = false, GuildId = Model.Guild.Id})
+				}				
+			}			
+		</tbody>
+	</table>
+</div>
+@section Scripts
+{
+	<script>
+		$(document).on("click", "#DropdownSelectedCurrency", function()
+		{
+			var currencyId = $(this).val();			
+			var currencyName = $(this).text();
+			var costCurrencyDiv = $(this).closest("#CostCurrency");
+			if(costCurrencyDiv.length != 0)
+			{
+				costCurrencyDiv.find("#CostCurrencyDisplay").text(currencyName);
+				costCurrencyDiv.find("#CostCurrencyId").val(currencyId);
+				return;
+			}
+
+			var rewardCurrencyDiv = $(this).closest("#RewardCurrency");
+			if(rewardCurrencyDiv.length != 0)
+			{
+				rewardCurrencyDiv.find("#RewardCurrencyDisplay").text(currencyName);
+				rewardCurrencyDiv.find("#RewardCurrencyId").val(currencyId);
+			}
+		})
+	</script>
+}

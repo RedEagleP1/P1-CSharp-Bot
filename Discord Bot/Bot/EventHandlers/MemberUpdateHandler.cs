@@ -1,0 +1,61 @@
+﻿using Discord.WebSocket;
+using Discord;
+using Microsoft.Extensions.DependencyInjection;
+using Models;
+using Microsoft.EntityFrameworkCore;
+using System.Diagnostics.Metrics;
+
+namespace Bot.EventHandlers
+{
+    public class MemberUpdateHandler : IEventHandler
+    {
+        readonly DiscordSocketClient client;
+        public MemberUpdateHandler(DiscordSocketClient client)
+        {
+            this.client = client;
+        }
+
+        public void Subscribe()
+        {
+            client.GuildMemberUpdated += OnGuildMemberUpdate;
+        }
+        Task OnGuildMemberUpdate(Cacheable<SocketGuildUser, ulong> before, SocketGuildUser after)
+        {
+            _ = Task.Run(async () =>
+            {
+                SocketGuildUser b = await before.GetOrDownloadAsync();
+                await SendRoleMessage(b, after);
+            });
+
+            return Task.CompletedTask;
+        }
+        async Task SendRoleMessage(SocketGuildUser before, SocketGuildUser after)
+        {
+            if (before.Roles.Count >= after.Roles.Count)
+                return;
+
+            using var context = DBContextFactory.GetNewContext();
+            var newRole = after.Roles.Except(before.Roles).FirstOrDefault();
+            if(newRole == null)
+            {
+                return;
+            }
+
+            var roleMessage = await context.RoleMessages.AsNoTracking().FirstOrDefaultAsync(rm => rm.RoleId == newRole.Id);
+            if(roleMessage == null)
+            {
+                return;
+            }
+
+            await after.SendMessageAsync(roleMessage.Message);
+
+            var roleSurvey = await context.RolesSurvey.AsNoTracking().FirstOrDefaultAsync(rs => rs.RoleId == newRole.Id && rs.ParentSurveyId == null && rs.Index == 0);
+            if(roleSurvey == null)
+            {
+                return;
+            }
+
+            await RoleSurveyHelper.SendRoleSurvey(roleSurvey, after, context);
+        }
+    }
+}

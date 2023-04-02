@@ -1,0 +1,16 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p>This is the dashboard for the P1 Discord Bot.</p>
+
+    @if (User.Identity.IsAuthenticated)
+    {
+        <a class="btn btn-info" asp-page="/Home/Guilds">Go to Guilds</a>
+        <br />
+        <a class="btn btn-info" asp-page="/Home/Currencies">Go to Currencies</a>
+    }
+</div>

@@ -1,0 +1,71 @@
+﻿@page
+@model WebApp.Pages.Modules.RolesForSale.IndexModel
+@{
+}
+@Html.AntiForgeryToken()
+<nav class="nav">
+    <a class="nav-link active" aria-current="page" asp-page="/Home/Guilds">Guilds</a>
+	<a class="nav-link active" aria-current="page" asp-page="/Home/Modules" asp-route-id="@Model.Guild.Id" asp-route-name="@Model.Guild.Name">Modules</a>
+</nav>
+<br />
+<div class="container p-3">
+	<table class="table table-bordered table-striped" style="width:100%">
+		<thead>
+			<tr>
+				<th>
+					Role Name
+				</th>
+				<th>
+					For Sale
+				</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach(var role in Model.Roles)
+			{
+				<tr>
+					<td>
+						@role.Role.Name
+					</td>
+					<td>
+						<div class="form-check form-switch">
+                        @if (role.IsForSale)
+                        {
+                            <input class="form-check-input ForSaleSwitch" type="checkbox" checked id="@role.Role.Id" />
+                        }
+                        else
+                        {
+                            <input class="form-check-input ForSaleSwitch" type="checkbox" id="@role.Role.Id" />
+                        }
+                    </div>
+					</td>
+				</tr>				
+			}			
+		</tbody>
+	</table>
+</div>
+@section Scripts
+{
+	<script>
+		$(document).on("change", ".ForSaleSwitch", function () {
+
+			var switchStatus = $(this).is(':checked');
+			var roleId = $(this).attr("id");
+			$.ajax({
+				type: "POST",
+				url: '?handler=ChangeForSaleStatus',
+				data: { roleId: roleId, isForSale: switchStatus },
+				headers: {
+					RequestVerificationToken:
+						$('input:hidden[name="__RequestVerificationToken"]').val()
+				},
+				success: function (result) {
+					location.reload();
+				},
+				error: function (req, status, error) {
+					console.log(status);
+				}
+			});
+		})
+	</script>
+}

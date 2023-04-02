@@ -1,0 +1,73 @@
+﻿@using Models
+@using WebApp.Pages.Partials
+@model RoleCostAndRewardRowPartialModel
+@{
+}
+<tr id="@Model.RoleCostAndReward_HM.MainInstance.RoleId">
+	<td>@Model.RoleCostAndReward_HM.RoleName</td>
+	@if (!Model.IsEditMode)
+	{
+		<td>
+			@Model.RoleCostAndReward_HM.MainInstance.Cost
+		</td>
+		<td>
+			@(Model.RoleCostAndReward_HM.CostCurrencyName)
+		</td>
+		<td>
+			@Model.RoleCostAndReward_HM.MainInstance.Reward
+		</td>
+		<td>
+			@(Model.RoleCostAndReward_HM.RewardCurrencyName)
+		</td>
+		<td>
+			<div id="ButtonGroup" class="w-75 btn-group" role="group">
+				<a asp-page-handler="Edit" asp-route-roleId="@Model.RoleCostAndReward_HM.MainInstance.RoleId" class="btn btn-primary mx-2">Edit</a>
+			</div>
+		</td>
+	}
+	else
+	{
+		<form method="post" asp-page-handler="Save">
+			<input type="hidden" asp-for="RoleCostAndReward_HM.MainInstance.Id"
+			   value="@Model.RoleCostAndReward_HM.MainInstance.Id" />
+			<input type="hidden" asp-for="RoleCostAndReward_HM.MainInstance.RoleId"
+			   value="@Model.RoleCostAndReward_HM.MainInstance.RoleId" />
+		<td>
+			<input type="number" asp-for="RoleCostAndReward_HM.MainInstance.Cost"
+			   value="@Model.RoleCostAndReward_HM.MainInstance.Cost">
+		</td>
+		<td>
+			<div id="CostCurrency">
+				<p id="CostCurrencyDisplay">
+						@(Model.RoleCostAndReward_HM.CostCurrencyName)
+				</p>
+				<input id="CostCurrencyId" type="hidden" asp-for="RoleCostAndReward_HM.MainInstance.CostCurrencyId"
+				   value="@Model.RoleCostAndReward_HM.MainInstance.CostCurrencyId">
+					@await Html.PartialAsync("/Pages/Partials/_CurrencyDropdown.cshtml", Model.CurrencyDropdown)
+			</div>
+		</td>
+		<td>
+			<input type="number" asp-for="RoleCostAndReward_HM.MainInstance.Reward"
+			   value="@Model.RoleCostAndReward_HM.MainInstance.Reward">
+		</td>
+		<td>
+			<div id="RewardCurrency">
+				<p id="RewardCurrencyDisplay">
+						@(Model.RoleCostAndReward_HM.RewardCurrencyName)
+				</p>
+				<input id="RewardCurrencyId" type="hidden" asp-for="RoleCostAndReward_HM.MainInstance.RewardCurrencyId"
+				   value="@Model.RoleCostAndReward_HM.MainInstance.RewardCurrencyId">
+					@await Html.PartialAsync("/Pages/Partials/_CurrencyDropdown.cshtml", Model.CurrencyDropdown)
+			</div>
+		</td>
+		<td>
+			<div id="ButtonGroup" class="w-75 btn-group" role="group">
+				<button type="submit" class="btn btn-primary mx-2">
+					Save
+				</button>
+				<a asp-page="Index" asp-route-guildId="@Model.GuildId" class="btn btn-secondary mx-2">Cancel</a>
+			</div>
+		</td>
+		</form>
+	}
+</tr>

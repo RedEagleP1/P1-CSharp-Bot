@@ -1,0 +1,36 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+
+namespace WebApp.Pages.Home
+{
+    [Authorize(Policy = "Allowed")]
+    public class ModulesModel : PageModel
+    {
+        public ulong GuildID { get; set; }
+        public string GuildName { get; set; }
+        public List<Module> Modules { get => Module.Modules; }  
+        public void OnGet(ulong id, string name)
+        {
+            GuildID = id;
+            GuildName = name;
+        }        
+    }
+
+    public class Module
+    {
+        public static List<Module> Modules = new List<Module>() {
+
+            new Module() { Name = "Role Messages", Description = "Configure What messages to send when a user gets a role.", PageName = "RoleMessages" },
+            new Module() {Name = "Role Surveys", Description = "Configure what survey to send when a user gets a role.", PageName = "RoleSurveys"},
+            new Module() {Name = "Role Costs And Rewards", Description = "Set the cost and reward of each role.", PageName="RoleCostsAndRewards"},
+            new Module() {Name = "Role Message And Survey Repeats", Description = "Set whether to repeat the message and surveys of a role.", PageName="RoleMessageAndSurveyRepeats"},
+            new Module() {Name = "Roles For Sale", Description = "Set which roles are available for sale", PageName = "RolesForSale"},
+            new Module() {Name = "Voice Channel Currency Gain", Description = "Set amount/currency gained for voice channels", PageName = "VoiceChannelCurrencyGains"},
+            new Module() {Name = "Text Channel Post Image Currency Gain", Description = "Set amount/currency gained for posting images on specific channels", PageName = "TextChannelCurrencyGainsImage" },
+            new Module() {Name = "Text Channel Message Currency Gain", Description = "Set amount/currency gained for messaging on specific channels", PageName = "TextChannelCurrencyGainsMessage" }
+        };
+        public string? Name { get; set; }
+        public string? Description { get; set; }
+        public string? PageName { get; set; }
+    }
+}

@@ -1,0 +1,63 @@
+﻿@using Models
+@using WebApp.Pages.Partials
+@model RoleMessageAndSurveyRepeatRowPartialModel
+@{
+	var repeatTime = Model.RoleMessageAndSurveyRepeat_HM.MainInstance.RepeatTime;
+	var hours = repeatTime.Hours;
+	var minutes = repeatTime.Minutes;
+	var amPmDesignator = "AM";
+	if (hours == 0)
+		hours = 12;
+	else if (hours == 12)
+		amPmDesignator = "PM";
+	else if (hours > 12)
+	{
+		hours -= 12;
+		amPmDesignator = "PM";
+	}
+	var formattedRepeatTime = String.Format("{0}:{1} {2}", hours, minutes, amPmDesignator);	
+}
+<form method="post" asp-page-handler="Save">
+	<input type="hidden" asp-for="RoleMessageAndSurveyRepeat_HM.MainInstance.Id" value="@Model.RoleMessageAndSurveyRepeat_HM.MainInstance.Id" />
+	<input type="hidden" asp-for="RoleMessageAndSurveyRepeat_HM.MainInstance.RoleId" value="@Model.RoleMessageAndSurveyRepeat_HM.MainInstance.RoleId" />
+	<tr id="@Model.RoleMessageAndSurveyRepeat_HM.MainInstance.RoleId">
+		<td width="50%">@Model.RoleMessageAndSurveyRepeat_HM.RoleName</td>
+		<td width="50%">
+			@if (Model.IsEditMode)
+			{
+				<input asp-for="RoleMessageAndSurveyRepeat_HM.MainInstance.RepeatTime" type="time" value="@string.Format("{0:hh\\:mm}", Model.RoleMessageAndSurveyRepeat_HM.MainInstance.RepeatTime)">
+			}
+			else
+			{
+				<p style="white-space: pre-line;">@formattedRepeatTime</p>
+			}
+		</td>
+		<td>
+			@if(Model.IsEditMode)
+			{
+				<input asp-for="RoleMessageAndSurveyRepeat_HM.MainInstance.RepeatAfterEvery_InDays" value="@Model.RoleMessageAndSurveyRepeat_HM.MainInstance.RepeatAfterEvery_InDays">
+			}
+			else
+			{
+				<p style="white-space: pre-line;">@Model.RoleMessageAndSurveyRepeat_HM.MainInstance.RepeatAfterEvery_InDays</p>
+			}
+			
+		</td>
+		<td>
+			<div id="ButtonGroup" class="w-75 btn-group" role="group">
+				@if (Model.IsEditMode)
+				{
+					<button type="submit" class="btn btn-primary mx-2">
+						Save
+					</button>
+					<a asp-route-guildId="@Model.GuildId" class="btn btn-secondary mx-2">Cancel</a>
+				}
+				else
+				{
+					<a asp-page-handler="Edit" asp-route-roleId="@Model.RoleMessageAndSurveyRepeat_HM.MainInstance.RoleId" class="btn btn-primary mx-2">Edit</a>
+					<a asp-page-handler="Delete" asp-route-roleId="@Model.RoleMessageAndSurveyRepeat_HM.MainInstance.RoleId" class="btn btn-danger mx-2">Delete</a>
+				}
+			</div>
+		</td>
+	</tr>
+</form>

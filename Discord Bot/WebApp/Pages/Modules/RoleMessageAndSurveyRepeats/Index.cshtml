@@ -1,0 +1,74 @@
+﻿@page
+@using WebApp.Pages.Partials
+@model WebApp.Pages.Modules.RoleMessageAndSurveyRepeats.IndexModel
+@{
+}
+@Html.AntiForgeryToken()
+<nav class="nav">
+    <a class="nav-link active" aria-current="page" asp-page="/Home/Guilds">Guilds</a>
+	<a class="nav-link active" aria-current="page" asp-page="/Home/Modules" asp-route-id="@Model.Guild.Id" asp-route-name="@Model.Guild.Name">Modules</a>
+</nav>
+<br />
+<div>
+	<h2 class="text-primary">Role Messages And Surveys Repeat</h2>
+	<div class="float-end">
+		@await Html.PartialAsync("/Pages/Partials/_RolesDropdown.cshtml", new RolesDropdownPartialModel(){ButtonName="Add Role", Roles=Model.AvailableRoles, AddNoneOption=false})
+	</div>
+</div>
+<br /><br />
+<div class="container p-3">
+	<table class="table table-bordered table-striped" style="width:100%">
+		<thead>
+			<tr>
+				<th>
+					Role Name
+				</th>
+				<th>
+					Time of day
+				</th>
+				<th>
+					After how many days it is repeated
+				</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody id="TableRows">
+			@foreach (var roleMessageAndSurveyRepeat_HM in Model.RoleMessageAndSurveyRepeat_HMs)
+			{
+				@if(Model.IsEditMode && Model.EditRoleId == roleMessageAndSurveyRepeat_HM.MainInstance.RoleId)
+				{
+					@await Html.PartialAsync("/Pages/Partials/_RoleMessageAndSurveyRepeatRow.cshtml", new RoleMessageAndSurveyRepeatRowPartialModel(){ RoleMessageAndSurveyRepeat_HM = roleMessageAndSurveyRepeat_HM, IsEditMode = true, GuildId = Model.Guild.Id})
+				}
+				else
+				{
+					@await Html.PartialAsync("/Pages/Partials/_RoleMessageAndSurveyRepeatRow.cshtml", new RoleMessageAndSurveyRepeatRowPartialModel(){ RoleMessageAndSurveyRepeat_HM = roleMessageAndSurveyRepeat_HM, IsEditMode = false, GuildId = Model.Guild.Id})
+				}				
+			}
+		</tbody>
+	</table>
+</div>
+
+
+@section Scripts
+{
+	<script>
+		$(document).on("click", "#DropdownSelectedRole", function () {
+			var roleId = $(this).val();
+			$.ajax({
+				type: "POST",
+				url: '?handler=AddRoleRepeat',
+				data: { roleId: roleId },
+				headers: {
+					RequestVerificationToken:
+						$('input:hidden[name="__RequestVerificationToken"]').val()
+				},
+				success: function (result) {
+					location.reload();
+				},
+				error: function (req, status, error) {
+					console.log(status);
+				}
+			});
+		})
+	</script>
+}

@@ -1,0 +1,35 @@
+﻿@page
+@model WebApp.Pages.Modules.RoleSurveys.IndexModel
+@{
+}
+@Html.AntiForgeryToken()
+<nav class="nav">
+    <a class="nav-link active" aria-current="page" asp-page="/Home/Guilds">Guilds</a>
+	<a class="nav-link active" aria-current="page" asp-page="/Home/Modules" asp-route-id="@Model.Guild.Id" asp-route-name="@Model.Guild.Name">Modules</a>
+</nav>
+<br />
+<div>
+	<h2 class="text-primary">Role Surveys</h2>
+</div>
+<br /><br />
+<div class="container p-3">
+	<table class="table table-bordered table-striped" style="width:100%">
+		<thead>
+			<tr>
+				<th>
+					Role Name
+				</th>
+				<th>
+					Has Survey
+				</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody id="TableRows">
+			@foreach (var role in Model.AllRoles)
+			{
+				@await Html.PartialAsync("/Pages/Partials/_RoleListRow.cshtml", role)
+			}
+		</tbody>
+	</table>
+</div>

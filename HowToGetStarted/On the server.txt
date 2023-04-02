@@ -1,0 +1,10 @@
+On the server, the bot runs as P1Bot.service and the website runs as P1BotWebsite.service.
+To check status -> systemctl status XXXX.service
+To start -> systemctl start XXXX.service
+To stop -> systemctl stop XXXX.service
+To restart -> systemctl restart XXXX.service
+
+Whenever a new currency is created, a restart will be required using the above command.
+
+The files for website are at location -> /home/p1omadmin/bot
+The files for bot are at location -> /home/p1omadmin/botConsole

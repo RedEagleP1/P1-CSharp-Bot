@@ -1,0 +1,107 @@
+Read "How to get started.txt" before you read this.
+
+Hello, this is a guide for any future developer that might work on this project.
+Before I begin though, a quick note.
+
+When I started this project, I had no idea about how anything worked. From Asp.Net core, EF Core, Discord.Net, how websites work, how databases work. None of it.
+I learned as I developed. With limited time I could give to this project and how everything was new to me, you can imagine the code to be, to put it lightly, less than ideal.
+Also note that during development, there was no complete picture as requirements changed constantly. This probably happens for all projects but this was the first proper project I worked on and was a really good learning experience.
+
+If you are an experienced developer, I would suggest spending time redesigning and refactoring if possible.
+Now enough of me trying to justify the less than ideal code I wrote and let me explain how everything works.
+
+You have three projects in the solution:
+1. Bot
+2. Models
+3. WebApp
+
+As you may be aware, we basically have two things here, one is the actual discord bot and other is the website that is used as a GUI to make changes to the working of the bot.
+For example, you may add a new role survey on the website. And it will be reflected on the bot.
+
+Obviously, the Bot project is the actual bot which is a console app. The WebApp project is the website which is an ASP.net core Razor Pages app.
+The Models project is a class library and it is what ties the two together. It contains the classes that represent the tables in the MySQL database.
+
+So you may add, for example, a role survey using a website. That role survey will be added to the database. Then whenever the bot recieves an event, it will check the database and respond accordingly.
+
+Models Project:
+One thing you might notice is that none of the classes hava navigation properties in them. I was using them before, but when I had to work on role surveys, I needed a many to many relationship in lots of places.
+And it was difficult for me to understand how to use navigation properties and fill proper data in them in the queries. That is because I didn't have a good understing of exactly how the classes tied to the tables in the database.
+So i skipped navigation properties and this helped me understand better as I had to make multiple queries using foreign keys to create a single object. I also learned the fluent api which helped.
+
+The way i make multiple queries is probably inefficient but the performance was good enough so I didn't bother.
+There should be an attached image that shows the database schema.
+
+Now, when you open the website, you will notice that it shows a list of guilds. How is that in the database? It's because the Bot, when first launched writes it to the database. And on any change updates it.
+This is read by the website to show you the list of guilds among other things.
+Perhaps I could have just made an API request to Discord to recieve that data. But I had no idea it was even a thing when I first started using the bot. This is one of the places that could recieve an improvement.
+
+Some Info about the classes in the project:
+1. DBContextFactory -> It is a static class that is used to create the DbContext easily. This made my life so much easier.
+2. DesignDbContextFactory -> Ok, this is important. How do we make changes to database? After we create migrations?
+	This class in it's CreateDbContext function has the connection string to the databse. In the package manager console. You select the Default project as Models, and then you type,
+	update-database -StartupPorject Models. 
+	Same for adding migrations,
+	add-migration migrationname -StartupProject Models
+
+	The command, detects the DesignDbContextFactory class and uses it's CreateDbContext() function to know which database to connect to.
+	So, when developing, set the connection string to your local db. In production environment, change that to the real database.
+	I know this method is crude and should be automated but it didn't cause me any inconvenience so i let it be.
+
+->We also have some helper classes which are basically used to store all relevant information of an object in one class after reading different tables from the database. For example RoleSurvey_HM (HM stands for Helper Model)
+
+
+WebApp Project:
+Someone familiar with Asp.net core should be able to easily understand what is happening in the code itself.
+I haven't used the best practices at all, because i don't know what they are. I just tried to make it work.
+The code might be a mess but there is nothing complex going on. Some pages that display what exists in the database, and the ability to make add, update and delete stuff in the database.
+The most complex thing would be the Role Surveys. This is becuase they are nested. A role survey can have child which can have another child and so on.
+
+Note-> There is authentication and policy, so make sure when you create a new page you add [Authorize(Policy = "Allowed")] above the class. Otherwise anyone will be able to reach that page and make changes.
+
+Bot Project:
+
+So here we have the main project.
+If you know Discord.Net, all the task based events and multithreading should make sense to you.
+So let me explain things that might not be so obvious.
+Firstly, the appsettings. The Settings class reads the file and then it is being used by other classes. The way i was doing it is I would chnage the file name from appsetting.Development.json to appsettings.json when I needed to go for production.
+And for development I would change it back. Yes I can set up environment variables to automate this but I didn't bother. I wan't inconvenienced by it. More info should be in the setup guide.
+
+Ok the next thing.
+Let's take /account command.
+When this command is used, it sends you a question with buttons that you can click (and an embed).
+When user clicks a button as an answer, it asks the next question and so on.
+
+How does the app know what were the previous answers? Becuase we are not keeping track of that in the database. (why? well, initially we didn't need to. Now i feel it might have been a better solution.)
+The way it keeps track is it adds the answer to the attached embed. This also helps user see what answers he gave previously.
+When you are expecting text as an answer from the user, like description, we give them the "Add Description" button. A modal is launched when they click it and they can submit whatever.
+The embed also serves as a way to distinguish between buttons and event. For example, if embed title is "Review" or "Account", then we know it is for Review and Account command respectively.
+After the series of questions, the result is posted on a specific channel for verification.
+
+Now, how do we know at what point we are in the series of asking questions? How do we know if we should send the question for description or evidence or anything else. This is where Conditions come in.
+It is a crude fluent API type class that we use to set trigger conditions.
+First, we have a list of possible Response. Each response has a trigger condition.
+When a button is clicked and we recieve the object (ScoketMessageComponnet or whatever), it is first turned into a Request object, so it is easier to deal with them.
+Then the command, say /account, goes through the list of responses and check whether the trigger condition is true or not. If it is, then it sends that as a response.
+
+You will notice that when we need to launch a modal as a response (for example, user clicks on "Add Description"), it is handled differently than others. This is because you can defer a button click but you can't do that if you plan to launch a modal afterwards. The modal needs to be launched within 3 seconds of button press so you can't offload that to another thread for later.
+So if we need to send a modal, we do that immediately. If not, we offload that to another thread so we don't block the main thread.
+
+Another thing i would mention is the DBReadWrite class.
+As i was learning multithreading, I realised how problems can occur if two threads read and write to the same row in the database at the same time.
+This class is basically used as a lock, (it would only work if the other places are also using this lock and not directly making changes after creating a context).
+I basically only use this class is places where there exists a behaviour that can cause issues when accessing database at once.
+For example, you use the /award command twice to award a user 20 SJH and then 20 SJH again.
+(Let's say player had 0 SJH before.)
+These two threads read 0 SJH, then add 20 SJH to it and write it to the database, so the user only gets 20 SJH because one thread overwrites what other did.
+This is a good place to use locks with DBReadWrite.	
+
+It uses sephamoreslim and should be easy to see how it works. (Look up sephamoreslim if you dont know).
+
+Then we have some things like when a bot joins another guild or whatnot and we need to update the database so it can be reflected on the website.
+Another thing we have is the TimerCST. Basically, some things need to happen periodically so we use it.
+
+By the way, in Models, classes/tables like VoiceChannelTrack, LastPostedMessageTrack and LastPostedImageTrack basically exist to keep track of some things. Like when did the user last sent a message to a channel and was awarded currency for that (so we can avoid spam by having a delay between allowed messages)
+
+Hope this gives you an idea of how this project is setup and works. You wouldn't find any informational comments in the code itself. Because the names kinda explain themselves (or maybe because i am lazy).
+But if you do find anything that you can't understand. I would be available anytime and you can ask Samuel to set up a meeting with me. Do try to read the code on your own before that though.
+And at the end of it all, I apologize for the less than ideal code that you have to deal with (it's not that bad though tbh). - Rammy.

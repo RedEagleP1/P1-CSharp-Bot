@@ -1,0 +1,109 @@
+﻿@page
+@using WebApp.Pages.Partials
+@model WebApp.Pages.Modules.VoiceChannelCurrencyGains.IndexModel
+@{
+}
+@Html.AntiForgeryToken()
+<nav class="nav">
+    <a class="nav-link active" aria-current="page" asp-page="/Home/Guilds">Guilds</a>
+	<a class="nav-link active" aria-current="page" asp-page="/Home/Modules" asp-route-id="@Model.Guild.Id" asp-route-name="@Model.Guild.Name">Modules</a>
+</nav>
+<br />
+<div>
+	<h2 class="text-primary">Voice Channels Currency Gain</h2>
+</div>
+<br /><br />
+<div class="container p-3">
+	<table class="table table-bordered table-striped" style="width:100%">
+		<thead>
+			<tr>
+				<th>
+					Channel Name
+				</th>
+				<th>
+					Is Enabled
+				</th>
+				<th>
+					Currency
+				</th>
+				<th>
+					Currency gained per hour when deafen/mute
+				</th>
+				<th>
+					Currency gained per hour when unmute
+				</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody id="TableRows">
+			@foreach (var vc in Model.VoiceChannelCurrencyGains)
+			{
+				<tr>
+					<form method="post" asp-page-handler="Save">
+					<td>
+						@vc.VoiceChannelCurrencyGain.ChannelName
+						<input type="hidden" asp-for="VoiceChannelCurrencyGain.Id" value="@vc.VoiceChannelCurrencyGain.Id">
+					</td>
+					<td>
+						<div class="form-check form-switch">
+							@if (vc.VoiceChannelCurrencyGain.IsEnabled)
+							{
+								<input asp-for="VoiceChannelCurrencyGain.IsEnabled" class="form-check-input" type="checkbox" checked />
+							}
+							else
+							{
+								<input asp-for="VoiceChannelCurrencyGain.IsEnabled" class="form-check-input" type="checkbox" />
+							}
+						</div>
+					</td>
+					<td>
+						<div id="Currency">
+							<p id="CurrencyNameDisplay">
+								@vc.CurrencyName
+							</p>
+							<input id="CurrencyId" type="hidden" asp-for="VoiceChannelCurrencyGain.CurrencyId"
+							   value="@vc.VoiceChannelCurrencyGain.CurrencyId">
+							@await Html.PartialAsync("/Pages/Partials/_CurrencyDropdown.cshtml", new CurrencyDropdownPartialModel(){ButtonName = "Select Currency", Currencies = Model.AllCurrencies, AddNoneOption = true})
+						</div>
+					</td>
+					<td>
+						<input asp-for="VoiceChannelCurrencyGain.AmountGainedPerHourWhenMuteOrDeaf" value="@vc.VoiceChannelCurrencyGain.AmountGainedPerHourWhenMuteOrDeaf">
+					</td>
+					<td>
+						<input asp-for="VoiceChannelCurrencyGain.AmountGainedPerHourWhenSpeaking" value="@vc.VoiceChannelCurrencyGain.AmountGainedPerHourWhenSpeaking">
+					</td>
+					<td>
+						<button type="submit" class="btn btn-primary mx-2">
+							Save
+						</button>
+					</td>
+					</form>
+				</tr>
+			}
+		</tbody>
+	</table>
+</div>
+
+@section Scripts
+	{
+	<script>
+		$(document).on("click", "#DropdownSelectedCurrency", function () {
+			var currencyId = $(this).val();
+			var currencyName = $(this).text();
+			var currencyDiv = $(this).closest("#Currency");
+			if (currencyDiv.length != 0) {
+				currencyDiv.find("#CurrencyNameDisplay").text(currencyName);
+				currencyDiv.find("#CurrencyId").val(currencyId);
+				return;
+			}
+		})
+	</script>
+	@if (ViewData["Message"] != null)
+	{
+		<script>
+			window.onload = function () {
+				alert("@ViewData["Message"]");
+			};
+		</script>
+	}
+}

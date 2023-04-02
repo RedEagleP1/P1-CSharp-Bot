@@ -1,0 +1,34 @@
+﻿@using Models
+@using WebApp.Pages.Partials
+@model RoleSurveyTreeBranchPartialModel
+@{
+    var availableTriggers = Model.AllRoleSurvey_HMs.FirstOrDefault(hm => hm.MainInstance.Id == Model.CurrentRoleSurvey_HM.MainInstance.ParentSurveyId)?.Options.Select(hm => hm.MainInstance).ToList();
+    if(Model.CurrentRoleSurvey_HM.MainInstance.HasConditionalTrigger){
+        for (int i = availableTriggers.Count - 1; i >= 0; i--)
+        {
+            if (Model.CurrentRoleSurvey_HM.Triggers.FirstOrDefault(t => t.MainInstance.Id == availableTriggers[i].Id) != null)
+            {
+                availableTriggers.RemoveAt(i);
+            }
+        }
+    }
+    var childSurvey_HMs = Model.AllRoleSurvey_HMs.Where(hm => hm.MainInstance.ParentSurveyId == Model.CurrentRoleSurvey_HM.MainInstance.Id).ToList();
+}
+<div class="RoleSurveyTreeBranch" style="margin-left:50px">
+    <div class="Parent">
+        @if (Model.IsEditMode && Model.RoleSurveyEditId == Model.CurrentRoleSurvey_HM.MainInstance.Id)
+        {
+            @await Html.PartialAsync("/Pages/Partials/_RoleSurveyEdit.cshtml", new RoleSurveyEditPartialModel(){RoleSurvey_HM = Model.CurrentRoleSurvey_HM, CanHaveCondition = Model.CanHaveCondition, AllRoles = Model.AllRoles, AvailableTriggerOptions = availableTriggers})
+        }
+        else
+        {
+            @await Html.PartialAsync("/Pages/Partials/_RoleSurveyDisplay.cshtml", new RoleSurveyDisplayPartialModel(){RoleSurvey_HM = Model.CurrentRoleSurvey_HM, CanHaveCondition = Model.CanHaveCondition, DisplayButtons = !Model.IsEditMode})
+        }
+    </div>
+    <div class="Children">
+        @foreach(var childSurvey_HM in childSurvey_HMs)
+        {
+            @await Html.PartialAsync("/Pages/Partials/_RoleSurveyTreeBranch.cshtml", new RoleSurveyTreeBranchPartialModel(){CurrentRoleSurvey_HM = childSurvey_HM, AllRoles = Model.AllRoles, IsEditMode = Model.IsEditMode, RoleSurveyEditId = Model.RoleSurveyEditId, AllRoleSurvey_HMs = Model.AllRoleSurvey_HMs, CanHaveCondition = true})
+        }     
+    </div>
+</div>

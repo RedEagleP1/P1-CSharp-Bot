@@ -1,0 +1,10 @@
+Ok. So first step would be to create appsettings.json for the Bot project and the WebApp project.
+For format, I have included appsettings.Example_Bot.json and appsettings.Example_WebApp.json  files.
+
+You need to create appseetings.json files in both those projects based on the examples.
+Note that you can create appsettings.Development.json files for development as well. 
+ASP.net core handles that automatically. For the Bot console app, i would change the file I am reading from in the Settings class to switch between development and production. It didn't cause me any inconvenience so i didn't bother setting up environment variables and stuff.
+
+Once you have created a you discord bot application on the developer's portal on discord's website. You need to write appropriate info in the appsettings.
+
+And then, you just need to run the website or bot, and it should work.

@@ -1,0 +1,174 @@
+﻿@page
+@using WebApp.Pages.Partials
+@model WebApp.Pages.Modules.RoleSurveys.SelectedRoleModel
+@{
+    var surveysLevel1 = Model.RoleSurvey_HMs.Where(rs => rs.MainInstance.ParentSurveyId == null).OrderBy(p => p.MainInstance.Index);
+}
+@Html.AntiForgeryToken()
+<nav class="nav">
+    <a class="nav-link active" aria-current="page" asp-page="/Home/Guilds">Guilds</a>
+    <a class="nav-link active" aria-current="page" asp-page="/Home/Modules" asp-route-id="@Model.Guild.Id" asp-route-name="@Model.Guild.Name">Modules</a>
+    <a class="nav-link active" aria-current="page" asp-page="Index" asp-route-guildId="@Model.Guild.Id">Role Surveys</a>
+</nav>
+<br />
+<h3>Role Name : @Model.Role.Name</h3>
+<h3>Role ID : @Model.Role.Id</h3>
+<br />
+<div id="Surveys">
+    <h5>Surveys:</h5>
+    @if(!Model.IsEditMode)
+    {
+        <form method="post">
+            <button type="submit" class="btn btn-success mx-2" asp-page-handler="AddNewSurvey" asp-route-roleId="@Model.Role.Id" asp-route-index=0>Add Below</button>
+        </form>
+    }     
+    <div class="RoleSurveyTree">
+        @foreach(var roleSurvey_HM in surveysLevel1)
+        {
+            @await Html.PartialAsync("/Pages/Partials/_RoleSurveyTreeBranch.cshtml", new RoleSurveyTreeBranchPartialModel(){IsEditMode = Model.IsEditMode, RoleSurveyEditId = Model.RoleSurveyEditId, AllRoles = Model.AllRoles, CurrentRoleSurvey_HM = roleSurvey_HM, AllRoleSurvey_HMs = Model.RoleSurvey_HMs, CanHaveCondition=false})
+        }
+    </div>    
+</div>
+
+@section Scripts
+{
+    <script>
+        var surveysElement = $("#Surveys");
+
+        $(document).on("click", "#AddOption", function () {
+
+            var topElement = $(this).closest('.RoleSurvey');
+            var roleSurveyFormData = topElement.find("#RoleSurveyEditForm").serialize();
+            $.ajax({
+                type: "GET",
+                url: '?handler=RoleSurveyAddOption',
+                data: roleSurveyFormData,
+                headers: {
+                    RequestVerificationToken:
+                        $('input:hidden[name="__RequestVerificationToken"]').val()
+                },
+                success: function (result) {
+
+                    topElement.replaceWith(result);
+                },
+                error: function (req, status, error) {
+                    console.log(status);
+                }
+            });
+        });
+        $(document).on("click", "#RemoveOption", function () {
+
+            var topElement = $(this).closest('.RoleSurvey');
+            var index = $(this).closest("#Option").find("#Index").text();
+            var formData = topElement.find("#RoleSurveyEditForm").serialize();
+            formData += '&' + $.param({optionIndex: index});
+
+            $.ajax({
+                type: "GET",
+                url: '?handler=RoleSurveyRemoveOption',
+                data: formData,
+                headers: {
+                    RequestVerificationToken:
+                        $('input:hidden[name="__RequestVerificationToken"]').val()
+                },
+                success: function (result) {
+
+                    topElement.replaceWith(result);
+                },
+                error: function (req, status, error) {
+                    console.log(status);
+                }
+            });
+        });
+        
+        $(document).on("click", "#DropdownSelectedRole", function () {
+
+            var selectedRoleId = $(this).val();
+            var selectedRoleName = $(this).text();
+
+            var optionElement = $(this).closest('#Option');
+            optionElement.find('.AwardRoleNameDisplay').text(selectedRoleName);
+            optionElement.find('.AwardRoleId').val(selectedRoleId);
+        });
+
+        $(document).on("click", "#DropdownSelectedTrigger", function () {
+
+            var selectedTriggerId = $(this).val();
+            var topElement = $(this).closest('.RoleSurvey');
+            var formData = topElement.find("#RoleSurveyEditForm").serialize();
+            formData += '&' + $.param({ triggerId: selectedTriggerId });
+            $.ajax({
+                type: "GET",
+                url: '?handler=RoleSurveyAddTrigger',
+                data: formData,
+                headers: {
+                    RequestVerificationToken:
+                        $('input:hidden[name="__RequestVerificationToken"]').val()
+                },
+                success: function (result) {
+
+                    topElement.replaceWith(result);
+                },
+                error: function (req, status, error) {
+                    console.log(status);
+                }
+            });
+        });       
+        
+        $(document).on("click", "#RemoveTrigger", function () {
+
+            var topElement = $(this).closest('.RoleSurvey');
+            var index = $(this).closest("#Trigger").find("#Index").text();
+            var formData = topElement.find("#RoleSurveyEditForm").serialize();
+            formData += '&' + $.param({triggerIndex: index});
+
+            $.ajax({
+                type: "GET",
+                url: '?handler=RoleSurveyRemoveTrigger',
+                data: formData,
+                headers: {
+                    RequestVerificationToken:
+                        $('input:hidden[name="__RequestVerificationToken"]').val()
+                },
+                success: function (result) {
+
+                    topElement.replaceWith(result);
+                },
+                error: function (req, status, error) {
+                    console.log(status);
+                }
+            });
+        });
+    </script>
+    @if(Model.ShouldFocusOnParticularRoleSurvey)
+    {
+        <script>            
+            $(document).ready(function () {
+
+                var root = document.querySelector(':root');
+                var targetElement = $('[data-id=@Model.RoleSurveyFocusId]').closest('.RoleSurvey')[0];
+                // Change scroll behavior
+                root.setAttribute("style", "scroll-behavior: auto;");
+
+                // Timeout ensures styles are applied before scrolling
+                setTimeout(function () {
+                    
+                    targetElement.scrollIntoView(false);
+
+                    // Reset to CSS defaults.
+                    root.removeAttribute("style");
+                }, 0)
+            });            
+        </script>
+    }
+    @if(ViewData["Message"] != null)
+    {
+        <script>
+            window.onload = function () {
+                alert("@ViewData["Message"]");
+            };
+        </script>
+    }
+}
+
+

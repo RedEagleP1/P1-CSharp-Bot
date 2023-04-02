@@ -1,0 +1,59 @@
+﻿@using Models
+@using WebApp.Pages.Partials
+@model RoleSurveyDisplayPartialModel
+<div class="RoleSurvey">
+    <div class="card" style="width:400px">
+        <div class="card-body">
+            <p class="d-none" data-Id="@Model.RoleSurvey_HM.MainInstance.Id">@Model.RoleSurvey_HM.MainInstance.Id</p>
+            @if (Model.CanHaveCondition)
+            {
+                <h5 class="text-success">Has Condition: @Model.RoleSurvey_HM.MainInstance.HasConditionalTrigger.ToString()</h5>
+                @if (Model.RoleSurvey_HM.MainInstance.HasConditionalTrigger)
+                {
+                    <h5 class="text-success">Triggers:</h5>
+                    @foreach (var trigger in Model.RoleSurvey_HM.Triggers.Select(hm => hm.MainInstance))
+                    {
+                        <p class="mt-2 mb-0">@trigger.Text</p>
+                    }
+                }
+            }
+            <h5 class="text-success">Initial Message:</h5>
+            <p>@Model.RoleSurvey_HM.MainInstance.InitialMessage</p>
+            <h5 class="text-success">Allow Multi Select: @Model.RoleSurvey_HM.MainInstance.AllowOptionsMultiSelect.ToString()</h5>
+            <h5 class="text-success">Options:</h5>
+            @foreach (var options in Model.RoleSurvey_HM.Options)
+            {
+                <p class="mt-2 mb-0">@options.MainInstance.Text</p>
+                <label>Role To Award -> </label>
+                <label class="text-primary ml-0 my-0">@(options.RoleName)</label>
+            }
+            <h5 class="text-success">End Message:</h5>
+            <p>@Model.RoleSurvey_HM.MainInstance.EndMessage</p>
+            @if (Model.DisplayButtons)
+            {
+                <div class="btn-group" role="group">
+                    <a class="btn btn-primary mx-2" asp-page-handler="Edit" asp-route-roleSurveyId="@Model.RoleSurvey_HM.MainInstance.Id">Edit</a>
+                    <form method="post" class="btn-group">
+                        <button type="submit" class="btn btn-danger mx-2" asp-page-handler="Delete" asp-route-roleSurveyId="@Model.RoleSurvey_HM.MainInstance.Id">Delete</button>
+                    </form>
+                    @if (Model.RoleSurvey_HM.MainInstance.ParentSurveyId == null)
+                    {
+                        <form method="post" class="btn-group">
+                            <button type="submit" class="btn btn-success mx-2" asp-page-handler="AddNewSurvey" asp-route-roleId="@Model.RoleSurvey_HM.MainInstance.RoleId" asp-route-index=@(Model.RoleSurvey_HM.MainInstance.Index + 1)>Add Below</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <form method="post" class="btn-group">
+                            <button type="submit" class="btn btn-success mx-2" asp-page-handler="AddChildSurvey" asp-route-parentSurveyId="@Model.RoleSurvey_HM.MainInstance.ParentSurveyId" asp-route-index="@(Model.RoleSurvey_HM.MainInstance.Index + 1)">Add Below</button>
+                        </form>
+                    }
+
+                    <form method="post" class="btn-group">
+                        <button type="submit" class="btn btn-success mx-2" asp-page-handler="AddChildSurvey" asp-route-parentSurveyId="@Model.RoleSurvey_HM.MainInstance.Id" asp-route-index=0>Add Child Below</button>
+                    </form>
+                </div>
+            }
+        </div>
+    </div>
+</div>

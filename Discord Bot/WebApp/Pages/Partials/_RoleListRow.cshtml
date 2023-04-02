@@ -1,0 +1,25 @@
+﻿@using Models
+@using Models.HelperClasses
+@using WebApp.Pages.Partials
+@model RoleListRowPartialModel
+
+<tr id="@Model.Role.Id">
+	<td width="50%">@Model.Role.Name</td>
+	<td width="30%">
+		@if (Model.HasSurvey)
+		{
+			<h6 class="card-text text-success">Yes</h6>
+		}
+		else
+		{
+			<h6 class="card-text text-danger">No</h6>
+		}
+	</td>
+	<td>
+		<div id="ButtonGroup" class="w-75 btn-group" role="group">
+			<a asp-page="SelectedRole" asp-route-roleId="@Model.Role.Id" class="btn btn-primary mx-2">
+				Select
+			</a>
+		</div>
+	</td>
+</tr>

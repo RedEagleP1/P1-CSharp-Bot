@@ -8,3 +8,5 @@ Whenever a new currency is created, a restart will be required using the above c
 
 The files for website are at location -> /home/p1omadmin/bot
 The files for bot are at location -> /home/p1omadmin/botConsole
+
+The location of the proxypass.conf is /etc/apache2/conf.d/userdata/std/2_4/p1omadmin/p1om.com/proxypass.conf

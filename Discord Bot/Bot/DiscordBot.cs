@@ -33,6 +33,7 @@ namespace Bot
             await client.LoginAsync(TokenType.Bot, settings.DiscordBotToken);
             await client.StartAsync();           
 
+            
             client.Ready += SubscribeToEvents;
         }
 
@@ -44,6 +45,7 @@ namespace Bot
 
         async Task SubscribeToEvents()
         {
+            client.Ready -= SubscribeToEvents; //Discord periodically requests a gateway reconnect. The bot may often fire Ready event in such cases. To avoid the function running mutiple times, we unsubscribe here.
             await EnsureCertainCurrenciesExistInDatabase();
             DiscordQueryHelper.Init(client);
 

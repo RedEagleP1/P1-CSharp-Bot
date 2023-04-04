@@ -1,0 +1,10 @@
+[Unit]
+Description=P1OM Bot
+
+[Service]
+ExecStart=/usr/bin/dotnet /home/p1omadmin/botConsole/Bot.dll
+Restart=always
+RestartSec=10
+KillSignal=SIGINT
+SyslogIdentifier=P1Bot
+User=root

@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.Extensions.Configuration;
+using System.Text.Json;
 
 namespace Models
 {
@@ -11,10 +13,16 @@ namespace Models
         public ApplicationDbContext CreateDbContext(string[] args)
         {
             var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
-            var connectionString = ***REMOVED***;
-            optionsBuilder.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+            var jsonText = File.ReadAllText("appsettings.json");
+            var settings = JsonSerializer.Deserialize<AppsettingsJson>(jsonText);
+            optionsBuilder.UseMySql(settings.ConnectionString, ServerVersion.AutoDetect(settings.ConnectionString));
 
             return new ApplicationDbContext(optionsBuilder.Options);
+        }
+
+        private class AppsettingsJson
+        {
+            public string ConnectionString { get; set; }
         }
     }
 }

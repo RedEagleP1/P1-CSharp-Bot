@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Bot.OneTimeRegister;
 using Bot.SlashCommands;
 using Discord;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Bot.EventHandlers
 {
@@ -180,6 +181,13 @@ namespace Bot.EventHandlers
         }
         async Task RegisterSlashCommands()
         {
+            //As I was making changes to the slash commands, I often needed to unregister and then register the commands again. So I put that on startup.
+            //As number of slash commands grew, this became slow.
+            //So I changed the logic to only delete a command if it is removed, or register a command if it doesn't exist.
+            //If you do make changes to the properties of a command, you will need to re-register them during development.
+            //The part under try and catch exist because when a new currency is created, which will rarely happen, we would need to add that as an option for "award" and "currency" commands.
+            //There is certainly a better way to achieve this but I didn't have time.
+
             Console.WriteLine("Re-Registering Slash Commands...");
             foreach (var guild in client.Guilds)
             {
@@ -187,13 +195,40 @@ namespace Bot.EventHandlers
 
                 foreach (var command in commands)
                 {
-                    await SlashCommandsRegister.DeleteCommand(guild, command.Name);
+                    if(!slashCommands.Any(sc => sc.Name == command.Name))
+                    {
+                        await SlashCommandsRegister.DeleteCommand(guild, command.Name);
+                    }
                 }
 
                 foreach (var slashCommand in slashCommands)
                 {
-                    await SlashCommandsRegister.RegisterCommand(guild, slashCommand.Properties);
+                    if(!commands.Any(c => c.Name == slashCommand.Name))
+                    {
+                        await SlashCommandsRegister.RegisterCommand(guild, slashCommand.Properties);
+                    }                    
                 }
+
+                try
+                {
+                    var awardCommand = commands.FirstOrDefault(c => c.Name == "award");
+                    var awardSlashCommand = slashCommands.FirstOrDefault(sc => sc.Name == "award");
+                    bool newCurrencyHasBeenAdded = awardSlashCommand.Properties.Options.Value.FirstOrDefault(o => o.Name == "currency").Choices.Count > awardCommand.Options.FirstOrDefault(o => o.Name == "currency").Choices.Count;
+                    if (newCurrencyHasBeenAdded)
+                    {
+                        await SlashCommandsRegister.DeleteCommand(guild, "award");
+                        await SlashCommandsRegister.DeleteCommand(guild, "currency");
+
+                        await SlashCommandsRegister.RegisterCommand(guild, awardSlashCommand.Properties);
+                        var currencySlashCommand = slashCommands.FirstOrDefault(sc => sc.Name == "currency");
+                        await SlashCommandsRegister.RegisterCommand(guild, currencySlashCommand.Properties);
+                    }
+                }
+                catch(Exception ex)
+                {
+                    Console.WriteLine("There was an error while registering slash commands..");
+                }
+
             }
             Console.WriteLine("Registering Slash Commands Done.");
         }

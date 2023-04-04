@@ -61,7 +61,7 @@ namespace Bot.EventHandlers
 
                     if(request.IncomingValue != "Done")
                     {
-                        newSelectedOptionsValue += " " + request.IncomingValue;
+                        newSelectedOptionsValue += "\n" + request.IncomingValue;
                         selectedOptionsField.Value = newSelectedOptionsValue;
                     }
 

@@ -44,7 +44,7 @@ Some Info about the classes in the project:
 	add-migration migrationname -StartupProject Models
 
 	The command, detects the DesignDbContextFactory class and uses it's CreateDbContext() function to know which database to connect to.
-	So, when developing, set the connection string to your local db. In production environment, change that to the real database.
+	So, when developing, set the connection string to your local db in the appsettings.json file in Models project. In production environment, change that to the real database.
 	I know this method is crude and should be automated but it didn't cause me any inconvenience so i let it be.
 
 ->We also have some helper classes which are basically used to store all relevant information of an object in one class after reading different tables from the database. For example RoleSurvey_HM (HM stands for Helper Model)

@@ -1,0 +1,16 @@
+[Unit]
+Description=Discord Bot using ASP.Net Core
+
+[Service]
+WorkingDirectory=/home/p1omadmin/bot
+ExecStart=/usr/bin/dotnet /home/p1omadmin/bot/WebApp.dll --urls=http://localhost:5000
+Restart=always
+# Restart service after 10 seconds if the dotnet service crashes:
+RestartSec=10
+KillSignal=SIGINT
+SyslogIdentifier=P1BotWebsite
+User=root
+Environment=ASPNETCORE_ENVIRONMENT=Production
+
+[Install]
+WantedBy=multi-user.target

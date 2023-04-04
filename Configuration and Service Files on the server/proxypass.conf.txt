@@ -1,0 +1,17 @@
+ProxyRequests off
+<Proxy *>
+    Order deny,allow
+    Allow from all
+</Proxy>
+<Location /bot >
+    ProxyPass http://localhost:5000/bot
+    ProxyPassReverse http://localhost:5000/bot
+
+    Header set Cache-Control "max-age=0, no-cache, no-store, must-revalidate"
+    Header set Pragma "no-cache"
+    Header set Expires 0
+</Location>
+## AutoSSL needs to not be proxied ## This portion only needed in the std node.conf
+<Location /.well-known/*>
+   ProxyPass !
+</Location>

@@ -42,20 +42,16 @@ namespace Bot.EventHandlers
             }
 
             var roleMessage = await context.RoleMessages.AsNoTracking().FirstOrDefaultAsync(rm => rm.RoleId == newRole.Id);
-            if(roleMessage == null)
+            if(roleMessage != null)
             {
-                return;
-            }
-
-            await after.SendMessageAsync(roleMessage.Message);
+                await after.SendMessageAsync(roleMessage.Message);
+            }           
 
             var roleSurvey = await context.RolesSurvey.AsNoTracking().FirstOrDefaultAsync(rs => rs.RoleId == newRole.Id && rs.ParentSurveyId == null && rs.Index == 0);
-            if(roleSurvey == null)
+            if(roleSurvey != null)
             {
-                return;
-            }
-
-            await RoleSurveyHelper.SendRoleSurvey(roleSurvey, after, context);
+                await RoleSurveyHelper.SendRoleSurvey(roleSurvey, after, context);
+            }            
         }
     }
 }

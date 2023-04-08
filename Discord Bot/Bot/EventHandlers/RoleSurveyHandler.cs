@@ -123,9 +123,10 @@ namespace Bot.EventHandlers
         static List<string> GetOptionsLeft(string selectedOptions, string[] allOptions)
         {
             List<string> optionsLeft = new();
+            var selectedOptionsList = selectedOptions.Split("\n");
             foreach(var option in allOptions)
             {
-                if(!selectedOptions.Contains(option))
+                if(!selectedOptionsList.Contains(option))
                 {
                     optionsLeft.Add(option);
                 }

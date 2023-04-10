@@ -130,7 +130,7 @@ namespace Bot.SlashCommands.ResponseHelpers
                 "If your work involves changes anyone else should know about, documenting the changes and modifying all existing documentation " +
                 "(including high level architectural documents related to the task) is critical. Link to any/all changes you made to documents and " +
                 "reply with all the documentation you wrote. \nIn the case of design, make sure you update the documents on the idea progression board. ")
-                .WithButtons("Add Document Changes")
+                .WithButtons("Add Documentation Changes", "No changes to the team's documentation are needed")
                 .WithFieldToAdd("Work Result")
                 .WithConditions(new Conditions()
                 .MakeSureEmbedTitleMatches("Review")
@@ -139,7 +139,7 @@ namespace Bot.SlashCommands.ResponseHelpers
 
             responses.Add(updateRelevantDocuments);
 
-            ModalLauncher.AddModal("Add Document Changes", "Document Changes");
+            ModalLauncher.AddModal("Add Documentation Changes", "Documentation Changes");
 
             var academyTaskReview_academyCardLink = new StandardResponse()
                 .WithContent("Copy the original exam card where you found it on the academy here:")
@@ -198,7 +198,7 @@ namespace Bot.SlashCommands.ResponseHelpers
             var postToChannel = new PostMessageAsResponse()
                 .WithContent("Great work, now your statement needs to be reviewed in #review by someone else to be submitted." + 
                             "Do /account anywhere in Discord to submit your time for the Revenue Royalty Program. ")
-                .WithFieldToAdd("Document Changes")
+                .WithFieldToAdd("Documentation Changes")
                 .OnChannel(DiscordQueryHelper.ReviewPostChannel)
                 .WithPostMessageContent((request) =>
                 {
@@ -210,8 +210,21 @@ namespace Bot.SlashCommands.ResponseHelpers
                 new KeyValuePair<string, string>(HelperStrings.verifiers, HelperStrings.none))
                 .WithConditions(new Conditions()
                 .MakeSureEmbedTitleMatches("Review")
-                .MakeSureFieldDoesNotExist("Document Changes")
-                .MakeSureModalTitleMatches("Document Changes"));
+                .MakeSureFieldDoesNotExist("Documentation Changes")
+                .AddCustomCondition((request) =>
+                {
+                    if(request.IncomingModalName == "Documentation Changes")
+                    {
+                        return true;
+                    }
+
+                    if(request.IncomingValue == "No changes to the team's documentation are needed")
+                    {
+                        return true;
+                    }
+
+                    return false;
+                }));
 
             responses.Add(postToChannel);
 

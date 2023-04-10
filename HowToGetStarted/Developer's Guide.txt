@@ -29,7 +29,6 @@ And it was difficult for me to understand how to use navigation properties and f
 So i skipped navigation properties and this helped me understand better as I had to make multiple queries using foreign keys to create a single object. I also learned the fluent api which helped.
 
 The way i make multiple queries is probably inefficient but the performance was good enough so I didn't bother.
-There should be an attached image that shows the database schema.
 
 Now, when you open the website, you will notice that it shows a list of guilds. How is that in the database? It's because the Bot, when first launched writes it to the database. And on any change updates it.
 This is read by the website to show you the list of guilds among other things.

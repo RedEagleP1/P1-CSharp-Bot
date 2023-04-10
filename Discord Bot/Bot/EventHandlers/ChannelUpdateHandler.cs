@@ -62,12 +62,18 @@ namespace Bot.EventHandlers
                         await context.SaveChangesAsync();
                         break;
                     case ChannelType.Text:
-                        var textChannel = await context.TextChannelsCurrencyGainImage.FirstOrDefaultAsync(v => v.ChannelId == afterChannel.Id);
-                        if (textChannel == null)
+                        var textChannelForImagePost = await context.TextChannelsCurrencyGainImage.FirstOrDefaultAsync(v => v.ChannelId == afterChannel.Id);
+                        if (textChannelForImagePost != null)
                         {
-                            return;
+                            textChannelForImagePost.ChannelName = afterChannel.Name;
                         }
-                        textChannel.ChannelName = afterChannel.Name;
+
+                        var textChannelForMessagePost = await context.TextChannelsCurrencyGainMessage.FirstOrDefaultAsync(v => v.ChannelId == afterChannel.Id);
+                        if (textChannelForMessagePost != null)
+                        {
+                            textChannelForMessagePost.ChannelName = afterChannel.Name;
+                        }
+
                         await context.SaveChangesAsync();
                         break;
                 }               
@@ -100,12 +106,18 @@ namespace Bot.EventHandlers
                         await context.SaveChangesAsync();
                         break;
                     case ChannelType.Text:
-                        var textChannel = await context.TextChannelsCurrencyGainImage.FirstOrDefaultAsync(v => v.ChannelId == channel.Id);
-                        if (textChannel == null)
+                        var textChannelForImagePost = await context.TextChannelsCurrencyGainImage.FirstOrDefaultAsync(v => v.ChannelId == channel.Id);
+                        if (textChannelForImagePost != null)
                         {
-                            return;
+                            context.TextChannelsCurrencyGainImage.Remove(textChannelForImagePost);
                         }
-                        context.TextChannelsCurrencyGainImage.Remove(textChannel);
+
+                        var textChannelForMessagePost = await context.TextChannelsCurrencyGainMessage.FirstOrDefaultAsync(v => v.ChannelId == channel.Id);
+                        if (textChannelForMessagePost != null)
+                        {
+                            context.TextChannelsCurrencyGainMessage.Remove(textChannelForMessagePost);
+                        }
+
                         await context.SaveChangesAsync();
                         break;
                 }
@@ -143,13 +155,20 @@ namespace Bot.EventHandlers
                         await context.SaveChangesAsync();
                         break;
                     case ChannelType.Text:
-                        var textChannel = new TextChannelCurrencyGainImage()
+                        var textChannelForImagePost = new TextChannelCurrencyGainImage()
                         {
                             ChannelId = channel.Id,
                             GuildId = guildChannel.Guild.Id,
                             ChannelName = guildChannel.Name
                         };
-                        context.TextChannelsCurrencyGainImage.Add(textChannel);
+                        context.TextChannelsCurrencyGainImage.Add(textChannelForImagePost);
+                        var textChannelForMessagePost = new TextChannelCurrencyGainMessage()
+                        {
+                            ChannelId = channel.Id,
+                            GuildId = guildChannel.Guild.Id,
+                            ChannelName = guildChannel.Name
+                        };
+                        context.TextChannelsCurrencyGainMessage.Add(textChannelForMessagePost);
                         await context.SaveChangesAsync();
                         break;
                 }

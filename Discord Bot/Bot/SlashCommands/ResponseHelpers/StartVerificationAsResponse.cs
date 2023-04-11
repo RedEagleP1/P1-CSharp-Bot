@@ -43,13 +43,13 @@ namespace Bot.SlashCommands.ResponseHelpers
         {
             if (request.User.Id == request.Message.MentionedUserIds.First())
             {
-                await request.RespondSeparatelyAsync("You can't verify your own work. Ask someone else to verify it.");
+                await request.RespondSeparatelyAsync("You can't verify your own work. Ask someone else to verify it.", ephemeral: true);
                 return;
             }
 
             if (HasVerified(request.User.Id, request))
             {
-                await request.RespondSeparatelyAsync("Looks like you have already verified once. You can't verify again. Let someone else verify it.");
+                await request.RespondSeparatelyAsync("Looks like you have already verified once. You can't verify again. Let someone else verify it.", ephemeral: true);
                 return;
             }
 

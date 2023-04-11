@@ -1,9 +1,11 @@
 ﻿using Bot.SlashCommands;
+using Discord;
 using Discord.WebSocket;
 using Microsoft.EntityFrameworkCore;
 using Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Metrics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -49,6 +51,15 @@ namespace Bot.EventHandlers
 
                     if (existingTrack.LastRecorded > timeAtWhichEventWasTriggered)
                     {
+                        return;
+                    }
+
+                    if (before.VoiceChannel == null)
+                    {
+                        existingTrack.LastRecorded = timeAtWhichEventWasTriggered;
+                        existingTrack.IsMuteOrDeafen = after.IsSelfDeafened || after.IsSelfMuted || after.IsDeafened || after.IsMuted;
+                        existingTrack.ChannelId = after.VoiceChannel?.Id;
+                        await context.SaveChangesAsync();
                         return;
                     }
 

@@ -84,7 +84,7 @@ namespace WebApp.Pages.Modules.RoleSurveys
         }
         public async Task<IActionResult> OnPostSave(RoleSurvey_HM roleSurvey_HM)
         {
-            var allOptions = _db.RoleSurveyOptions.Where(o => o.RoleSurveyId == roleSurvey_HM.MainInstance.Id).ToList();
+            var allOptions = _db.RoleSurveyOptions.AsNoTracking().Where(o => o.RoleSurveyId == roleSurvey_HM.MainInstance.Id).ToList();
             var optionsToRemove = new List<RoleSurveyOption>();
             foreach (RoleSurveyOption option in allOptions)
             {
@@ -100,11 +100,7 @@ namespace WebApp.Pages.Modules.RoleSurveys
                 return RedirectToPage("SelectedRole", "WithFocusWithAlert", new { roleSurveyId = roleSurvey_HM.MainInstance.Id, message = message });
             }
 
-            foreach (var option in optionsToRemove)
-            {
-                _db.Remove(option);
-            }
-
+            _db.RemoveRange(optionsToRemove);
             _db.RoleSurveyOptions.UpdateRange(roleSurvey_HM.Options.Select(hm => hm.MainInstance));
             _db.RolesSurvey.Update(roleSurvey_HM.MainInstance);
 

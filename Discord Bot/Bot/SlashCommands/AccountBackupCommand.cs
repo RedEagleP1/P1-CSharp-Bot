@@ -17,13 +17,11 @@ namespace Bot.SlashCommands
         const string name = "accountbackup";
         readonly SlashCommandProperties properties = CreateNewProperties();
         readonly DiscordSocketClient client;
-        readonly Settings settings;
         public string Name => name;
         public SlashCommandProperties Properties => properties;
-        public AccountBackupCommand(DiscordSocketClient client, Settings settings)
+        public AccountBackupCommand(DiscordSocketClient client)
         {
             this.client = client;
-            this.settings = settings;
         }
 
         public async Task HandleCommand(SocketSlashCommand command)
@@ -45,7 +43,7 @@ namespace Bot.SlashCommands
 
         async Task HandleResponse(SocketSlashCommand command)
         {
-            var user = client.GetGuild(settings.P1RepublicGuildId)?.GetUser(command.User.Id);
+            var user = client.GetGuild(Settings.P1RepublicGuildId)?.GetUser(command.User.Id);
             if (user == null || user.Roles.FirstOrDefault(role => role.Name == "Hours Treasurer") == null)
             {
                 return;

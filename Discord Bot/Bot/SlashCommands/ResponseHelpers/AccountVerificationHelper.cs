@@ -68,7 +68,7 @@ namespace Bot.SlashCommands.ResponseHelpers
                     trustOwned = new CurrencyOwned() { CurrencyId = trustCurrency.Id, OwnerId = request.User.Id, Amount = 0 };
                     context.CurrenciesOwned.Add(trustOwned);
                 }
-                trustOwned.Amount += 25;
+                trustOwned.Amount += Settings.AccountCommandSettings.Reward;
                 await context.SaveChangesAsync();
             }
             finally
@@ -96,7 +96,7 @@ namespace Bot.SlashCommands.ResponseHelpers
                     trustOwned = new CurrencyOwned() { CurrencyId = trustCurrency.Id, OwnerId = request.User.Id, Amount = 0 };
                     context.CurrenciesOwned.Add(trustOwned);
                 }
-                trustOwned.Amount += 25;
+                trustOwned.Amount += Settings.AccountCommandSettings.Reward;
                 await context.SaveChangesAsync();
             }
             finally
@@ -136,7 +136,7 @@ namespace Bot.SlashCommands.ResponseHelpers
                     trustOwned = new CurrencyOwned() { CurrencyId = trustCurrency.Id, OwnerId = request.User.Id, Amount = 0 };
                     context.CurrenciesOwned.Add(trustOwned);
                 }
-                trustOwned.Amount += 25;
+                trustOwned.Amount += Settings.AccountCommandSettings.Reward;
                 await context.SaveChangesAsync();
             }
             finally

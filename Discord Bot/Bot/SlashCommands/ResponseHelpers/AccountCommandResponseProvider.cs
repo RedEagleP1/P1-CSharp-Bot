@@ -2,9 +2,11 @@
 using Discord.WebSocket;
 using Microsoft.EntityFrameworkCore;
 using Models;
+using Models.Migrations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
@@ -14,7 +16,6 @@ namespace Bot.SlashCommands.ResponseHelpers
     public static class AccountCommandResponseProvider
     {
         static List<IResponse> responses = CreateResponses();
-
         public static async Task HandleResponse(Request request)
         {
             foreach(var response in responses)
@@ -40,17 +41,17 @@ namespace Bot.SlashCommands.ResponseHelpers
                 var context = DBContextFactory.GetNewContext();
                 var trustCurrency = await context.Currencies.AsNoTracking().FirstOrDefaultAsync(c => c.Name == "Trust");
                 var trustOwned = await context.CurrenciesOwned.FirstOrDefaultAsync(co => co.CurrencyId == trustCurrency.Id && co.OwnerId == command.User.Id);
-                if (trustOwned == null || trustOwned.Amount < 100)
+                if (trustOwned == null || trustOwned.Amount < Settings.AccountCommandSettings.Cost)
                 {
                     await command.ModifyOriginalResponseAsync((mp) =>
                     {
-                        mp.Content = "/Account cost 100 Trust. You don't have enough. \nYou can learn how to earn Trust in https://trello.com/c/QHLYcAKQ.";
+                        mp.Content = $"/Account cost {Settings.AccountCommandSettings.Cost} Trust. You don't have enough. \nYou can learn how to earn Trust in https://trello.com/c/QHLYcAKQ.";
                     });
 
                     return;
                 }
 
-                trustOwned.Amount -= 100;
+                trustOwned.Amount -= Settings.AccountCommandSettings.Cost;
                 await context.SaveChangesAsync();
             }
             finally
@@ -196,7 +197,7 @@ namespace Bot.SlashCommands.ResponseHelpers
                         var context = DBContextFactory.GetNewContext();
                         var trustCurrency = await context.Currencies.FirstOrDefaultAsync(c => c.Name == "Trust");
                         var trustOwned = await context.CurrenciesOwned.FirstOrDefaultAsync(co => co.CurrencyId == trustCurrency.Id && co.OwnerId == request.User.Id);
-                        trustOwned.Amount += 100;
+                        trustOwned.Amount += Settings.AccountCommandSettings.Cost;
                         await context.SaveChangesAsync();
                     }
                     finally

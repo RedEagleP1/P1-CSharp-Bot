@@ -59,13 +59,13 @@
                 {
                     <div id="Option">
                         <p id="Index" class="d-none">@i</p>
+                        <input type="hidden" asp-for="RoleSurvey_HM.Options[i].MainInstance.Id" value="@Model.RoleSurvey_HM.Options[i].MainInstance.Id" />
                         <input type="text" asp-for="RoleSurvey_HM.Options[i].MainInstance.Text" class="w-100" value="@Model.RoleSurvey_HM.Options[i].MainInstance.Text" />
                         <br />
                         <label>Role To Award -> </label>
-                        <label class="text-danger AwardRoleNameDisplay">@(Model.RoleSurvey_HM.Options[i].RoleName)</label>
                         <input class="AwardRoleId" asp-for="RoleSurvey_HM.Options[i].MainInstance.RoleId" type="hidden" value="@Model.RoleSurvey_HM.Options[i].MainInstance.RoleId" />
                         <input asp-for="RoleSurvey_HM.Options[i].MainInstance.RoleSurveyId" type="hidden" value="@Model.RoleSurvey_HM.Options[i].MainInstance.RoleSurveyId" />
-                        @await Html.PartialAsync("/Pages/Partials/_RolesDropdown.cshtml", new RolesDropdownPartialModel(){ButtonName="Select Role To Award", Roles=Model.AllRoles, AddNoneOption=true})
+                        @await Html.PartialAsync("/Pages/Partials/_RolesDropdown.cshtml", new RolesDropdownPartialModel(){ButtonName= Model.RoleSurvey_HM.Options[i].RoleName, Roles=Model.AllRoles, AddNoneOption=true})
                         <button type="button" id="RemoveOption" class="btn btn-danger mx-0 mb-2">Remove</button>
                     </div>
                 }

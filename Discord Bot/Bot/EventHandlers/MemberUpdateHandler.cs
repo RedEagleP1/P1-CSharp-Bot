@@ -35,23 +35,21 @@ namespace Bot.EventHandlers
                 return;
 
             using var context = DBContextFactory.GetNewContext();
-            var newRole = after.Roles.Except(before.Roles).FirstOrDefault();
-            if(newRole == null)
+            var addedRoles = after.Roles.Except(before.Roles);
+            foreach(var role in addedRoles)
             {
-                return;
-            }
+                var roleMessage = await context.RoleMessages.AsNoTracking().FirstOrDefaultAsync(rm => rm.RoleId == role.Id);
+                if (roleMessage != null)
+                {
+                    await after.SendMessageAsync(roleMessage.Message);
+                }
 
-            var roleMessage = await context.RoleMessages.AsNoTracking().FirstOrDefaultAsync(rm => rm.RoleId == newRole.Id);
-            if(roleMessage != null)
-            {
-                await after.SendMessageAsync(roleMessage.Message);
-            }           
-
-            var roleSurvey = await context.RolesSurvey.AsNoTracking().FirstOrDefaultAsync(rs => rs.RoleId == newRole.Id && rs.ParentSurveyId == null && rs.Index == 0);
-            if(roleSurvey != null)
-            {
-                await RoleSurveyHelper.SendRoleSurvey(roleSurvey, after, context);
-            }            
+                var roleSurvey = await context.RolesSurvey.AsNoTracking().FirstOrDefaultAsync(rs => rs.RoleId == role.Id && rs.ParentSurveyId == null && rs.Index == 0);
+                if (roleSurvey != null)
+                {
+                    await RoleSurveyHelper.SendRoleSurvey(roleSurvey, after, context);
+                }
+            }          
         }
     }
 }

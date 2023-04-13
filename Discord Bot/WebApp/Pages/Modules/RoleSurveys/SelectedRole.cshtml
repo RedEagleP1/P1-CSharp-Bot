@@ -86,8 +86,10 @@
             var selectedRoleId = $(this).val();
             var selectedRoleName = $(this).text();
 
+            var dropdownElement = $(this).closest('.dropdown');
+            dropdownElement.find("#dropdownMenuButton").text(selectedRoleName);
+
             var optionElement = $(this).closest('#Option');
-            optionElement.find('.AwardRoleNameDisplay').text(selectedRoleName);
             optionElement.find('.AwardRoleId').val(selectedRoleId);
         });
 

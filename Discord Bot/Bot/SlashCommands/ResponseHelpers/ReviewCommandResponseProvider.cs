@@ -40,17 +40,17 @@ namespace Bot.SlashCommands.ResponseHelpers
                 var context = DBContextFactory.GetNewContext();
                 var trustCurrency = await context.Currencies.AsNoTracking().FirstOrDefaultAsync(c => c.Name == "Trust");
                 var trustOwned = await context.CurrenciesOwned.FirstOrDefaultAsync(co => co.CurrencyId == trustCurrency.Id && co.OwnerId == command.User.Id);
-                if (trustOwned == null || trustOwned.Amount < 100)
+                if (trustOwned == null || trustOwned.Amount < Settings.ReviewCommandSettings.Cost)
                 {
                     await command.ModifyOriginalResponseAsync((mp) =>
                     {
-                        mp.Content = "Task Reviews cost 100 Trust. You don't have enough. \nYou can learn how to earn Trust in https://trello.com/c/QHLYcAKQ.";
+                        mp.Content = $"Access denied. Task Reviews cost {Settings.ReviewCommandSettings.Cost} Trust. \r\n\r\n**\U0001f6d1 URGENT \U0001f6d1**\r\nEarn Trust, then return instead of pursuing other tasks or means of review. \r\n\r\n**Open this guide now**: https://trello.com/c/QHLYcAKQ.";
                     });
 
                     return;
                 }
 
-                trustOwned.Amount -= 100;
+                trustOwned.Amount -= Settings.ReviewCommandSettings.Cost;
                 await context.SaveChangesAsync();
             }
             finally
@@ -249,7 +249,7 @@ namespace Bot.SlashCommands.ResponseHelpers
 
                     var text = "Your card was rejected for review due to unclear Acceptance Criteria, " +
                     "please review the following data you submitted and resubmit with clearer Acceptance Criteria." +
-                    " We have refunded your 100 trust. \nHere is the data: \n";
+                    $" We have refunded your {Settings.ReviewCommandSettings.Cost} trust. \nHere is the data: \n";
                     var embed = request.ReferencedMessage.Embeds.First().ToEmbedBuilder().Build();
                     var userThatIsRequestingReview = await DiscordQueryHelper.GetUserAsync(request.ReferencedMessage.MentionedUserIds.First());
                     await userThatIsRequestingReview.SendMessageAsync(text: text, embed: embed);                                      
@@ -281,7 +281,7 @@ namespace Bot.SlashCommands.ResponseHelpers
 
                     var text = "Your card was rejected for review because it didn't meet the requirements, " +
                     "please review the following data you submitted and resubmit after you meet the requirements." +
-                    " We have refunded your 100 trust. \nHere is the data: \n";
+                    $" We have refunded your {Settings.ReviewCommandSettings.Cost} trust. \nHere is the data: \n";
                     var embed = request.ReferencedMessage.Embeds.First().ToEmbedBuilder().Build();
                     var userThatIsRequestingReview = await DiscordQueryHelper.GetUserAsync(request.ReferencedMessage.MentionedUserIds.First());
                     await userThatIsRequestingReview.SendMessageAsync(text: text, embed: embed);
@@ -292,7 +292,7 @@ namespace Bot.SlashCommands.ResponseHelpers
                         var context = DBContextFactory.GetNewContext();
                         var trustCurrency = await context.Currencies.FirstOrDefaultAsync(c => c.Name == "Trust");
                         var trustOwned = await context.CurrenciesOwned.FirstOrDefaultAsync(co => co.CurrencyId == trustCurrency.Id && co.OwnerId == userThatIsRequestingReview.Id);
-                        trustOwned.Amount += 100;
+                        trustOwned.Amount += Settings.ReviewCommandSettings.Cost;
                         await context.SaveChangesAsync();
                     }
                     finally
@@ -318,7 +318,7 @@ namespace Bot.SlashCommands.ResponseHelpers
 
             var verification_TaskType_Programming = new StandardResponse()
                 .WithContent("Programming tasks need to be handled by specialists through a different system. " +
-                "\nWe will delete this submission and return the 25 Trust the treasury. Is that ok?")
+                $"\nWe will delete this submission and return the {Settings.ReviewCommandSettings.Reward} Trust to the treasury. Is that ok?")
                 .WithButtons("Yes", "No")
                 .WithConditions(new Conditions()
                 .MakeSureEmbedTitleMatches("Review (Verification Process)")
@@ -341,7 +341,7 @@ namespace Bot.SlashCommands.ResponseHelpers
                         var context = DBContextFactory.GetNewContext();
                         var trustCurrency = await context.Currencies.FirstOrDefaultAsync(c => c.Name == "Trust");
                         var trustOwned = await context.CurrenciesOwned.FirstOrDefaultAsync(co => co.CurrencyId == trustCurrency.Id && co.OwnerId == userThatIsRequestingReview.Id);
-                        trustOwned.Amount += 100;
+                        trustOwned.Amount += Settings.ReviewCommandSettings.Cost;
                         await context.SaveChangesAsync();
                     }
                     finally
@@ -378,7 +378,7 @@ namespace Bot.SlashCommands.ResponseHelpers
             var verification_lowRating = new CustomResponse()
                 .WithResponse(async (request) =>
                 {
-                    var content = $"Please send <@{request.ReferencedMessage.MentionedUserIds.First()}> how they could improve their submission.\nThank you for your time. You have been awarded +25 Trust. \n";
+                    var content = $"Please send <@{request.ReferencedMessage.MentionedUserIds.First()}> how they could improve their submission.\nThank you for your time. You have been awarded +{Settings.ReviewCommandSettings.Reward} Trust. \n";
                     if (!await ReviewVerificationHelper.HandleResponse_NegativeVerification(request, content))
                     {
                         return;
@@ -400,7 +400,7 @@ namespace Bot.SlashCommands.ResponseHelpers
             var verification_highRating = new CustomResponse()
                 .WithResponse(async (request) =>
                 {
-                    var content = $"Thank you for your time. You have been awarded +25 Trust!\nPlease send <@{request.ReferencedMessage.MentionedUserIds.First()}> congratulations and any tips you might have.\n";
+                    var content = $"Thank you for your time. You have been awarded +{Settings.ReviewCommandSettings.Reward} Trust!\nPlease send <@{request.ReferencedMessage.MentionedUserIds.First()}> congratulations and any tips you might have.\n";
                     if (!await ReviewVerificationHelper.HandleResponse_PositiveVerification(request, content))
                     {
                         return;

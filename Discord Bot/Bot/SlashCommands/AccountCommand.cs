@@ -13,23 +13,21 @@ namespace Bot.SlashCommands
         const string name = "account";
         readonly SlashCommandProperties properties = CreateNewProperties();
         readonly DiscordSocketClient client;
-        readonly Settings settings;
         public string Name => name;
         public SlashCommandProperties Properties => properties;
-        public AccountCommand(DiscordSocketClient client, Settings settings)
+        public AccountCommand(DiscordSocketClient client)
         {
             this.client = client;
-            this.settings = settings;
         }
         public void Awake()
         {
-            var guild = client.GetGuild(settings.P1OCGuildId);
+            var guild = client.GetGuild(Settings.P1OCGuildId);
             if(guild == null)
             {
                 Console.WriteLine("Error: Account command -> P1OC Guild not found.");
                 return;
             }
-            var postChannel = guild.GetTextChannel(settings.AccountsChannelId);
+            var postChannel = guild.GetTextChannel(Settings.AccountsChannelId);
             if(postChannel == null)
             {
                 Console.WriteLine("Error: Can't find the post channel for the account command.");

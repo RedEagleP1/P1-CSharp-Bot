@@ -41,7 +41,7 @@ namespace Bot.SlashCommands.ResponseHelpers
                     trustOwned = new CurrencyOwned() { CurrencyId = trustCurrency.Id, OwnerId = request.User.Id, Amount = 0 };
                     context.CurrenciesOwned.Add(trustOwned);
                 }
-                trustOwned.Amount += 25;
+                trustOwned.Amount += Settings.ReviewCommandSettings.Reward;
                 await context.SaveChangesAsync();
             }
             finally
@@ -71,7 +71,7 @@ namespace Bot.SlashCommands.ResponseHelpers
                     trustOwned = new CurrencyOwned() { CurrencyId = trustCurrency.Id, OwnerId = request.User.Id, Amount = 0 };
                     context.CurrenciesOwned.Add(trustOwned);
                 }
-                trustOwned.Amount += 25;
+                trustOwned.Amount += Settings.ReviewCommandSettings.Reward;
                 await context.SaveChangesAsync();
             }
             finally
@@ -99,21 +99,23 @@ namespace Bot.SlashCommands.ResponseHelpers
             await request.UpdateOriginalMessageAsync(content, null, null);
         }
 
-        public static int GetCurrencyToAward(Request request)
+        public static float GetCurrencyToAward(Request request)
         {
             var taskType = MessageComponentAndEmbedHelper.GetField(request.Embed.ToEmbedBuilder(), "Task Type").Value.ToString();
-            int currencyToAward = 0;
+            float currencyToAward = 0;
+
+            var ratingRewards = taskType == "Academy Exam" ? Settings.ReviewCommandSettings.AcademyTaskRatingRewards : Settings.ReviewCommandSettings.NonAcademyTaskRatingRewards;
 
             switch (request.IncomingValue[..2])
             {
                 case "3)":
-                    currencyToAward = taskType == "Academy Exam" ? 120 : 5;
+                    currencyToAward = ratingRewards.Three;
                     break;
                 case "4)":
-                    currencyToAward = taskType == "Academy Exam" ? 140 : 10;
+                    currencyToAward = ratingRewards.Four;
                     break;
                 case "5)":
-                    currencyToAward = taskType == "Academy Exam" ? 170 : 15;
+                    currencyToAward = ratingRewards.Five;
                     break;
             }
 

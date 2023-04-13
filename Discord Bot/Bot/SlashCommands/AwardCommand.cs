@@ -20,16 +20,14 @@ namespace Bot.SlashCommands
         readonly SlashCommandProperties properties = CreateNewProperties();
 
         private DiscordSocketClient client;
-        readonly Settings settings;
         static Regex hourRolecheck = new Regex("^T-(\\d+)h$");
 
         public string Name => name;
         public SlashCommandProperties Properties => properties;
 
-        public AwardCommand(DiscordSocketClient client, Settings settings)
+        public AwardCommand(DiscordSocketClient client)
         {
             this.client = client;
-            this.settings = settings;
         }
 
         public async Task HandleCommand(SocketSlashCommand command)
@@ -51,7 +49,7 @@ namespace Bot.SlashCommands
 
         async Task HandleResponse(SocketSlashCommand command)
         {
-            var user = client.GetGuild(settings.P1RepublicGuildId)?.GetUser(command.User.Id);
+            var user = client.GetGuild(Settings.P1RepublicGuildId)?.GetUser(command.User.Id);
             if (user == null || !HasRoleToAwardHours(user.Roles, out int roleHours))
             {
                 await command.ModifyOriginalResponseAsync(response => response.Content = "You are not authorized to use this command.");
@@ -72,7 +70,7 @@ namespace Bot.SlashCommands
                 var currencyAwardLimit = await GetCurrencyAwardLimit(context, command.User.Id, roleHours, currency.Id);
                 if (optionValues.amount > currencyAwardLimit.AmountLeft)
                 {
-                    await command.ModifyOriginalResponseAsync(response => response.Content = "You don't have enough hours.");
+                    await command.ModifyOriginalResponseAsync(response => response.Content = $"You don't have enough {currency.Name}.");
                     return;
                 }
 

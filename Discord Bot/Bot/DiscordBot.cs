@@ -15,12 +15,7 @@ namespace Bot
     public class DiscordBot
     {
         DiscordSocketClient client;
-        private readonly Settings settings;
         private TimerCST timerCST;
-        public DiscordBot(Settings settings)
-        {
-            this.settings = settings;
-        }
 
         public async Task StartBot()
         {
@@ -30,7 +25,7 @@ namespace Bot
             });
             client.Log += LogMessage;
 
-            await client.LoginAsync(TokenType.Bot, settings.DiscordBotToken);
+            await client.LoginAsync(TokenType.Bot, Settings.DiscordBotToken);
             await client.StartAsync();           
 
             
@@ -51,11 +46,11 @@ namespace Bot
 
             List<ISlashCommand> slashCommands = new()
             {
-                new AwardCommand(client, settings),
+                new AwardCommand(client),
                 new CurrencyCommand(),
-                new AccountCommand(client,settings),
-                new AccountBackupCommand(client,  settings),
-                new ReviewCommand(client,  settings),
+                new AccountCommand(client),
+                new AccountBackupCommand(client),
+                new ReviewCommand(client),
                 new BuyRoleCommand()
             };
 

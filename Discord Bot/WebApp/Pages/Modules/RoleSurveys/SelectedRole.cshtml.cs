@@ -71,11 +71,11 @@ namespace WebApp.Pages.Modules.RoleSurveys
             }
 
             var roleSurvey = await _db.RolesSurvey.FirstOrDefaultAsync(rs => rs.Id == roleSurveyId);
-            var siblingRoleSurveys = _db.RolesSurvey.Where(rs => rs.ParentSurveyId == roleSurvey.ParentSurveyId && rs.RoleId == roleSurvey.RoleId).ToList();
+            var siblingRoleSurveys = _db.RolesSurvey.Where(rs => rs.ParentSurveyId == roleSurvey.ParentSurveyId && rs.RoleId == roleSurvey.RoleId).OrderBy(rs => rs.Index).ToList();
             siblingRoleSurveys.Remove(roleSurvey);
-            for(int i=roleSurvey.Index + 1;i<siblingRoleSurveys.Count;i++)
+            for(int i=0;i<siblingRoleSurveys.Count;i++)
             {
-                siblingRoleSurveys[i].Index--;
+                siblingRoleSurveys[i].Index = i;
             }
             _db.RolesSurvey.Remove(roleSurvey);         
             
@@ -179,7 +179,7 @@ namespace WebApp.Pages.Modules.RoleSurveys
         {
             roleSurvey_HM.Options.Add(new RoleSurveyOption_HM()
             {
-                MainInstance = new RoleSurveyOption() { Text = "This is the option text...", RoleId = null, RoleSurveyId = roleSurvey_HM.MainInstance.Id }
+                MainInstance = new RoleSurveyOption() { Text="", RoleId = null, RoleSurveyId = roleSurvey_HM.MainInstance.Id }
             });
 
             var model = await CreateRoleSurveyEditPartialModelFromIncomingProperties(roleSurvey_HM, _db);

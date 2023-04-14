@@ -70,8 +70,8 @@ namespace Bot.EventHandlers
                         if (request.IncomingValue != "Done")
                         {
                             var optionsLeft = GetOptionsLeft(selectedOptionsField.Value.ToString(), incomingRoleSurvey_HM.Options.Select(o => o.MainInstance.Text).ToArray());
-                            optionsLeft.Add("Done");
-                            var messagComponent = MessageComponentAndEmbedHelper.CreateButtons(optionsLeft.ToArray());
+                            //optionsLeft.Add("Done");
+                            var messagComponent = MessageComponentAndEmbedHelper.CreateButtons("Done", optionsLeft.ToArray());
 
                             var roleId = incomingRoleSurvey_HM.Options.FirstOrDefault(o => o.MainInstance.Text == request.IncomingValue).MainInstance.RoleId;
                             if(roleId != null)
@@ -89,7 +89,8 @@ namespace Bot.EventHandlers
                         if(nextRoleSurvey_HM == null)
                         {
                             var endMessage = survey.EndMessage ?? "Survey Ended";
-                            await request.UpdateOriginalMessageAsync(endMessage, null, builder.Build());
+                            await request.UpdateOriginalMessageAsync("Survey Completed", null, builder.Build());
+                            await request.RespondSeparatelyAsync(endMessage, null, null);
                             return;
                         }
 

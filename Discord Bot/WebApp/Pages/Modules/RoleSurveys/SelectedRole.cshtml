@@ -141,6 +141,34 @@
                 }
             });
         });
+
+        $(document).on("submit", "#RoleSurveyEditForm", function (e) {
+
+            var allOptions = $(this).find('.optionText');
+            for (let index = 0; index < allOptions.length; index++) {
+
+                var text = $(allOptions[index]).val().trim();
+                if (text===undefined || text === null || text.match("^ *$") !== null) {
+                    e.preventDefault();
+                    alert("Not saved. Please fill the text values for the options.");
+                    return;
+                }
+                for(let i=0;i<allOptions.length;i++)
+                {
+                    if(i==index)
+                    {
+                        continue;
+                    }
+
+                    if($(allOptions[i]).val().trim() == text)
+                    {
+                        e.preventDefault();
+                        alert("Not saved. You have duplicate text in options.");
+                        return;
+                    }
+                }
+            }
+        });
     </script>
     @if(Model.ShouldFocusOnParticularRoleSurvey)
     {

@@ -24,7 +24,7 @@ namespace Bot.EventHandlers
                 new EmbedFieldBuilder().WithName("Selected Options 1").WithValue("None")).Build();
 
             var buttonNames = roleSurvey_HM.Options.Select(o => o.MainInstance.Text).ToArray();
-            var component = MessageComponentAndEmbedHelper.CreateButtons(buttonNames);
+            var component = MessageComponentAndEmbedHelper.CreateButtons(3, buttonNames);
             await user.SendMessageAsync(content, embed: embed, components: component);
         }
         public static async Task SendRoleSurvey(RoleSurvey_HM roleSurvey_HM, IUser user)
@@ -33,7 +33,7 @@ namespace Bot.EventHandlers
             var embed = new EmbedBuilder().WithTitle("Role Survey").WithFields(new EmbedFieldBuilder().WithName("Id").WithValue(roleSurvey_HM.MainInstance.Id)).Build();
 
             var buttonNames = roleSurvey_HM.Options.Select(o => o.MainInstance.Text).ToArray();
-            var component = MessageComponentAndEmbedHelper.CreateButtons(buttonNames);
+            var component = MessageComponentAndEmbedHelper.CreateButtons(3, buttonNames);
             await user.SendMessageAsync(content, embed: embed, components: component);
         }
         public static async Task SendNextRoleSurvey(RoleSurvey_HM roleSurvey_HM, Request request, EmbedBuilder builder)
@@ -46,7 +46,7 @@ namespace Bot.EventHandlers
             var embed = builder.Build();
 
             var buttonNames = roleSurvey_HM.Options.Select(o => o.MainInstance.Text).ToArray();
-            var component = MessageComponentAndEmbedHelper.CreateButtons(buttonNames);
+            var component = MessageComponentAndEmbedHelper.CreateButtons(3, buttonNames);
             await request.UpdateOriginalMessageAsync(content, component, embed);
         }
 

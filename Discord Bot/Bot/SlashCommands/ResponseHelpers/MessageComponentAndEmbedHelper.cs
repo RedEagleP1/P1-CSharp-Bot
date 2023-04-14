@@ -18,6 +18,27 @@ namespace Bot.SlashCommands.ResponseHelpers
             }
             return componentBuilder.Build();
         }
+        public static MessageComponent CreateButtons(int maxRows, params string[] buttonNames)
+        {
+            maxRows = Math.Clamp(maxRows, 0, 4);
+            var componentBuilder = new ComponentBuilder();
+            for (int i = 0; i < buttonNames.Length; i++)
+            {
+                componentBuilder.WithButton(buttonNames[i], buttonNames[i], row: i % maxRows);
+            }
+            return componentBuilder.Build();
+        }
+        public static MessageComponent CreateButtons(string specialButton, params string[] buttonNames)
+        {
+            var componentBuilder = new ComponentBuilder();
+            for (int i = 0; i < buttonNames.Length; i++)
+            {
+                componentBuilder.WithButton(buttonNames[i], buttonNames[i], row: i % 3);
+            }
+
+            componentBuilder.WithButton(specialButton, specialButton, style: ButtonStyle.Success, row: 4, emote: Emoji.Parse(":white_check_mark:"));
+            return componentBuilder.Build();
+        }
 
         public static void ChangeField(EmbedBuilder embedBuilder, string fieldName, string newValue)
         {

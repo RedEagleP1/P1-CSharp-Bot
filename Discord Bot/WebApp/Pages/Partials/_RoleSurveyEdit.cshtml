@@ -60,7 +60,7 @@
                     <div id="Option">
                         <p id="Index" class="d-none">@i</p>
                         <input type="hidden" asp-for="RoleSurvey_HM.Options[i].MainInstance.Id" value="@Model.RoleSurvey_HM.Options[i].MainInstance.Id" />
-                        <input type="text" asp-for="RoleSurvey_HM.Options[i].MainInstance.Text" class="w-100" value="@Model.RoleSurvey_HM.Options[i].MainInstance.Text" />
+                        <input type="text" asp-for="RoleSurvey_HM.Options[i].MainInstance.Text" class="w-100 optionText" value="@Model.RoleSurvey_HM.Options[i].MainInstance.Text" placeholder="Option Text Here..."/>
                         <br />
                         <label>Role To Award -> </label>
                         <input class="AwardRoleId" asp-for="RoleSurvey_HM.Options[i].MainInstance.RoleId" type="hidden" value="@Model.RoleSurvey_HM.Options[i].MainInstance.RoleId" />

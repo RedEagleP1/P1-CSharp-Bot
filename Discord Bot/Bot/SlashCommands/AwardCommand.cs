@@ -20,7 +20,7 @@ namespace Bot.SlashCommands
         readonly SlashCommandProperties properties = CreateNewProperties();
 
         private DiscordSocketClient client;
-        static Regex hourRolecheck = new Regex("^T-(\\d+)h$");
+        static Regex hourRolecheck = new Regex("^T-(\\d+)h-(\\w+)$");
 
         public string Name => name;
         public SlashCommandProperties Properties => properties;
@@ -50,17 +50,18 @@ namespace Bot.SlashCommands
         async Task HandleResponse(SocketSlashCommand command)
         {
             var user = client.GetGuild(Settings.P1RepublicGuildId)?.GetUser(command.User.Id);
-            if (user == null || !HasRoleToAwardHours(user.Roles, out int roleHours))
-            {
-                await command.ModifyOriginalResponseAsync(response => response.Content = "You are not authorized to use this command.");
-                return;
-            }
 
             if (!TryExtractOptionValues(command.Data.Options, out var optionValues))
             {
                 await command.ModifyOriginalResponseAsync(response => response.Content = "Error. Contact the noob developer of this bot");
                 return;
             }
+
+            if (user == null || !HasRoleToAwardCurrency(user.Roles, optionValues.currency, out int roleHours))
+            {
+                await command.ModifyOriginalResponseAsync(response => response.Content = $"You don't have the required role to award {optionValues.currency}");
+                return;
+            }           
 
             await DBReadWrite.LockReadWrite();
             try
@@ -137,15 +138,17 @@ namespace Bot.SlashCommands
         }
 
 
-        static bool HasRoleToAwardHours(IReadOnlyCollection<SocketRole> userRoles, out int hours)
+        static bool HasRoleToAwardCurrency(IReadOnlyCollection<SocketRole> userRoles, string currencyName, out int hours)
         {
             hours = 0;
             bool hasRole = false;
             foreach (SocketRole role in userRoles)
             {
                 var match = hourRolecheck.Match(role.Name);
-                if (!match.Success)
+                if(!match.Success || match.Groups[2].Value != currencyName)
+                {
                     continue;
+                }
 
                 hasRole = true;
                 hours = int.Parse(match.Groups[1].Value);

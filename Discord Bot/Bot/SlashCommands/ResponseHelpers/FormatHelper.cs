@@ -46,5 +46,17 @@ namespace Bot.SlashCommands.ResponseHelpers
 
             return result;
         }
+
+        public static List<ulong> ExtractUserMentionsIDs(string input)
+        {
+            List<ulong> result = new List<ulong>();
+            var matchCollection = Regex.Matches(input, "<(?:@|@!)(\\d+)>");
+            foreach (Match match in matchCollection)
+            {
+                result.Add(ulong.Parse(match.Groups[1].Value));
+            }
+
+            return result;
+        }
     }
 }

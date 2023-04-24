@@ -169,7 +169,7 @@ namespace Bot.SlashCommands.ResponseHelpers
                 m.Components = new ComponentBuilder().Build();
             });
 
-            await request.UpdateOriginalMessageAsync($"Could you write back to <@{request.ReferencedMessage.MentionedUserIds.First()}> explaining the further evidence they should present?", null, null);
+            await request.UpdateOriginalMessageAsync($"Could you write back to <@{FormatHelper.ExtractUserMentions(request.ReferencedMessage.Content).FirstOrDefault()}> explaining the further evidence they should present?", null, null);
             return;
         }
         static async Task HandlePositiveVerification_HasTimeEvidence(Request request)
@@ -189,7 +189,7 @@ namespace Bot.SlashCommands.ResponseHelpers
             });
 
             await request.UpdateOriginalMessageAsync("Thank you for your help", null, null);
-            await AwardCurrencyAndSaveRecord(request.ReferencedMessage.MentionedUserIds.First(), request.ReferencedMessage.CreatedAt.Date, builder.Build().Fields, false);
+            await AwardCurrencyAndSaveRecord(FormatHelper.ExtractUserMentionsIDs(request.ReferencedMessage.Content).FirstOrDefault(), request.ReferencedMessage.CreatedAt.Date, builder.Build().Fields, false);
         }
         static async Task HandlePositiveVerificationWithoutTimeEvidence(Request request)
         {
@@ -228,7 +228,7 @@ namespace Bot.SlashCommands.ResponseHelpers
             await request.UpdateOriginalMessageAsync("Thank you for your help.", null, null);
             if (verifiers.Count == 2)
             {
-                await AwardCurrencyAndSaveRecord(request.ReferencedMessage.MentionedUserIds.First(), request.ReferencedMessage.CreatedAt.Date, builder.Build().Fields, true);
+                await AwardCurrencyAndSaveRecord(FormatHelper.ExtractUserMentionsIDs(request.ReferencedMessage.Content).FirstOrDefault(), request.ReferencedMessage.CreatedAt.Date, builder.Build().Fields, true);
             }
         }
         static float CalculateAverageTime(float previousTime, float verifierTime, int verifiersCount)

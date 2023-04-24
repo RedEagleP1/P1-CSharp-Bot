@@ -184,23 +184,35 @@ namespace Bot.EventHandlers
             //As I was making changes to the slash commands, I often needed to unregister and then register the commands again. So I put that on startup.
             //As number of slash commands grew, this became slow.
             //So I changed the logic to only delete a command if it is removed, or register a command if it doesn't exist.
-            //If you do make changes to the properties of a command, you will need to re-register them during development.
-            //The part under try and catch exist because when a new currency is created, which will rarely happen, we would need to add that as an option for "award" and "currency" commands.
-            //There is certainly a better way to achieve this but I didn't have time.
+            //Or delete and register again if properties are different.
+             //There is certainly a better way to achieve this but I didn't have time.
 
-            Console.WriteLine("Re-Registering Slash Commands...");
+            Console.WriteLine("Re-Registering Slash Commands (If required)...");
             foreach (var guild in client.Guilds)
             {
                 var commands = await guild.GetApplicationCommandsAsync();
 
                 foreach (var command in commands)
                 {
-                    if(!slashCommands.Any(sc => sc.Name == command.Name))
+                    //delete command if it is registered on discord but doesn't exist in slashCommands.
+                    var slashCommand = slashCommands.FirstOrDefault(sc => sc.Name == command.Name);                    
+                    if (slashCommand == null)
                     {
                         await SlashCommandsRegister.DeleteCommand(guild, command.Name);
+                        continue;
+                    }
+
+
+                    //Delete and then re-register command if properties of the registered one are different from the one in slashCommands.
+                    if (!ArePropertiesSame(slashCommand.Properties, command))
+                    {
+                        await SlashCommandsRegister.DeleteCommand(guild, command.Name);
+                        await SlashCommandsRegister.RegisterCommand(guild, slashCommand.Properties);
+                        Console.WriteLine($"Re-Registered {command.Name} command on guild {guild.Name}");
                     }
                 }
 
+                //add commands if they are not registered on discord but exist in slashCommands.
                 foreach (var slashCommand in slashCommands)
                 {
                     if(!commands.Any(c => c.Name == slashCommand.Name))
@@ -208,29 +220,47 @@ namespace Bot.EventHandlers
                         await SlashCommandsRegister.RegisterCommand(guild, slashCommand.Properties);
                     }                    
                 }
-
-                try
-                {
-                    var awardCommand = commands.FirstOrDefault(c => c.Name == "award");
-                    var awardSlashCommand = slashCommands.FirstOrDefault(sc => sc.Name == "award");
-                    bool newCurrencyHasBeenAdded = awardSlashCommand.Properties.Options.Value.FirstOrDefault(o => o.Name == "currency").Choices.Count > awardCommand.Options.FirstOrDefault(o => o.Name == "currency").Choices.Count;
-                    if (newCurrencyHasBeenAdded)
-                    {
-                        await SlashCommandsRegister.DeleteCommand(guild, "award");
-                        await SlashCommandsRegister.DeleteCommand(guild, "currency");
-
-                        await SlashCommandsRegister.RegisterCommand(guild, awardSlashCommand.Properties);
-                        var currencySlashCommand = slashCommands.FirstOrDefault(sc => sc.Name == "currency");
-                        await SlashCommandsRegister.RegisterCommand(guild, currencySlashCommand.Properties);
-                    }
-                }
-                catch(Exception ex)
-                {
-                    Console.WriteLine("There was an error while registering slash commands..");
-                }
-
             }
             Console.WriteLine("Registering Slash Commands Done.");
+        }
+
+        //The checks in this function only cover the part required at the time. As more complex commands are created, the proper checks need to be added here.
+        static bool ArePropertiesSame(SlashCommandProperties properties, SocketApplicationCommand command)
+        {
+            if(properties.Description.Value != command.Description)
+            {
+                return false;
+            }
+
+            foreach(var option in command.Options)
+            {
+                var propertyOption = properties.Options.Value.FirstOrDefault(o => o.Name == option.Name);
+                if(propertyOption == null)
+                {
+                    return false;
+                }
+
+                if(option.Description != propertyOption.Description || ((option.IsRequired ?? false) != (propertyOption.IsRequired ?? false)) || option.Type != propertyOption.Type)
+                {
+                    return false;
+                }
+
+                if(option.Choices.Count != propertyOption.Choices.Count)
+                {
+                    return false;
+                }
+
+                foreach (var choice in option.Choices)
+                {
+                    var propertyOptionChoice = propertyOption.Choices.FirstOrDefault(c => c.Name == choice.Name && c.Value.ToString() == choice.Value.ToString());
+                    if(propertyOptionChoice == null)
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
         }
     }
 }

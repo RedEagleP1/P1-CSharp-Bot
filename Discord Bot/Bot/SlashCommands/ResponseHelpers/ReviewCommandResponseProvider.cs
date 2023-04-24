@@ -251,7 +251,7 @@ namespace Bot.SlashCommands.ResponseHelpers
                     "please review the following data you submitted and resubmit with clearer Acceptance Criteria." +
                     $" We have refunded your {Settings.ReviewCommandSettings.Cost} trust. \nHere is the data: \n";
                     var embed = request.ReferencedMessage.Embeds.First().ToEmbedBuilder().Build();
-                    var userThatIsRequestingReview = await DiscordQueryHelper.GetUserAsync(request.ReferencedMessage.MentionedUserIds.First());
+                    var userThatIsRequestingReview = await DiscordQueryHelper.GetUserAsync(FormatHelper.ExtractUserMentionsIDs(request.ReferencedMessage.Content).FirstOrDefault());
                     await userThatIsRequestingReview.SendMessageAsync(text: text, embed: embed);                                      
                 })
                 .WithConditions(new Conditions()
@@ -283,7 +283,7 @@ namespace Bot.SlashCommands.ResponseHelpers
                     "please review the following data you submitted and resubmit after you meet the requirements." +
                     $" We have refunded your {Settings.ReviewCommandSettings.Cost} trust. \nHere is the data: \n";
                     var embed = request.ReferencedMessage.Embeds.First().ToEmbedBuilder().Build();
-                    var userThatIsRequestingReview = await DiscordQueryHelper.GetUserAsync(request.ReferencedMessage.MentionedUserIds.First());
+                    var userThatIsRequestingReview = await DiscordQueryHelper.GetUserAsync(FormatHelper.ExtractUserMentionsIDs(request.ReferencedMessage.Content).FirstOrDefault());
                     await userThatIsRequestingReview.SendMessageAsync(text: text, embed: embed);
 
                     await DBReadWrite.LockReadWrite();
@@ -330,7 +330,7 @@ namespace Bot.SlashCommands.ResponseHelpers
                 .WithResponse(async (request) =>
                 {
                     await request.DeleteOriginalMessageAsync();
-                    var userThatIsRequestingReview = await DiscordQueryHelper.GetUserAsync(request.ReferencedMessage.MentionedUserIds.First());
+                    var userThatIsRequestingReview = await DiscordQueryHelper.GetUserAsync(FormatHelper.ExtractUserMentionsIDs(request.ReferencedMessage.Content).FirstOrDefault());
                     await request.DeleteReferencedMessageAsync();
 
                     var text = "Good news! You don’t need to do /Review for programming tasks. The person who takes the pull request does the “review”. ";
@@ -378,7 +378,7 @@ namespace Bot.SlashCommands.ResponseHelpers
             var verification_lowRating = new CustomResponse()
                 .WithResponse(async (request) =>
                 {
-                    var content = $"Please send <@{request.ReferencedMessage.MentionedUserIds.First()}> how they could improve their submission.\nThank you for your time. You have been awarded +{Settings.ReviewCommandSettings.Reward} Trust. \n";
+                    var content = $"Please send <@{FormatHelper.ExtractUserMentionsIDs(request.ReferencedMessage.Content).FirstOrDefault()}> how they could improve their submission.\nThank you for your time. You have been awarded +{Settings.ReviewCommandSettings.Reward} Trust. \n";
                     if (!await ReviewVerificationHelper.HandleResponse_NegativeVerification(request, content))
                     {
                         return;
@@ -388,7 +388,7 @@ namespace Bot.SlashCommands.ResponseHelpers
                     "Please reach out to @name and ask them what was lacking in your submission if you need clarity. ";
 
                     var embed = request.ReferencedMessage.Embeds.First().ToEmbedBuilder().Build();
-                    var userThatIsRequestingReview = await DiscordQueryHelper.GetUserAsync(request.ReferencedMessage.MentionedUserIds.First());
+                    var userThatIsRequestingReview = await DiscordQueryHelper.GetUserAsync(FormatHelper.ExtractUserMentionsIDs(request.ReferencedMessage.Content).FirstOrDefault());
                     await userThatIsRequestingReview.SendMessageAsync(text: text, embed: embed);
                 })
                 .WithConditions(new Conditions()
@@ -400,7 +400,7 @@ namespace Bot.SlashCommands.ResponseHelpers
             var verification_highRating = new CustomResponse()
                 .WithResponse(async (request) =>
                 {
-                    var content = $"Thank you for your time. You have been awarded +{Settings.ReviewCommandSettings.Reward} Trust!\nPlease send <@{request.ReferencedMessage.MentionedUserIds.First()}> congratulations and any tips you might have.\n";
+                    var content = $"Thank you for your time. You have been awarded +{Settings.ReviewCommandSettings.Reward} Trust!\nPlease send <@{FormatHelper.ExtractUserMentionsIDs(request.ReferencedMessage.Content).FirstOrDefault()}> congratulations and any tips you might have.\n";
                     if (!await ReviewVerificationHelper.HandleResponse_PositiveVerification(request, content))
                     {
                         return;
@@ -414,7 +414,7 @@ namespace Bot.SlashCommands.ResponseHelpers
                     {
                         var context = DBContextFactory.GetNewContext();
                         var trustCurrency = await context.Currencies.FirstOrDefaultAsync(c => c.Name == "Trust");
-                        var trustOwned = await context.CurrenciesOwned.FirstOrDefaultAsync(co => co.CurrencyId == trustCurrency.Id && co.OwnerId == request.ReferencedMessage.MentionedUserIds.First());
+                        var trustOwned = await context.CurrenciesOwned.FirstOrDefaultAsync(co => co.CurrencyId == trustCurrency.Id && co.OwnerId == FormatHelper.ExtractUserMentionsIDs(request.ReferencedMessage.Content).FirstOrDefault());
                         trustOwned.Amount += currencyToAward;
                         await context.SaveChangesAsync();
                     }
@@ -424,7 +424,7 @@ namespace Bot.SlashCommands.ResponseHelpers
                     }
 
                     var embed = request.ReferencedMessage.Embeds.First().ToEmbedBuilder().Build();
-                    var userThatIsRequestingReview = await DiscordQueryHelper.GetUserAsync(request.ReferencedMessage.MentionedUserIds.First());
+                    var userThatIsRequestingReview = await DiscordQueryHelper.GetUserAsync(FormatHelper.ExtractUserMentionsIDs(request.ReferencedMessage.Content).FirstOrDefault());
                     await userThatIsRequestingReview.SendMessageAsync(text: text, embed: embed);
                 })
                 .WithConditions(new Conditions()

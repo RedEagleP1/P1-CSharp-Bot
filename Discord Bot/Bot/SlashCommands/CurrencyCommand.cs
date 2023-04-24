@@ -78,7 +78,8 @@ namespace Bot.SlashCommands
             var percentageObject = options.FirstOrDefault(option => option.Name == "percentage");
             if(percentageObject == null || percentageObject.Value.GetType() != typeof(bool))
             {
-                return false;
+                optionValues.percentage = Settings.CurrencyCommandPercentageOptionDefaultValue;
+                return true;
             }
 
             optionValues.percentage = (bool)percentageObject.Value;
@@ -105,7 +106,7 @@ namespace Bot.SlashCommands
                 .AddOption(currencyOptionBuilder)
                 .AddOption("percentage", ApplicationCommandOptionType.Boolean,
                     "True, to check the percentage owned. False, to check the amount owned.",
-                    isRequired: true)
+                    isRequired: false)
                 .Build();
         }
 

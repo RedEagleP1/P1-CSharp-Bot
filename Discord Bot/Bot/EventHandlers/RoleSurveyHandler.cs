@@ -70,8 +70,7 @@ namespace Bot.EventHandlers
                         if (request.IncomingValue != "Done")
                         {
                             var optionsLeft = GetOptionsLeft(selectedOptionsField.Value.ToString(), incomingRoleSurvey_HM.Options.Select(o => o.MainInstance.Text).ToArray());
-                            //optionsLeft.Add("Done");
-                            var messagComponent = MessageComponentAndEmbedHelper.CreateButtons("Done", optionsLeft.ToArray());
+                            var messagComponent = MessageComponentAndEmbedHelper.CreateButtons("Done", ButtonStyle.Success, Emoji.Parse(":white_check_mark:"), optionsLeft.ToArray());
 
                             var roleId = incomingRoleSurvey_HM.Options.FirstOrDefault(o => o.MainInstance.Text == request.IncomingValue).MainInstance.RoleId;
                             if(roleId != null)

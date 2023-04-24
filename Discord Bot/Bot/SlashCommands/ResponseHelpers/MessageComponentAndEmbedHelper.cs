@@ -28,7 +28,7 @@ namespace Bot.SlashCommands.ResponseHelpers
             }
             return componentBuilder.Build();
         }
-        public static MessageComponent CreateButtons(string specialButton, params string[] buttonNames)
+        public static MessageComponent CreateButtons(string specialButton, ButtonStyle style, Emoji emoji, params string[] buttonNames)
         {
             var componentBuilder = new ComponentBuilder();
             for (int i = 0; i < buttonNames.Length; i++)
@@ -36,7 +36,7 @@ namespace Bot.SlashCommands.ResponseHelpers
                 componentBuilder.WithButton(buttonNames[i], buttonNames[i], row: i % 3);
             }
 
-            componentBuilder.WithButton(specialButton, specialButton, style: ButtonStyle.Success, row: 4, emote: Emoji.Parse(":white_check_mark:"));
+            componentBuilder.WithButton(specialButton, specialButton, style: style, row: 4, emote: emoji);
             return componentBuilder.Build();
         }
 

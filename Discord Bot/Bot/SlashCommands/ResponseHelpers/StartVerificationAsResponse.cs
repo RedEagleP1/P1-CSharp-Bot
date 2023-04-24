@@ -41,7 +41,7 @@ namespace Bot.SlashCommands.ResponseHelpers
 
         public async Task HandleResponse(Request request)
         {
-            if (request.User.Id == request.Message.MentionedUserIds.First())
+            if (request.User.Id == FormatHelper.ExtractUserMentionsIDs(request.Message.Content).FirstOrDefault())
             {
                 await request.RespondSeparatelyAsync("You can't verify your own work. Ask someone else to verify it.", ephemeral: true);
                 return;

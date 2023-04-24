@@ -17,6 +17,7 @@ namespace Bot
         public static ulong ReviewChannelId { get; private set; }
         public static AccountCommandSettings AccountCommandSettings { get; private set; }
         public static ReviewCommandSettings ReviewCommandSettings { get; private set; }
+        public static bool CurrencyCommandPercentageOptionDefaultValue { get; private set; }
 
         public static void Init()
         {
@@ -57,6 +58,8 @@ namespace Bot
                     Five = float.Parse(reviewCommandAppSettings["NonAcademyTaskRatingRewards:five"])
                 }
             };
+
+            CurrencyCommandPercentageOptionDefaultValue = bool.Parse(config.GetSection("Discord:currencyCommand")["percentageOptionDefaultValue"]);
         }
     }
 

@@ -20,7 +20,7 @@ namespace Bot.SlashCommands
         readonly SlashCommandProperties properties = CreateNewProperties();
 
         private DiscordSocketClient client;
-        static Regex hourRolecheck = new Regex("^T-(\\d+)-(\\w+)$");
+        static Regex hourRolecheck = new Regex("^T-(\\d+)-([\\w\\W]+)$");
 
         public string Name => name;
         public SlashCommandProperties Properties => properties;

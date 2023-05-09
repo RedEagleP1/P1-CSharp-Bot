@@ -169,7 +169,7 @@ namespace Bot.SlashCommands.ResponseHelpers
                 m.Components = new ComponentBuilder().Build();
             });
 
-            await request.UpdateOriginalMessageAsync($"Could you write back to <@{FormatHelper.ExtractUserMentions(request.ReferencedMessage.Content).FirstOrDefault()}> explaining the further evidence they should present?", null, null);
+            await request.UpdateOriginalMessageAsync($"Could you write back to {FormatHelper.ExtractUserMentions(request.ReferencedMessage.Content).FirstOrDefault()} explaining the further evidence they should present?", null, null);
             return;
         }
         static async Task HandlePositiveVerification_HasTimeEvidence(Request request)

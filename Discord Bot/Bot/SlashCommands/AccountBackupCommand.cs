@@ -46,6 +46,10 @@ namespace Bot.SlashCommands
             var user = client.GetGuild(Settings.P1RepublicGuildId)?.GetUser(command.User.Id);
             if (user == null || user.Roles.FirstOrDefault(role => role.Name == "Hours Treasurer") == null)
             {
+                await command.ModifyOriginalResponseAsync(response =>
+                {
+                    response.Content = "You don't have permission to use this command.";
+                });
                 return;
             }
 

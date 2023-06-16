@@ -21,7 +21,8 @@ namespace Bot
         {
             client = new DiscordSocketClient(new DiscordSocketConfig()
             {
-                GatewayIntents = GatewayIntents.All
+                GatewayIntents = GatewayIntents.All,
+                LogLevel = (LogSeverity)Settings.LogLevel
             });
             client.Log += LogMessage;
 

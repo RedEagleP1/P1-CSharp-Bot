@@ -80,8 +80,8 @@ namespace Bot.SlashCommands
             using var context = DBContextFactory.GetNewContext();
             writer.WriteLine($"Backup {DateTime.Now}\n");
             Dictionary<ulong, PersonRecord> personRecords = new();
-            List<Currency> allCurrencies = context.Currencies.AsNoTracking().ToList();
-            List<CurrencyOwned> AllCurrencyOwned = context.CurrenciesOwned.AsNoTracking().ToList();
+            List<Currency> allCurrencies = await context.Currencies.AsNoTracking().ToListAsync();
+            List<CurrencyOwned> AllCurrencyOwned = await context.CurrenciesOwned.AsNoTracking().ToListAsync();
 
             foreach(var currencyOwned in AllCurrencyOwned)
             {
@@ -97,7 +97,7 @@ namespace Bot.SlashCommands
                 
             }
 
-            foreach(var taskCompletionRecord in context.TaskCompletionRecords.AsNoTracking())
+            foreach(var taskCompletionRecord in await context.TaskCompletionRecords.AsNoTracking().ToListAsync())
             {
                 List<string> record = new();
                 record.Add("\n");

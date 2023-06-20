@@ -62,7 +62,18 @@ namespace Bot.PeriodicEvents
                 {                    
                     foreach(var user in users)
                     {
-                        await user.SendMessageAsync(roleMessage.Message);
+                        try
+                        {
+                            await user.SendMessageAsync(roleMessage.Message);
+                        }
+                        catch(Discord.Net.HttpException exc)
+                        {
+                            if(exc.DiscordCode != DiscordErrorCode.CannotSendMessageToUser)
+                            {
+                                Console.WriteLine(exc.ToString());
+                            }
+                        }
+                        
                     }
                 }
 

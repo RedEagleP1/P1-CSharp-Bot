@@ -41,7 +41,17 @@ namespace Bot.EventHandlers
                 var roleMessage = await context.RoleMessages.AsNoTracking().FirstOrDefaultAsync(rm => rm.RoleId == role.Id);
                 if (roleMessage != null)
                 {
-                    await after.SendMessageAsync(roleMessage.Message);
+                    try
+                    {
+                        await after.SendMessageAsync(roleMessage.Message);
+                    }
+                    catch (Discord.Net.HttpException exc)
+                    {
+                        if (exc.DiscordCode != DiscordErrorCode.CannotSendMessageToUser)
+                        {
+                            Console.WriteLine(exc.ToString());
+                        }
+                    }                    
                 }
 
                 var roleSurvey = await context.RolesSurvey.AsNoTracking().FirstOrDefaultAsync(rs => rs.RoleId == role.Id && rs.ParentSurveyId == null && rs.Index == 0);

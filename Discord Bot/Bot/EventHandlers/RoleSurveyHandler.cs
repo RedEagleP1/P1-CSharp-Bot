@@ -152,7 +152,7 @@ namespace Bot.EventHandlers
         static async Task<RoleSurvey_HM?> GetNextRoleSurvey_HM(RoleSurvey_HM current, string[] optionsSelected, IEmbed embed, ApplicationDbContext context)
         {
             var role = await context.Roles.FirstOrDefaultAsync(r => r.Id == current.MainInstance.RoleId);
-            var childSurveys = context.RolesSurvey.Where(rs => rs.ParentSurveyId == current.MainInstance.Id).OrderBy(rs => rs.Index).ToList();
+            var childSurveys = await context.RolesSurvey.Where(rs => rs.ParentSurveyId == current.MainInstance.Id).OrderBy(rs => rs.Index).ToListAsync();
 
             foreach (var cs in childSurveys)
             {
@@ -180,7 +180,7 @@ namespace Bot.EventHandlers
             {
                 var parentSurveyAllOptions = context.RoleSurveyOptions.Where(o => o.RoleSurveyId == parentSurveyId).Select(o => o.Text).ToArray();
                 var parentSurveySelectedOptions = GetOptionsSelectedAsArray(RoleSurveyHelper.GetSelectedOptions(embed, parentSurveyId.Value), parentSurveyAllOptions);
-                var siblingSurveys = context.RolesSurvey.Where(rs => rs.ParentSurveyId == parentSurveyId && rs.RoleId == role.Id).OrderBy(rs => rs.Index).ToList();
+                var siblingSurveys = await context.RolesSurvey.Where(rs => rs.ParentSurveyId == parentSurveyId && rs.RoleId == role.Id).OrderBy(rs => rs.Index).ToListAsync();
 
                 for (int i = currentSurveyIndex + 1; i < siblingSurveys.Count; i++)
                 {
@@ -212,7 +212,7 @@ namespace Bot.EventHandlers
                 currentSurveyIndex = parentSurvey.Index;
             }
 
-            var rootSiblingSurveys = context.RolesSurvey.Where(rs => rs.ParentSurveyId == null && rs.RoleId == role.Id).OrderBy(rs => rs.Index).ToList();
+            var rootSiblingSurveys = await context.RolesSurvey.Where(rs => rs.ParentSurveyId == null && rs.RoleId == role.Id).OrderBy(rs => rs.Index).ToListAsync();
 
             for (int i = currentSurveyIndex + 1; i < rootSiblingSurveys.Count; i++)
             {

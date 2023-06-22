@@ -27,7 +27,17 @@ namespace Bot.SlashCommands
                 try
                 {
                     string message = await GetMessage(command);
-                    await command.User.SendMessageAsync(message);
+                    try
+                    {
+                        await command.User.SendMessageAsync(message);
+                    }
+                    catch (Discord.Net.HttpException exc)
+                    {
+                        if (exc.DiscordCode != DiscordErrorCode.CannotSendMessageToUser)
+                        {
+                            Console.WriteLine(exc.ToString());
+                        }
+                    }
                     await command.ModifyOriginalResponseAsync(response => response.Content = "I have sent you a direct message. Check it.");
                 }
                 catch(Exception e)

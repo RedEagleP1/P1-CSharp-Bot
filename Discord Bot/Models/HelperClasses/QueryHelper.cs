@@ -24,7 +24,7 @@ namespace Models.HelperClasses
         static async Task<List<RoleSurveyOption_HM>> GetOption_HMs(ApplicationDbContext context, RoleSurvey roleSurvey)
         {
             var roleSurveyOption_HMs = new List<RoleSurveyOption_HM>();
-            var options = context.RoleSurveyOptions.Where(o => o.RoleSurveyId == roleSurvey.Id).AsNoTracking().ToList();
+            var options = await context.RoleSurveyOptions.Where(o => o.RoleSurveyId == roleSurvey.Id).AsNoTracking().ToListAsync();
             foreach (var option in options)
             {
                 var role = await context.Roles.FirstOrDefaultAsync(r => r.Id == option.RoleId);
@@ -41,8 +41,8 @@ namespace Models.HelperClasses
         static async Task<List<RoleSurveyOption_HM>> GetTrigger_HMs(ApplicationDbContext context, RoleSurvey roleSurvey)
         {
             var triggerSurveyOption_HMs = new List<RoleSurveyOption_HM>();
-            var triggerOptionsIds = context.RoleSurveyRoleSurveyTriggers.Where(rsrst => rsrst.RoleSurveyId == roleSurvey.Id).AsNoTracking().Select(rsrst => rsrst.RoleSurveyOptionId).ToList();
-            var triggers = context.RoleSurveyOptions.AsNoTracking().AsEnumerable().Where(o => triggerOptionsIds.Contains(o.Id)).ToList();
+            var triggerOptionsIds = await context.RoleSurveyRoleSurveyTriggers.Where(rsrst => rsrst.RoleSurveyId == roleSurvey.Id).AsNoTracking().Select(rsrst => rsrst.RoleSurveyOptionId).ToListAsync();
+            var triggers = (await context.RoleSurveyOptions.AsNoTracking().ToListAsync()).Where(o => triggerOptionsIds.Contains(o.Id)).ToList();
             foreach (var option in triggers)
             {
                 var role = await context.Roles.FirstOrDefaultAsync(r => r.Id == option.RoleId);

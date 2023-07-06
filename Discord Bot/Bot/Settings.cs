@@ -18,6 +18,7 @@ namespace Bot
         public static AccountCommandSettings AccountCommandSettings { get; private set; }
         public static ReviewCommandSettings ReviewCommandSettings { get; private set; }
         public static bool CurrencyCommandPercentageOptionDefaultValue { get; private set; }
+        public static int LogLevel { get; private set; }
 
         public static void Init()
         {
@@ -26,6 +27,8 @@ namespace Bot
                                     .Build();
 
             ConnectionString = config.GetConnectionString("DefaultConnection");
+            LogLevel = int.Parse(config.GetSection("Discord")["LogLevel"]);
+            LogLevel = LogLevel < 0 ? 0 : LogLevel > 5 ? 5 : LogLevel;
             DiscordBotToken = config.GetSection("Discord")["botToken"];
             P1RepublicGuildId = ulong.Parse(config.GetSection("Discord:P1Republic")["guildID"]);
             var p1oc = config.GetSection("Discord:P1OC");

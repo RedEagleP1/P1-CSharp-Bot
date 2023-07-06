@@ -21,7 +21,8 @@ namespace Bot
         {
             client = new DiscordSocketClient(new DiscordSocketConfig()
             {
-                GatewayIntents = GatewayIntents.All
+                GatewayIntents = GatewayIntents.All,
+                LogLevel = (LogSeverity)Settings.LogLevel
             });
             client.Log += LogMessage;
 
@@ -81,7 +82,7 @@ namespace Bot
         async Task EnsureCertainCurrenciesExistInDatabase()
         {
             var context = DBContextFactory.GetNewContext();
-            var currencies = context.Currencies.ToList();
+            var currencies = await context.Currencies.ToListAsync();
             var skyJelliesHours = await context.Currencies.FirstOrDefaultAsync(c => c.Name == "Sky Jellies Hour (SJH)");
             if (skyJelliesHours == null)
             {

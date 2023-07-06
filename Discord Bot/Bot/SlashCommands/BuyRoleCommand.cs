@@ -38,7 +38,7 @@ namespace Bot.SlashCommands
                     var builder = new EmbedBuilder().WithTitle("Roles For Sale");
                     var embedDescription = "";
                     List<string> rolesForSaleNames = new();
-                    foreach(var rfs in context.RolesForSale.AsNoTracking().ToList())
+                    foreach(var rfs in await context.RolesForSale.AsNoTracking().ToListAsync())
                     {
                         var role = await context.Roles.AsNoTracking().FirstOrDefaultAsync(r => r.Id == rfs.RoleId);
                         if(role.GuildId == command.GuildId)

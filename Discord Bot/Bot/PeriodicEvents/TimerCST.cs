@@ -22,17 +22,20 @@ namespace Bot.PeriodicEvents
             timer = new Timer(DailyEvents, null, timeLeftBeforeNewDay, TimeSpan.FromHours(24));
         }
 
-        async void DailyEvents(object? c)
+        void DailyEvents(object? c)
         {
-            await RefreshCurrencyAwardLimit();
-            SetRoleMessageAndSurveyRepeatForToday();
+            _ = Task.Run(async () =>
+            {
+                await RefreshCurrencyAwardLimit();
+                SetRoleMessageAndSurveyRepeatForToday();
+            });            
         }
 
-        void SetRoleMessageAndSurveyRepeatForToday()
+        async void SetRoleMessageAndSurveyRepeatForToday()
         {
             var context = DBContextFactory.GetNewContext();
-            var repeated = context.RoleMessagesAndSurveysRepeated.AsNoTracking();
-            var repeats = context.RoleMessageAndSurveyRepeats.AsNoTracking();
+            var repeated = await context.RoleMessagesAndSurveysRepeated.AsNoTracking().ToListAsync();
+            var repeats = await context.RoleMessageAndSurveyRepeats.AsNoTracking().ToListAsync();
             foreach(var repeat in repeats)
             {
                 var lastRepeated = repeated.FirstOrDefault(r => r.RoleId == repeat.RoleId);
@@ -59,7 +62,18 @@ namespace Bot.PeriodicEvents
                 {                    
                     foreach(var user in users)
                     {
-                        await user.SendMessageAsync(roleMessage.Message);
+                        try
+                        {
+                            await user.SendMessageAsync(roleMessage.Message);
+                        }
+                        catch(Discord.Net.HttpException exc)
+                        {
+                            if(exc.DiscordCode != DiscordErrorCode.CannotSendMessageToUser)
+                            {
+                                Console.WriteLine(exc.ToString());
+                            }
+                        }
+                        
                     }
                 }
 

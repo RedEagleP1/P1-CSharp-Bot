@@ -307,7 +307,17 @@ namespace Bot.SlashCommands.ResponseHelpers
                     $" We have refunded your {Settings.ReviewCommandSettings.Cost - Settings.ReviewCommandSettings.Reward} trust. \nHere is the data: \n";
                     var embed = request.ReferencedMessage.Embeds.First().ToEmbedBuilder().Build();
                     var userThatIsRequestingReview = await DiscordQueryHelper.GetUserAsync(FormatHelper.ExtractUserMentionsIDs(request.ReferencedMessage.Content).FirstOrDefault());
-                    await userThatIsRequestingReview.SendMessageAsync(text: text, embed: embed);
+                    try
+                    {
+                        await userThatIsRequestingReview.SendMessageAsync(text: text, embed: embed);
+                    }
+                    catch (Discord.Net.HttpException exc)
+                    {
+                        if (exc.DiscordCode != DiscordErrorCode.CannotSendMessageToUser)
+                        {
+                            Console.WriteLine(exc.ToString());
+                        }
+                    }
 
                     await DBReadWrite.LockReadWrite();
                     try
@@ -357,7 +367,17 @@ namespace Bot.SlashCommands.ResponseHelpers
                     await request.DeleteReferencedMessageAsync();
 
                     var text = "Good news! You don’t need to do /Review for programming tasks. The person who takes the pull request does the “review”. ";
-                    await userThatIsRequestingReview.SendMessageAsync(text: text);
+                    try
+                    {
+                        await userThatIsRequestingReview.SendMessageAsync(text: text);
+                    }
+                    catch (Discord.Net.HttpException exc)
+                    {
+                        if (exc.DiscordCode != DiscordErrorCode.CannotSendMessageToUser)
+                        {
+                            Console.WriteLine(exc.ToString());
+                        }
+                    }
                     await DBReadWrite.LockReadWrite();
                     try
                     {
@@ -474,7 +494,17 @@ namespace Bot.SlashCommands.ResponseHelpers
 
                     var embed = request.ReferencedMessage.Embeds.First().ToEmbedBuilder().Build();
                     var userThatIsRequestingReview = await DiscordQueryHelper.GetUserAsync(FormatHelper.ExtractUserMentionsIDs(request.ReferencedMessage.Content).FirstOrDefault());
-                    await userThatIsRequestingReview.SendMessageAsync(text: text, embed: embed);
+                    try
+                    {
+                        await userThatIsRequestingReview.SendMessageAsync(text: text, embed: embed);
+                    }
+                    catch (Discord.Net.HttpException exc)
+                    {
+                        if (exc.DiscordCode != DiscordErrorCode.CannotSendMessageToUser)
+                        {
+                            Console.WriteLine(exc.ToString());
+                        }
+                    }
                 })
                 .WithConditions(new Conditions()
                 .MakeSureEmbedTitleMatches("Review (Verification Process)")

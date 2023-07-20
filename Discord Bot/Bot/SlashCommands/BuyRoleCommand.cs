@@ -87,7 +87,7 @@ namespace Bot.SlashCommands
             var user = await DiscordQueryHelper.GetSocketGuildUserAsync(request.GuildId.Value, request.User.Id);
             bool canBuy = true; ;
             var context = DBContextFactory.GetNewContext();
-            var role = await context.Roles.FirstOrDefaultAsync(r => r.Name == request.IncomingValue);
+            var role = await context.Roles.FirstOrDefaultAsync(r => r.GuildId == request.GuildId && r.Name == request.IncomingValue);
             if(user.Roles.Any(r => r.Id == role.Id))
             {
                 await request.UpdateOriginalMessageAsync("You already have that role", null, null);

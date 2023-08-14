@@ -10,3 +10,5 @@ Once you have created a you discord bot application on the developer's portal on
 And then, you just need to run the website or bot, and it should work.
 
 The Models project has an appsettings.json even though it's a library because of the DesingTimeDBContextFactory which needs a connection string.
+
+Discord bot walkthrough video: https://youtu.be/0QjcIknv6bk

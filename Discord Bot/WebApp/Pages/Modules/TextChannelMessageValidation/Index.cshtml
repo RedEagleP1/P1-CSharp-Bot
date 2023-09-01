@@ -1,0 +1,36 @@
+﻿@page
+@model WebApp.Pages.Modules.TextChannelMessageValidation.IndexModel
+@{
+}
+@Html.AntiForgeryToken()
+<nav class="nav">
+	<a class="nav-link active" aria-current="page" asp-page="/Home/Guilds">Guilds</a>
+	<a class="nav-link active" aria-current="page" asp-page="/Home/Modules" asp-route-id="@Model.Guild.Id" asp-route-name="@Model.Guild.Name">Modules</a>
+</nav>
+<br />
+<div>
+	<h2 class="text-primary">Text Channel Message Validation</h2>
+</div>
+<br />
+<br />
+<div class="container p-3">
+	<table class="table table-bordered table-striped" style="width:100%">
+		<thead>
+			<tr>
+				<th>
+					Channel Name
+				</th>
+				<th>
+					IsEnabled
+				</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody id="TableRows">
+			@foreach (var textChannel in Model.TextChannels)
+			{
+				@await Html.PartialAsync("/Pages/Partials/_TextChannelRow.cshtml", textChannel)
+			}
+		</tbody>
+	</table>
+</div>

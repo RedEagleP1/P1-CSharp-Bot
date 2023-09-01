@@ -1,0 +1,25 @@
+﻿@using Models
+@using Models.HelperClasses
+@using WebApp.Pages.Partials
+@model TextChannelPartialModel
+
+<tr id="@Model.ChannelId">
+	<td width="50%">@Model.ChannelName</td>
+	<td width="30%">
+		@if (Model.IsEnabled)
+		{
+			<h6 class="card-text text-success">Yes</h6>
+		}
+		else
+		{
+			<h6 class="card-text text-danger">No</h6>
+		}
+	</td>
+	<td>
+		<div id="ButtonGroup" class="w-75 btn-group" role="group">
+			<a asp-page="SelectedChannel" asp-route-guildId="@Model.GuildId" asp-route-channelId="@Model.ChannelId" class="btn btn-primary mx-2">
+				Select
+			</a>
+		</div>
+	</td>
+</tr>

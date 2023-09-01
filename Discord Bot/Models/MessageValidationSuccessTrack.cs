@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace Models
 {
-	public class LastPostedMessageTrack
-	{
+    public class MessageValidationSuccessTrack
+    {
         public int Id { get; set; }
         public ulong UserId { get; set; }
         public ulong ChannelId { get; set; }

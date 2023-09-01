@@ -6,11 +6,13 @@ using Newtonsoft.Json;
 using System.Security.Claims;
 using System.Text.Json;
 using Models;
+using Discord.Rest;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 var pathBase = builder.Configuration.GetValue<string>("PathBase");
 Console.WriteLine(pathBase);
+await DiscordREST.Init(builder.Configuration.GetValue<string>("Discord:botToken"));
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 // Add services to the container.

@@ -61,20 +61,7 @@ namespace Bot.EventHandlers
                         voiceChannel.ChannelName = afterChannel.Name;
                         await context.SaveChangesAsync();
                         break;
-                    case ChannelType.Text:
-                        var textChannelForImagePost = await context.TextChannelsCurrencyGainImage.FirstOrDefaultAsync(v => v.ChannelId == afterChannel.Id);
-                        if (textChannelForImagePost != null)
-                        {
-                            textChannelForImagePost.ChannelName = afterChannel.Name;
-                        }
-
-                        var textChannelForMessagePost = await context.TextChannelsCurrencyGainMessage.FirstOrDefaultAsync(v => v.ChannelId == afterChannel.Id);
-                        if (textChannelForMessagePost != null)
-                        {
-                            textChannelForMessagePost.ChannelName = afterChannel.Name;
-                        }
-
-                        await context.SaveChangesAsync();
+                    default:
                         break;
                 }               
                 
@@ -105,20 +92,7 @@ namespace Bot.EventHandlers
                         context.VoiceChannelCurrencyGains.Remove(voiceChannel);
                         await context.SaveChangesAsync();
                         break;
-                    case ChannelType.Text:
-                        var textChannelForImagePost = await context.TextChannelsCurrencyGainImage.FirstOrDefaultAsync(v => v.ChannelId == channel.Id);
-                        if (textChannelForImagePost != null)
-                        {
-                            context.TextChannelsCurrencyGainImage.Remove(textChannelForImagePost);
-                        }
-
-                        var textChannelForMessagePost = await context.TextChannelsCurrencyGainMessage.FirstOrDefaultAsync(v => v.ChannelId == channel.Id);
-                        if (textChannelForMessagePost != null)
-                        {
-                            context.TextChannelsCurrencyGainMessage.Remove(textChannelForMessagePost);
-                        }
-
-                        await context.SaveChangesAsync();
+                    default:
                         break;
                 }
             });
@@ -154,22 +128,7 @@ namespace Bot.EventHandlers
                         context.VoiceChannelCurrencyGains.Add(voiceChannel);
                         await context.SaveChangesAsync();
                         break;
-                    case ChannelType.Text:
-                        var textChannelForImagePost = new TextChannelCurrencyGainImage()
-                        {
-                            ChannelId = channel.Id,
-                            GuildId = guildChannel.Guild.Id,
-                            ChannelName = guildChannel.Name
-                        };
-                        context.TextChannelsCurrencyGainImage.Add(textChannelForImagePost);
-                        var textChannelForMessagePost = new TextChannelCurrencyGainMessage()
-                        {
-                            ChannelId = channel.Id,
-                            GuildId = guildChannel.Guild.Id,
-                            ChannelName = guildChannel.Name
-                        };
-                        context.TextChannelsCurrencyGainMessage.Add(textChannelForMessagePost);
-                        await context.SaveChangesAsync();
+                    default:
                         break;
                 }
             });

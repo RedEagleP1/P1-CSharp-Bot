@@ -20,10 +20,8 @@ namespace Models
         public DbSet<TaskCompletionRecord> TaskCompletionRecords { get; set; }
         public DbSet<VoiceChannelCurrencyGain> VoiceChannelCurrencyGains { get; set; }
         public DbSet<VoiceChannelTrack> VoiceChannelTracks { get; set; }
-        public DbSet<TextChannelCurrencyGainImage> TextChannelsCurrencyGainImage { get; set; }
-        public DbSet<LastPostedImageTrack> LastPostedImageTracks { get; set; }
-        public DbSet<TextChannelCurrencyGainMessage> TextChannelsCurrencyGainMessage { get; set; }
-        public DbSet<LastPostedMessageTrack> LastPostedMessageTracks { get; set; }
+        public DbSet<TextChannelMessageValidation> TextChannelMessageValidation { get; set; }
+        public DbSet<MessageValidationSuccessTrack> MessageValidationSuccessTracks { get; set; }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
@@ -124,10 +122,28 @@ namespace Models
                 .WithMany()
                 .HasForeignKey(v => v.GuildId);
 
-            modelBuilder.Entity<TextChannelCurrencyGainImage>()
+            modelBuilder.Entity<TextChannelMessageValidation>()
                 .HasOne<Guild>()
                 .WithMany()
-                .HasForeignKey(c => c.GuildId);
+                .HasForeignKey(mv => mv.GuildId);
+
+            modelBuilder.Entity<TextChannelMessageValidation>()
+                .HasOne<Currency>()
+                .WithMany()
+                .HasForeignKey(mv => mv.CurrencyId)
+                .IsRequired(false);
+
+            modelBuilder.Entity<TextChannelMessageValidation>()
+                .HasOne<Role>()
+                .WithMany()
+                .HasForeignKey(mv => mv.RoleToGiveSuccess)
+                .IsRequired(false);
+
+            modelBuilder.Entity<TextChannelMessageValidation>()
+                .HasOne<Role>()
+                .WithMany()
+                .HasForeignKey(mv => mv.RoleToGiveFailure)
+                .IsRequired(false);
 
             base.OnModelCreating(modelBuilder);
         }

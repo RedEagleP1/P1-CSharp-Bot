@@ -1,0 +1,232 @@
+﻿@page
+@using WebApp.Pages.Partials
+@model WebApp.Pages.Modules.TextChannelMessageValidation.SelectedChannelModel
+@{
+
+}
+@Html.AntiForgeryToken()
+<nav class="nav">
+    <a class="nav-link active" aria-current="page" asp-page="/Home/Guilds">Guilds</a>
+	<a class="nav-link active" aria-current="page" asp-page="/Home/Modules" asp-route-id="@Model.Guild.Id" asp-route-name="@Model.Guild.Name">Modules</a>
+	<a class="nav-link active" aria-current="page" asp-page="Index" asp-route-guildId="@Model.Guild.Id">Text Channel Message Validation</a>
+</nav>
+<br />
+<div>
+	<h2 class="text-primary">@Model.TextChannelMessageValidation.ChannelId</h2>
+	<h2 class="text-primary">@Model.TextChannelMessageValidation.ChannelName</h2>
+</div>
+<form method="post" asp-page-handler="Save">
+    <input type="hidden" id="" asp-for="TextChannelMessageValidation.Id" value="@Model.TextChannelMessageValidation.Id" />
+    <input type="hidden" id="" asp-for="TextChannelMessageValidation.ChannelId" value="@Model.TextChannelMessageValidation.ChannelId" />
+	<input type="hidden" id="" asp-for="TextChannelMessageValidation.GuildId" value="@Model.TextChannelMessageValidation.GuildId" />
+	<div class="form-check form-switch">
+        @if (Model.TextChannelMessageValidation.IsEnabled)
+        {
+            <input asp-for="TextChannelMessageValidation.IsEnabled" class="form-check-input" type="checkbox" checked />
+        }
+        else
+        {
+            <input asp-for="TextChannelMessageValidation.IsEnabled" class="form-check-input" type="checkbox" />
+        }
+        <label class="form-check-label" for="flexSwitchCheckDefault">Is Enabled</label>
+    </div>
+    <div class="CurrencySelect">
+        <label>Currency To Give On Success:</label>
+        <input class="CurrencyIdInput" type="hidden" asp-for="TextChannelMessageValidation.CurrencyId"
+               value="@Model.TextChannelMessageValidation.CurrencyId">
+        @await Html.PartialAsync("/Pages/Partials/_CurrencyDropdown.cshtml", new CurrencyDropdownPartialModel(){ButtonName = Model.CurrencyName, Currencies = Model.AllCurrencies, AddNoneOption = true})
+    </div>
+	<div>
+		<label>Amount Gained Per Message</label>
+		<input asp-for="TextChannelMessageValidation.AmountGainedPerMessage" value="@Model.TextChannelMessageValidation.AmountGainedPerMessage">
+	</div>
+	<div>
+		<label>Delay Between Allowed Messages In Minutes</label>
+		<input asp-for="TextChannelMessageValidation.DelayBetweenAllowedMessageInMinutes" value="@Model.TextChannelMessageValidation.DelayBetweenAllowedMessageInMinutes">
+	</div>	
+	<div>
+		<label>Minimum Character Count</label>
+		<input asp-for="TextChannelMessageValidation.MinimumCharacterCount" value="@Model.TextChannelMessageValidation.MinimumCharacterCount">
+		<div class="form-check form-switch">
+			@if (Model.TextChannelMessageValidation.IsEnabledCharacterCountCheck)
+			{
+				<input asp-for="TextChannelMessageValidation.IsEnabledCharacterCountCheck" class="form-check-input" type="checkbox" checked />
+			}
+			else
+			{
+				<input asp-for="TextChannelMessageValidation.IsEnabledCharacterCountCheck" class="form-check-input" type="checkbox" />
+			}
+			<label class="form-check-label" for="flexSwitchCheckDefault">Is Enabled Character Count Check</label>
+		</div>
+	</div>
+	<div>
+		<label>Phrases That Should Exist (All separated by new line)</label>
+		<textarea asp-for="TextChannelMessageValidation.PhrasesThatShouldExist" value="@Model.TextChannelMessageValidation.PhrasesThatShouldExist" class="mx-2 w-100" rows="5"></textarea>
+		<div class="form-check form-switch">
+			@if (Model.TextChannelMessageValidation.IsEnabledPhraseCheck)
+			{
+				<input asp-for="TextChannelMessageValidation.IsEnabledPhraseCheck" class="form-check-input" type="checkbox" checked />
+			}
+			else
+			{
+				<input asp-for="TextChannelMessageValidation.IsEnabledPhraseCheck" class="form-check-input" type="checkbox" />
+			}
+			<label class="form-check-label" for="flexSwitchCheckDefault">Is Enabled Phrase Check</label>
+		</div>
+	</div>
+	<div class="form-check form-switch">
+		@if (Model.TextChannelMessageValidation.ShouldContainURL)
+		{
+			<input asp-for="TextChannelMessageValidation.ShouldContainURL" class="form-check-input" type="checkbox" checked />
+		}
+		else
+		{
+			<input asp-for="TextChannelMessageValidation.ShouldContainURL" class="form-check-input" type="checkbox" />
+		}
+		<label class="form-check-label" for="flexSwitchCheckDefault">Should Contain URL</label>
+	</div>
+	<div class="form-check form-switch">
+		@if (Model.TextChannelMessageValidation.ShouldContainMediaURL)
+		{
+			<input asp-for="TextChannelMessageValidation.ShouldContainMediaURL" class="form-check-input" type="checkbox" checked />
+		}
+		else
+		{
+			<input asp-for="TextChannelMessageValidation.ShouldContainMediaURL" class="form-check-input" type="checkbox" />
+		}
+		<label class="form-check-label" for="flexSwitchCheckDefault">Should Contain Media URL</label>
+	</div>
+	<div class="form-check form-switch">
+		@if (Model.TextChannelMessageValidation.ShouldContainMedia)
+		{
+			<input asp-for="TextChannelMessageValidation.ShouldContainMedia" class="form-check-input" type="checkbox" checked />
+		}
+		else
+		{
+			<input asp-for="TextChannelMessageValidation.ShouldContainMedia" class="form-check-input" type="checkbox" />
+		}
+		<label class="form-check-label" for="flexSwitchCheckDefault">Should Contain Media</label>
+	</div>
+	<div class="form-check form-switch">
+		@if (Model.TextChannelMessageValidation.ShouldDeleteMessageOnSuccess)
+		{
+			<input asp-for="TextChannelMessageValidation.ShouldDeleteMessageOnSuccess" class="form-check-input" type="checkbox" checked />
+		}
+		else
+		{
+			<input asp-for="TextChannelMessageValidation.ShouldDeleteMessageOnSuccess" class="form-check-input" type="checkbox" />
+		}
+		<label class="form-check-label" for="flexSwitchCheckDefault">Should Delete Message On Success</label>
+	</div>
+	<div class="form-check form-switch">
+		@if (Model.TextChannelMessageValidation.ShouldDeleteMessageOnFailure)
+		{
+			<input asp-for="TextChannelMessageValidation.ShouldDeleteMessageOnFailure" class="form-check-input" type="checkbox" checked />
+		}
+		else
+		{
+			<input asp-for="TextChannelMessageValidation.ShouldDeleteMessageOnFailure" class="form-check-input" type="checkbox" />
+		}
+		<label class="form-check-label" for="flexSwitchCheckDefault">Should Delete Message On Failure</label>
+	</div>
+	<div>
+		<label>DM To Send On Success</label>
+		<textarea asp-for="TextChannelMessageValidation.MessageToSendSuccess" value="@Model.TextChannelMessageValidation.MessageToSendSuccess" class="mx-2 w-100" rows="5"></textarea>
+		<div class="form-check form-switch">
+			@if (Model.TextChannelMessageValidation.ShouldSendDMSuccess)
+			{
+				<input asp-for="TextChannelMessageValidation.ShouldSendDMSuccess" class="form-check-input" type="checkbox" checked />
+			}
+			else
+			{
+				<input asp-for="TextChannelMessageValidation.ShouldSendDMSuccess" class="form-check-input" type="checkbox" />
+			}
+			<label class="form-check-label" for="flexSwitchCheckDefault">Should Send DM On Success</label>
+		</div>
+	</div>
+	<div>
+		<label>DM To Send On Failure</label>
+		<textarea asp-for="TextChannelMessageValidation.MessageToSendFailure" value="@Model.TextChannelMessageValidation.MessageToSendFailure" class="mx-2 w-100" rows="5"></textarea>
+		<div class="form-check form-switch">
+			@if (Model.TextChannelMessageValidation.ShouldSendDMFailure)
+			{
+				<input asp-for="TextChannelMessageValidation.ShouldSendDMFailure" class="form-check-input" type="checkbox" checked />
+			}
+			else
+			{
+				<input asp-for="TextChannelMessageValidation.ShouldSendDMFailure" class="form-check-input" type="checkbox" />
+			}
+			<label class="form-check-label" for="flexSwitchCheckDefault">Should Send DM On Failure</label>
+		</div>
+	</div>
+	<div class="RoleSelect">
+		<label>Role To Give On Success: </label>
+		<input class="RoleIdInput" type="hidden" asp-for="TextChannelMessageValidation.RoleToGiveSuccess"
+			   value="@Model.TextChannelMessageValidation.RoleToGiveSuccess">
+		@await Html.PartialAsync("/Pages/Partials/_RolesDropdown.cshtml", new RolesDropdownPartialModel(){ButtonName = Model.RoleOnSuccessName, Roles = Model.AllRoles, AddNoneOption = true})
+	</div>
+	<div id="RoleSelect">
+		<label>Role To Give On Failure: </label>
+		<input class="RoleIdInput" type="hidden" asp-for="TextChannelMessageValidation.RoleToGiveFailure"
+			   value="@Model.TextChannelMessageValidation.RoleToGiveFailure">
+		@await Html.PartialAsync("/Pages/Partials/_RolesDropdown.cshtml", new RolesDropdownPartialModel(){ButtonName = Model.RoleOnFailureName, Roles = Model.AllRoles, AddNoneOption = true})
+	</div>
+	<div>
+		<div class="form-check form-switch">
+			@if (Model.TextChannelMessageValidation.UseGPT)
+			{
+				<input asp-for="TextChannelMessageValidation.UseGPT" class="form-check-input" type="checkbox" checked />
+			}
+			else
+			{
+				<input asp-for="TextChannelMessageValidation.UseGPT" class="form-check-input" type="checkbox" />
+			}
+			<label class="form-check-label" for="flexSwitchCheckDefault">Should Use GPT</label>
+		</div>
+		<label>GPT Criteria</label>
+		<textarea asp-for="TextChannelMessageValidation.GPTCriteria" value="@Model.TextChannelMessageValidation.GPTCriteria" class="mx-2 w-100" rows="5"></textarea>
+		<label>GPT DM Style Success (Example: You are an old and wise magician in a fairy tale world.)</label>
+		<textarea asp-for="TextChannelMessageValidation.DMStyleSuccess" value="@Model.TextChannelMessageValidation.DMStyleSuccess" class="mx-2 w-100" rows="5"></textarea>
+		<label>GPT DM Style Failure (Example: You are a ghost.)</label>
+		<textarea asp-for="TextChannelMessageValidation.DMStyleFailure" value="@Model.TextChannelMessageValidation.DMStyleFailure" class="mx-2 w-100" rows="5"></textarea>
+	</div>
+	<button type="submit" class="btn btn-primary mx-2">
+		Save
+	</button>
+</form>
+<br /><br />
+@section Scripts
+	{
+	<script>
+		$(document).on("click", "#DropdownSelectedCurrency", function () {
+
+			var selectedCurrencyId = $(this).val();
+			var selectedCurrencyName = $(this).text();
+
+			var dropdownElement = $(this).closest('.dropdown');
+			dropdownElement.find("#dropdownMenuButton").text(selectedCurrencyName);
+
+			var currencySelectElement = $(this).closest('.CurrencySelect');
+			currencySelectElement.find('.CurrencyIdInput').val(selectedCurrencyId);
+		});
+		$(document).on("click", "#DropdownSelectedRole", function () {
+
+			var selectedRoleId = $(this).val();
+			var selectedRoleName = $(this).text();
+
+			var dropdownElement = $(this).closest('.dropdown');
+			dropdownElement.find("#dropdownMenuButton").text(selectedRoleName);
+
+			var roleSelectElement = $(this).closest('.RoleSelect');
+			roleSelectElement.find('.RoleIdInput').val(selectedRoleId);
+		});
+	</script>
+	@if (ViewData["Message"] != null)
+	{
+		<script>
+			window.onload = function () {
+				alert("@ViewData["Message"]");
+			};
+		</script>
+	}
+}

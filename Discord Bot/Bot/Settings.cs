@@ -19,6 +19,7 @@ namespace Bot
         public static ReviewCommandSettings ReviewCommandSettings { get; private set; }
         public static bool CurrencyCommandPercentageOptionDefaultValue { get; private set; }
         public static int LogLevel { get; private set; }
+        public static string GPT_APIKey { get; private set; }
 
         public static void Init()
         {
@@ -63,6 +64,7 @@ namespace Bot
             };
 
             CurrencyCommandPercentageOptionDefaultValue = bool.Parse(config.GetSection("Discord:currencyCommand")["percentageOptionDefaultValue"]);
+            GPT_APIKey = config.GetSection("GPT")["APIKey"];
         }
     }
 

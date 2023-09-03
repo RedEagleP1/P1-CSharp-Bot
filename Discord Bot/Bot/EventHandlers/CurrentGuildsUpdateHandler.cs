@@ -31,8 +31,6 @@ namespace Bot.EventHandlers
                 await UpdateCurrentGuilds();
                 await RegisterSlashCommands();
                 await UpdateVoiceChannelCurrencyGains();
-                await UpdateTextChannelCurrencyGainsImage();
-                await UpdateTextChannelCurrencyGainsMessage();
             });
         }
 
@@ -43,8 +41,6 @@ namespace Bot.EventHandlers
                 await UpdateCurrentGuilds();
                 await RegisterSlashCommands();
                 await UpdateVoiceChannelCurrencyGains();
-                await UpdateTextChannelCurrencyGainsImage();
-                await UpdateTextChannelCurrencyGainsMessage();
             });
             return Task.CompletedTask;
         }
@@ -114,70 +110,6 @@ namespace Bot.EventHandlers
 
             await context.SaveChangesAsync();
             Console.WriteLine("Updated Voice Channels Currency Gains List in the database. Done.");
-        }
-        public async Task UpdateTextChannelCurrencyGainsImage()
-        {
-            Console.WriteLine("Updating Text Channels Currency Gains For Images List in the database...");
-            var context = DBContextFactory.GetNewContext();
-            foreach (var guild in client.Guilds)
-            {
-                foreach (var channel in guild.TextChannels)
-                {
-                    if(channel.GetChannelType() != ChannelType.Text)
-                    {
-                        continue;
-                    }
-                    var currencyGain = await context.TextChannelsCurrencyGainImage.FirstOrDefaultAsync(cg => cg.GuildId == guild.Id && cg.ChannelId == channel.Id);
-                    if (currencyGain != null)
-                    {
-                        continue;
-                    }
-
-                    currencyGain = new TextChannelCurrencyGainImage()
-                    {
-                        GuildId = guild.Id,
-                        ChannelId = channel.Id,
-                        ChannelName = channel.Name
-                    };
-
-                    context.TextChannelsCurrencyGainImage.Add(currencyGain);
-                }
-            }
-
-            await context.SaveChangesAsync();
-            Console.WriteLine("Updated Text Channels Currency Gains For Images List in the database. Done.");
-        }
-        public async Task UpdateTextChannelCurrencyGainsMessage()
-        {
-            Console.WriteLine("Updating Text Channels Currency Gains For Message List in the database...");
-            var context = DBContextFactory.GetNewContext();
-            foreach (var guild in client.Guilds)
-            {
-                foreach (var channel in guild.TextChannels)
-                {
-                    if (channel.GetChannelType() != ChannelType.Text)
-                    {
-                        continue;
-                    }
-                    var currencyGain = await context.TextChannelsCurrencyGainMessage.FirstOrDefaultAsync(cg => cg.GuildId == guild.Id && cg.ChannelId == channel.Id);
-                    if (currencyGain != null)
-                    {
-                        continue;
-                    }
-
-                    currencyGain = new TextChannelCurrencyGainMessage()
-                    {
-                        GuildId = guild.Id,
-                        ChannelId = channel.Id,
-                        ChannelName = channel.Name
-                    };
-
-                    context.TextChannelsCurrencyGainMessage.Add(currencyGain);
-                }
-            }
-
-            await context.SaveChangesAsync();
-            Console.WriteLine("Updated Text Channels Currency Gains For Message List in the database. Done.");
         }
         async Task RegisterSlashCommands()
         {

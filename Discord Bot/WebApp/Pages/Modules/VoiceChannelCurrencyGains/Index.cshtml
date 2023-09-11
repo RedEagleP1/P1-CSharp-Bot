@@ -58,12 +58,9 @@
 					</td>
 					<td>
 						<div id="Currency">
-							<p id="CurrencyNameDisplay">
-								@vc.CurrencyName
-							</p>
 							<input id="CurrencyId" type="hidden" asp-for="VoiceChannelCurrencyGain.CurrencyId"
 							   value="@vc.VoiceChannelCurrencyGain.CurrencyId">
-							@await Html.PartialAsync("/Pages/Partials/_CurrencyDropdown.cshtml", new CurrencyDropdownPartialModel(){ButtonName = "Select Currency", Currencies = Model.AllCurrencies, AddNoneOption = true})
+							@await Html.PartialAsync("/Pages/Partials/_CurrencyDropdown.cshtml", new CurrencyDropdownPartialModel(){ButtonName = $"{@vc.CurrencyName}", Currencies = Model.AllCurrencies, AddNoneOption = true})
 						</div>
 					</td>
 					<td>

@@ -52,26 +52,31 @@ namespace Bot.SlashCommands
         async Task<string> GetMessage(SocketSlashCommand command)
         {
             using var context = DBContextFactory.GetNewContext();
-            if(!TryExtractOptions(command.Data.Options, out var optionValues))
+
+            if (!TryExtractOptions(command.Data.Options, out var optionValues))
             {
                 return "Error. Contact the noob developer of this bot";
             }
+            
+            var currenciesOwnedByUser = context.CurrenciesOwned.Where(co => co.OwnerId == command.User.Id).ToList();
 
-            var currency = await context.Currencies.FirstOrDefaultAsync(c => c.Name == optionValues.currency);
-            var currencyOwnedByUser = await context.CurrenciesOwned.FirstOrDefaultAsync(co => co.CurrencyId == currency.Id && co.OwnerId == command.User.Id);
-            if(currencyOwnedByUser == null)
+            string returnString = "";
+
+            if(currenciesOwnedByUser == null)
             {
                 return "You don't own any currency";
             }
-
-            var totalCurrencyInExistence = context.CurrenciesOwned.Where(co => co.CurrencyId == currency.Id).Select(co => co.Amount).Sum();
-            if (optionValues.percentage)
+            foreach(var ownedCurrency in currenciesOwnedByUser)
             {
-                float percentage = totalCurrencyInExistence > 0 ? (currencyOwnedByUser.Amount / totalCurrencyInExistence) * 100 : 0;
-                return $"You own {percentage}% of the total awarded {optionValues.currency}";
+                string currencyName = context.Currencies.Single(c => c.Id == ownedCurrency.CurrencyId).Name;
+                var totalExistingCurrency = context.CurrenciesOwned.Where(co => co.CurrencyId == ownedCurrency.CurrencyId).Select(co => co.Amount).Sum();
+                float percentage = totalExistingCurrency > 0 ? (ownedCurrency.Amount / totalExistingCurrency) * 100 : 0;
+
+                returnString += $"You own {ownedCurrency.Amount} {currencyName} ({percentage}% of total awarded)\n";
+
             }
 
-            return $"You own {currencyOwnedByUser.Amount} {optionValues.currency}";
+            return returnString;
         }
 
         static bool TryExtractOptions(IReadOnlyCollection<SocketSlashCommandDataOption> options, out OptionValues optionValues)
@@ -97,23 +102,23 @@ namespace Bot.SlashCommands
         }
         static SlashCommandProperties CreateNewProperties()
         {
-            var currencyOptionBuilder = new SlashCommandOptionBuilder()
-                .WithName("currency")
-                    .WithDescription("Name of the currency")
-                    .WithRequired(true);
+            //var currencyOptionBuilder = new SlashCommandOptionBuilder()
+            //    .WithName("currency")
+            //        .WithDescription("Name of the currency")
+            //        .WithRequired(true);
 
             var context = DBContextFactory.GetNewContext();
             var allCurrencies = context.Currencies.Select(c => c.Name).ToList();
-            foreach (var c in allCurrencies)
-            {
-                currencyOptionBuilder.AddChoice(c, c);
-            }
-            currencyOptionBuilder.WithType(ApplicationCommandOptionType.String);
+            //foreach (var c in allCurrencies)
+            //{
+            //    currencyOptionBuilder.AddChoice(c, c);
+            //}
+            //currencyOptionBuilder.WithType(ApplicationCommandOptionType.String);
 
             return new SlashCommandBuilder()
                 .WithName(name)
-                .WithDescription("Check how much of a particular currency you own")
-                .AddOption(currencyOptionBuilder)
+                .WithDescription("Check how much of each currency you own")
+                //.AddOption(currencyOptionBuilder)
                 .AddOption("percentage", ApplicationCommandOptionType.Boolean,
                     "True, to check the percentage owned. False, to check the amount owned.",
                     isRequired: false)

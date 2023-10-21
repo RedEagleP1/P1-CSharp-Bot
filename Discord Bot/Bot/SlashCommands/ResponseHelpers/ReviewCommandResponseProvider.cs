@@ -336,63 +336,6 @@ namespace Bot.SlashCommands.ResponseHelpers
 
             responses.Add(verification_Requirements_Met);
 
-            var verification_TaskType_Programming = new StandardResponse()
-                .WithContent("Programming tasks need to be handled by specialists through a different system. " +
-                $"\nWe will delete this submission and return the {Settings.ReviewCommandSettings.Reward} Trust to the treasury. Is that ok?")
-                .WithButtons("Yes", "No")
-                .WithConditions(new Conditions()
-                .MakeSureEmbedTitleMatches("Review (Verification Process)")
-                .MakeSureIncomingValueMatches("Programming"));
-
-            responses.Add(verification_TaskType_Programming);
-
-            var verification_TaskType_Programming_Yes = new CustomResponse()
-                .WithResponse(async (request) =>
-                {
-                    await request.DeleteOriginalMessageAsync();
-                    var userThatIsRequestingReview = await DiscordQueryHelper.GetUserAsync(FormatHelper.ExtractUserMentionsIDs(request.ReferencedMessage.Content).FirstOrDefault());
-                    await request.DeleteReferencedMessageAsync();
-
-                    var text = "Good news! You don’t need to do /Review for programming tasks. The person who takes the pull request does the “review”. ";
-                    try
-                    {
-                        await userThatIsRequestingReview.SendMessageAsync(text: text);
-                    }
-                    catch (Discord.Net.HttpException exc)
-                    {
-                        if (exc.DiscordCode != DiscordErrorCode.CannotSendMessageToUser)
-                        {
-                            Console.WriteLine(exc.ToString());
-                        }
-                    }
-                    await DBReadWrite.LockReadWrite();
-                    try
-                    {
-                        var context = DBContextFactory.GetNewContext();
-                        var trustCurrency = await context.Currencies.FirstOrDefaultAsync(c => c.Name == "Trust");
-                        var trustOwned = await context.CurrenciesOwned.FirstOrDefaultAsync(co => co.CurrencyId == trustCurrency.Id && co.OwnerId == userThatIsRequestingReview.Id);
-                        trustOwned.Amount += Settings.ReviewCommandSettings.Cost;
-                        await context.SaveChangesAsync();
-                    }
-                    finally
-                    {
-                        DBReadWrite.ReleaseLock();
-                    }
-                })
-                .WithConditions(new Conditions()
-                .MakeSureEmbedTitleMatches("Review (Verification Process)")
-                .MakeSureIncomingValueMatches("Yes"));
-
-            responses.Add(verification_TaskType_Programming_Yes);
-
-            var verification_TaskType_Programming_No = new StandardResponse()
-                .WithContent("What sort of task is this?")
-                .WithButtons("Programming", "Academy Exam", "Design", "Art", "Sound", "Production", "User Integration")
-                .WithConditions(new Conditions()
-                .MakeSureEmbedTitleMatches("Review (Verification Process)")
-                .MakeSureIncomingValueMatches("No"));
-
-            responses.Add(verification_TaskType_Programming_No);
 
             var verification_rateAcceptanceCriteria = new StandardResponse()
                 .WithContent("How well did the submission meet the Acceptance Criteria?")

@@ -336,7 +336,7 @@ namespace Bot.SlashCommands.ResponseHelpers
 
             responses.Add(verification_Requirements_Met);
 
-            var verification_TaskType_Programming = new StandardResponse()
+            /*var verification_TaskType_Programming = new StandardResponse()
                 .WithContent("Programming tasks need to be handled by specialists through a different system. " +
                 $"\nWe will delete this submission and return the {Settings.ReviewCommandSettings.Reward} Trust to the treasury. Is that ok?")
                 .WithButtons("Yes", "No")
@@ -344,9 +344,9 @@ namespace Bot.SlashCommands.ResponseHelpers
                 .MakeSureEmbedTitleMatches("Review (Verification Process)")
                 .MakeSureIncomingValueMatches("Programming"));
 
-            responses.Add(verification_TaskType_Programming);
+            responses.Add(verification_TaskType_Programming);*/
 
-            var verification_TaskType_Programming_Yes = new CustomResponse()
+            /*var verification_TaskType_Programming_Yes = new CustomResponse()
                 .WithResponse(async (request) =>
                 {
                     await request.DeleteOriginalMessageAsync();
@@ -383,16 +383,16 @@ namespace Bot.SlashCommands.ResponseHelpers
                 .MakeSureEmbedTitleMatches("Review (Verification Process)")
                 .MakeSureIncomingValueMatches("Yes"));
 
-            responses.Add(verification_TaskType_Programming_Yes);
+            responses.Add(verification_TaskType_Programming_Yes);*/
 
-            var verification_TaskType_Programming_No = new StandardResponse()
+           /* var verification_TaskType_Programming_No = new StandardResponse()
                 .WithContent("What sort of task is this?")
                 .WithButtons("Programming", "Academy Exam", "Design", "Art", "Sound", "Production", "User Integration")
                 .WithConditions(new Conditions()
                 .MakeSureEmbedTitleMatches("Review (Verification Process)")
                 .MakeSureIncomingValueMatches("No"));
 
-            responses.Add(verification_TaskType_Programming_No);
+            responses.Add(verification_TaskType_Programming_No);*/
 
             var verification_rateAcceptanceCriteria = new StandardResponse()
                 .WithContent("How well did the submission meet the Acceptance Criteria?")
@@ -400,7 +400,7 @@ namespace Bot.SlashCommands.ResponseHelpers
                 .WithFieldToAdd("Task Type")
                 .WithConditions(new Conditions()
                 .MakeSureEmbedTitleMatches("Review (Verification Process)")
-                .MakeSureIncomingValueDoesNotMatch("Programming")
+                //.MakeSureIncomingValueDoesNotMatch("Programming")
                 .MakeSureFieldDoesNotExist("Task Type"));
 
             responses.Add(verification_rateAcceptanceCriteria);

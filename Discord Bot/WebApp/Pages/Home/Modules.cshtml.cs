@@ -27,7 +27,7 @@ namespace WebApp.Pages.Home
             new Module() {Name = "Roles For Sale", Description = "Set which roles are available for sale", PageName = "RolesForSale"},
             new Module() {Name = "Voice Channel Currency Gain", Description = "Set amount/currency gained for voice channels", PageName = "VoiceChannelCurrencyGains"},
             new Module() {Name = "Text Channel Message Validation", Description = "Set message validation on specific channels", PageName = "TextChannelMessageValidation" },
-            new Module() {Name = "Role Costs And Rewards", Description = "Set the cost and reward of each role.", PageName="RoleCostsAndRewards"}
+            new Module() {Name = "Global Rewards", Description = "Give rewards based on voice channel.", PageName="GlobalRewards"}
         };
         public string? Name { get; set; }
         public string? Description { get; set; }

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Models;
 using WebApp.Pages.Partials;
 
-namespace WebApp.Pages.Modules.VoiceChannelCurrencyGains
+namespace WebApp.Pages.Modules.GlobalRewards
 {
     [Authorize(Policy = "Allowed")]
     public class IndexModel : PageModel

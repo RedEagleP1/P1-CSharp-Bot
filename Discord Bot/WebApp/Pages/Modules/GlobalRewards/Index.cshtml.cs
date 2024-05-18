@@ -12,7 +12,7 @@ namespace WebApp.Pages.Modules.GlobalRewards
     {
         public Guild Guild { get; set; }
         public List<Currency> AllCurrencies { get; set; }
-        public GlobalVoiceCurrencyGain GlobalCurrencyGain { get; set; }
+        public GlobalVoiceCurrencyGain GlobalVoiceCurrencyGain { get; set; }
 
         private readonly ApplicationDbContext _db;
         public IndexModel(ApplicationDbContext db)
@@ -22,7 +22,19 @@ namespace WebApp.Pages.Modules.GlobalRewards
         public async Task OnGet(ulong guildId)
         {
             Guild = await _db.Guilds.FirstOrDefaultAsync(g => g.Id == guildId);
-            Console.WriteLine(Guild.Name);
+            GlobalVoiceCurrencyGain = await _db.GlobalVoiceCurrencyGains.FirstOrDefaultAsync(g => g.GuildId == guildId);
+            if (GlobalVoiceCurrencyGain == null)
+            {
+                GlobalVoiceCurrencyGain = new GlobalVoiceCurrencyGain()
+                {
+                    GuildId = GlobalVoiceCurrencyGain.GuildId,
+                    IsEnabled = false
+                };
+                var context = DBContextFactory.GetNewContext();
+                context.GlobalVoiceCurrencyGains.Add(GlobalVoiceCurrencyGain);
+            }
+
+
             AllCurrencies = _db.Currencies.ToList();
         }
 
@@ -32,15 +44,23 @@ namespace WebApp.Pages.Modules.GlobalRewards
             ViewData["Message"] = message;
         }
 
-        public async Task<IActionResult> OnPostSave(GlobalVoiceCurrencyGain GlobalCurrencyGain)
+        public async Task<IActionResult> OnPostSave(GlobalVoiceCurrencyGain GlobalVoiceCurrencyGain)
         {
-            var globalInfo = await _db.GlobalVoiceCurrencyGains.FirstOrDefaultAsync(v => v.GuildId == GlobalCurrencyGain.GuildId);
+            Console.WriteLine($"{GlobalVoiceCurrencyGain.IsEnabled}");
+            var globalInfo = await _db.GlobalVoiceCurrencyGains.FirstOrDefaultAsync(v => v.GuildId == GlobalVoiceCurrencyGain.GuildId);
             if (globalInfo == null)
             {
                 return BadRequest();
             }
 
-            return RedirectToPage("Index","WithAlert",new { guildId = Guild.Id, message = $"Saved changes to {Guild.Name}" });
+            globalInfo.AmountGainedPerHourWhenMuteOrDeaf = GlobalVoiceCurrencyGain.AmountGainedPerHourWhenMuteOrDeaf;
+            globalInfo.AmountGainedPerHourWhenSpeaking = GlobalVoiceCurrencyGain.AmountGainedPerHourWhenSpeaking;
+            globalInfo.CurrencyId = GlobalVoiceCurrencyGain.CurrencyId;
+            globalInfo.IsEnabled = GlobalVoiceCurrencyGain.IsEnabled;
+
+            await _db.SaveChangesAsync();
+
+            return RedirectToPage("Index","WithAlert",new { guildId = globalInfo.GuildId, message = $"Saved changes to {globalInfo.GuildId}" });
         }
     }
 }

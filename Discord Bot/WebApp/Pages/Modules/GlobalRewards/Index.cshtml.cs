@@ -12,7 +12,7 @@ namespace WebApp.Pages.Modules.GlobalRewards
     {
         public Guild Guild { get; set; }
         public List<Currency> AllCurrencies { get; set; }
-        public VoiceChannelCurrencyGain VoiceChannelCurrencyGain { get; set; }
+        public GlobalVoiceCurrencyGain GlobalCurrencyGain { get; set; }
 
         private readonly ApplicationDbContext _db;
         public IndexModel(ApplicationDbContext db)
@@ -22,6 +22,7 @@ namespace WebApp.Pages.Modules.GlobalRewards
         public async Task OnGet(ulong guildId)
         {
             Guild = await _db.Guilds.FirstOrDefaultAsync(g => g.Id == guildId);
+            Console.WriteLine(Guild.Name);
             AllCurrencies = _db.Currencies.ToList();
         }
 
@@ -31,15 +32,15 @@ namespace WebApp.Pages.Modules.GlobalRewards
             ViewData["Message"] = message;
         }
 
-        public async Task<IActionResult> OnPostSave(VoiceChannelCurrencyGain VoiceChannelCurrencyGain)
+        public async Task<IActionResult> OnPostSave(GlobalVoiceCurrencyGain GlobalCurrencyGain)
         {
-            return RedirectToPage("Index","WithAlert",new { guildId = Guild.Id, message = $"Saved changes to channel {Guild.Name}" });
-        }
-    }
+            var globalInfo = await _db.GlobalVoiceCurrencyGains.FirstOrDefaultAsync(v => v.GuildId == GlobalCurrencyGain.GuildId);
+            if (globalInfo == null)
+            {
+                return BadRequest();
+            }
 
-    public class VoiceChannelCurrencyGainModel
-    {
-        public VoiceChannelCurrencyGain VoiceChannelCurrencyGain { get; set; }
-        public string CurrencyName { get; set; }
+            return RedirectToPage("Index","WithAlert",new { guildId = Guild.Id, message = $"Saved changes to {Guild.Name}" });
+        }
     }
 }

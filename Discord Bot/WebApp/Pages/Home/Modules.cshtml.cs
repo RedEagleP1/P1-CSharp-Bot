@@ -26,6 +26,7 @@ namespace WebApp.Pages.Home
             new Module() {Name = "Role Message And Survey Repeats", Description = "Set whether to repeat the message and surveys of a role.", PageName="RoleMessageAndSurveyRepeats"},
             new Module() {Name = "Roles For Sale", Description = "Set which roles are available for sale", PageName = "RolesForSale"},
             new Module() {Name = "Voice Channel Currency Gain", Description = "Set amount/currency gained for voice channels", PageName = "VoiceChannelCurrencyGains"},
+            new Module() {Name = "Global Voice Currency Gain", Description = "Set amount/currency gained for ALL voice channels", PageName = "GlobalVoiceCurrencyGains"},
             new Module() {Name = "Text Channel Message Validation", Description = "Set message validation on specific channels", PageName = "TextChannelMessageValidation" },
             new Module() {Name = "Global Rewards", Description = "Give rewards based on voice channel.", PageName="GlobalRewards"}
         };

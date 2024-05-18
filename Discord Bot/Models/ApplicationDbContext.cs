@@ -19,6 +19,7 @@ namespace Models
         public DbSet<RoleForSale> RolesForSale { get; set; }
         public DbSet<TaskCompletionRecord> TaskCompletionRecords { get; set; }
         public DbSet<VoiceChannelCurrencyGain> VoiceChannelCurrencyGains { get; set; }
+        public DbSet<GlobalVoiceCurrencyGain> GlobalVoiceCurrencyGains { get; set; }
         public DbSet<VoiceChannelTrack> VoiceChannelTracks { get; set; }
         public DbSet<TextChannelMessageValidation> TextChannelMessageValidation { get; set; }
         public DbSet<MessageValidationSuccessTrack> MessageValidationSuccessTracks { get; set; }
@@ -118,6 +119,17 @@ namespace Models
                 .IsRequired(false);
 
             modelBuilder.Entity<VoiceChannelCurrencyGain>()
+                .HasOne<Guild>()
+                .WithMany()
+                .HasForeignKey(v => v.GuildId);
+
+            modelBuilder.Entity<GlobalVoiceCurrencyGain>()
+                .HasOne<Currency>()
+                .WithMany()
+                .HasForeignKey(v => v.CurrencyId)
+                .IsRequired(false);
+
+            modelBuilder.Entity<GlobalVoiceCurrencyGain>()
                 .HasOne<Guild>()
                 .WithMany()
                 .HasForeignKey(v => v.GuildId);

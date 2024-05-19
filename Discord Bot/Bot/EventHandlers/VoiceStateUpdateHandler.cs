@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using System.Linq;
 using System.Text;
@@ -79,6 +80,30 @@ namespace Bot.EventHandlers
                                 {
                                     OwnerId = user.Id,
                                     CurrencyId = currencyGain.CurrencyId.Value,
+                                    Amount = 0
+                                };
+
+                                context.CurrenciesOwned.Add(currencyOwned);
+                            }
+
+                            currencyOwned.Amount += totalAmount;
+                        }
+
+                        //Global Gain
+                        var globalGain = await context.GlobalVoiceCurrencyGains.FirstOrDefaultAsync(g => g.GuildId == currencyGain.GuildId);
+                        if (globalGain.IsEnabled && globalGain.CurrencyId != null)
+                        {
+                            Debug.WriteLine(time.TotalSeconds);
+                            var amountPerHour = existingTrack.IsMuteOrDeafen ? globalGain.AmountGainedPerHourWhenMuteOrDeaf : globalGain.AmountGainedPerHourWhenSpeaking;
+                            var totalAmount = (float)(amountPerHour * time.TotalHours);
+
+                            var currencyOwned = await context.CurrenciesOwned.FirstOrDefaultAsync(co => co.OwnerId == user.Id && co.CurrencyId == globalGain.CurrencyId);
+                            if (currencyOwned == null)
+                            {
+                                currencyOwned = new CurrencyOwned()
+                                {
+                                    OwnerId = user.Id,
+                                    CurrencyId = globalGain.CurrencyId.Value,
                                     Amount = 0
                                 };
 

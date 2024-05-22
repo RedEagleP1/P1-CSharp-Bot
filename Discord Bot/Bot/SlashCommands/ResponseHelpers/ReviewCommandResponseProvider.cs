@@ -249,7 +249,7 @@ namespace Bot.SlashCommands.ResponseHelpers
 
                     var text = "Your card was rejected for review due to unclear Acceptance Criteria, " +
                     "please review the following data you submitted and resubmit with clearer Acceptance Criteria." +
-                    $" We have refunded your {Settings.ReviewCommandSettings.Cost} trust. \nHere is the data: \n";
+                    $" We have refunded your {Settings.ReviewCommandSettings.Cost - Settings.ReviewCommandSettings.Reward} trust. \nHere is the data: \n";
                     var embed = request.ReferencedMessage.Embeds.First().ToEmbedBuilder().Build();
                     var userThatIsRequestingReview = await DiscordQueryHelper.GetUserAsync(FormatHelper.ExtractUserMentionsIDs(request.ReferencedMessage.Content).FirstOrDefault());
                     try
@@ -262,6 +262,19 @@ namespace Bot.SlashCommands.ResponseHelpers
                         {
                             Console.WriteLine(exc.ToString());
                         }
+                    }
+                    await DBReadWrite.LockReadWrite();
+                    try
+                    {
+                        var context = DBContextFactory.GetNewContext();
+                        var trustCurrency = await context.Currencies.FirstOrDefaultAsync(c => c.Name == "Trust");
+                        var trustOwned = await context.CurrenciesOwned.FirstOrDefaultAsync(co => co.CurrencyId == trustCurrency.Id && co.OwnerId == userThatIsRequestingReview.Id);
+                        trustOwned.Amount += Settings.ReviewCommandSettings.Cost - Settings.ReviewCommandSettings.Reward;
+                        await context.SaveChangesAsync();
+                    }
+                    finally
+                    {
+                        DBReadWrite.ReleaseLock();
                     }
                 })
                 .WithConditions(new Conditions()
@@ -291,7 +304,7 @@ namespace Bot.SlashCommands.ResponseHelpers
 
                     var text = "Your card was rejected for review because it didn't meet the requirements, " +
                     "please review the following data you submitted and resubmit after you meet the requirements." +
-                    $" We have refunded your {Settings.ReviewCommandSettings.Cost} trust. \nHere is the data: \n";
+                    $" We have refunded your {Settings.ReviewCommandSettings.Cost - Settings.ReviewCommandSettings.Reward} trust. \nHere is the data: \n";
                     var embed = request.ReferencedMessage.Embeds.First().ToEmbedBuilder().Build();
                     var userThatIsRequestingReview = await DiscordQueryHelper.GetUserAsync(FormatHelper.ExtractUserMentionsIDs(request.ReferencedMessage.Content).FirstOrDefault());
                     try
@@ -312,7 +325,7 @@ namespace Bot.SlashCommands.ResponseHelpers
                         var context = DBContextFactory.GetNewContext();
                         var trustCurrency = await context.Currencies.FirstOrDefaultAsync(c => c.Name == "Trust");
                         var trustOwned = await context.CurrenciesOwned.FirstOrDefaultAsync(co => co.CurrencyId == trustCurrency.Id && co.OwnerId == userThatIsRequestingReview.Id);
-                        trustOwned.Amount += Settings.ReviewCommandSettings.Cost;
+                        trustOwned.Amount += Settings.ReviewCommandSettings.Cost - Settings.ReviewCommandSettings.Reward;
                         await context.SaveChangesAsync();
                     }
                     finally
@@ -336,7 +349,7 @@ namespace Bot.SlashCommands.ResponseHelpers
 
             responses.Add(verification_Requirements_Met);
 
-            var verification_TaskType_Programming = new StandardResponse()
+            /*var verification_TaskType_Programming = new StandardResponse()
                 .WithContent("Programming tasks need to be handled by specialists through a different system. " +
                 $"\nWe will delete this submission and return the {Settings.ReviewCommandSettings.Reward} Trust to the treasury. Is that ok?")
                 .WithButtons("Yes", "No")
@@ -383,16 +396,16 @@ namespace Bot.SlashCommands.ResponseHelpers
                 .MakeSureEmbedTitleMatches("Review (Verification Process)")
                 .MakeSureIncomingValueMatches("Yes"));
 
-            responses.Add(verification_TaskType_Programming_Yes);
+            responses.Add(verification_TaskType_Programming_Yes);*/
 
-            var verification_TaskType_Programming_No = new StandardResponse()
+            /*var verification_TaskType_Programming_No = new StandardResponse()
                 .WithContent("What sort of task is this?")
                 .WithButtons("Programming", "Academy Exam", "Design", "Art", "Sound", "Production", "User Integration")
                 .WithConditions(new Conditions()
                 .MakeSureEmbedTitleMatches("Review (Verification Process)")
                 .MakeSureIncomingValueMatches("No"));
 
-            responses.Add(verification_TaskType_Programming_No);
+            responses.Add(verification_TaskType_Programming_No);*/
 
             var verification_rateAcceptanceCriteria = new StandardResponse()
                 .WithContent("How well did the submission meet the Acceptance Criteria?")
@@ -400,7 +413,7 @@ namespace Bot.SlashCommands.ResponseHelpers
                 .WithFieldToAdd("Task Type")
                 .WithConditions(new Conditions()
                 .MakeSureEmbedTitleMatches("Review (Verification Process)")
-                .MakeSureIncomingValueDoesNotMatch("Programming")
+                //.MakeSureIncomingValueDoesNotMatch("Programming")
                 .MakeSureFieldDoesNotExist("Task Type"));
 
             responses.Add(verification_rateAcceptanceCriteria);
@@ -414,8 +427,10 @@ namespace Bot.SlashCommands.ResponseHelpers
                         return;
                     }
 
-                    var text = "Your card was rejected for review due insufficiency completion. " +
-                    "Please reach out to @name and ask them what was lacking in your submission if you need clarity. ";
+                    var text = "Your card was rejected for review due to insufficient completion. " +
+                    $"Please reach out to {request.User.Mention} and ask them what was lacking in your submission if you need clarity. " +
+                    $"Your {Settings.ReviewCommandSettings.Cost - Settings.ReviewCommandSettings.Reward} trust has been returned";
+
 
                     var embed = request.ReferencedMessage.Embeds.First().ToEmbedBuilder().Build();
                     var userThatIsRequestingReview = await DiscordQueryHelper.GetUserAsync(FormatHelper.ExtractUserMentionsIDs(request.ReferencedMessage.Content).FirstOrDefault());
@@ -429,6 +444,20 @@ namespace Bot.SlashCommands.ResponseHelpers
                         {
                             Console.WriteLine(exc.ToString());
                         }
+                    }
+
+                    await DBReadWrite.LockReadWrite();
+                    try
+                    {
+                        var context = DBContextFactory.GetNewContext();
+                        var trustCurrency = await context.Currencies.FirstOrDefaultAsync(c => c.Name == "Trust");
+                        var trustOwned = await context.CurrenciesOwned.FirstOrDefaultAsync(co => co.CurrencyId == trustCurrency.Id && co.OwnerId == userThatIsRequestingReview.Id);
+                        trustOwned.Amount += Settings.ReviewCommandSettings.Cost - Settings.ReviewCommandSettings.Reward;
+                        await context.SaveChangesAsync();
+                    }
+                    finally
+                    {
+                        DBReadWrite.ReleaseLock();
                     }
                 })
                 .WithConditions(new Conditions()

@@ -5,6 +5,8 @@ using Bot.OneTimeRegister;
 using Bot.SlashCommands;
 using Discord;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+using System.Threading.Channels;
+using System;
 
 namespace Bot.EventHandlers
 {

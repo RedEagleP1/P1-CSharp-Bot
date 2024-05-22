@@ -1,0 +1,2 @@
+dotnet ef database update --project "Discord Bot/Models"
+dotnet ef migrations add AddGlobalVoiceCurrencyGainsTable --project "Discord Bot/Models"

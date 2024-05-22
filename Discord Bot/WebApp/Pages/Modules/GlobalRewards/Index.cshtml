@@ -1,0 +1,99 @@
+﻿@page
+@using WebApp.Pages.Partials
+@model WebApp.Pages.Modules.GlobalRewards.IndexModel
+@{
+}
+@Html.AntiForgeryToken()
+<nav class="nav">
+    <a class="nav-link active" aria-current="page" asp-page="/Home/Guilds">Guilds</a>
+	<a class="nav-link active" aria-current="page" asp-page="/Home/Modules" asp-route-id="@Model.Guild.Id" asp-route-name="@Model.Guild.Name">Modules</a>
+</nav>
+<br />
+<div>
+	<h2 class="text-primary">Global Rewards</h2>
+</div>
+<br /><br />
+<div class="container p-3">
+	<table class="table table-bordered table-striped" style="width:100%">
+		<thead>
+			<tr>
+				<th>
+					Is Enabled
+				</th>
+				<th>
+					Currency
+				</th>
+				<th>
+					Currency gained per hour when deafen/mute
+				</th>
+				<th>
+					Currency gained per hour when unmute
+				</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody id="TableRows">
+				<tr>
+					<form method="post" asp-page-handler="Save">
+					<input type="hidden" asp-for="GlobalVoiceCurrencyGain.GuildId" value="@Model.GlobalVoiceCurrencyGain.GuildId">
+					<td>
+						<div class="form-check form-switch">
+							@if (@Model.GlobalVoiceCurrencyGain.IsEnabled)
+							{
+								<input asp-for="GlobalVoiceCurrencyGain.IsEnabled" class="form-check-input" type="checkbox" checked />
+							}
+							else
+							{
+								<input asp-for="GlobalVoiceCurrencyGain.IsEnabled" class="form-check-input" type="checkbox" />
+							}
+						</div>
+					</td>
+					<td>
+						<div id="Currency">
+							<p id="CurrencyNameDisplay">
+							</p>
+							<input id="CurrencyId" type="hidden" asp-for="GlobalVoiceCurrencyGain.CurrencyId"
+							   value="@Model.GlobalVoiceCurrencyGain.CurrencyId">
+							@await Html.PartialAsync("/Pages/Partials/_CurrencyDropdown.cshtml", new CurrencyDropdownPartialModel(){ButtonName = "Select Currency", Currencies = Model.AllCurrencies, AddNoneOption = true})
+						</div>
+					</td>
+					<td>
+						<input asp-for="GlobalVoiceCurrencyGain.AmountGainedPerHourWhenMuteOrDeaf" value="@Model.GlobalVoiceCurrencyGain.AmountGainedPerHourWhenMuteOrDeaf">
+					</td>
+					<td>
+						<input asp-for="GlobalVoiceCurrencyGain.AmountGainedPerHourWhenSpeaking" value="@Model.GlobalVoiceCurrencyGain.AmountGainedPerHourWhenSpeaking">
+					</td>
+					<td>
+						<button type="submit" class="btn btn-primary mx-2">
+							Save
+						</button>
+					</td>
+					</form>
+				</tr>
+		</tbody>
+	</table>
+</div>
+
+@section Scripts
+	{
+	<script>
+		$(document).on("click", "#DropdownSelectedCurrency", function () {
+			var currencyId = $(this).val();
+			var currencyName = $(this).text();
+			var currencyDiv = $(this).closest("#Currency");
+			if (currencyDiv.length != 0) {
+				currencyDiv.find("#CurrencyNameDisplay").text(currencyName);
+				currencyDiv.find("#CurrencyId").val(currencyId);
+				return;
+			}
+		})
+	</script>
+	@if (ViewData["Message"] != null)
+	{
+		<script>
+			window.onload = function () {
+				alert("@ViewData["Message"]");
+			};
+		</script>
+	}
+}

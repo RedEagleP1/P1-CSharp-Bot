@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -145,7 +146,8 @@ namespace Bot.SlashCommands
             foreach (SocketRole role in userRoles)
             {
                 var match = hourRolecheck.Match(role.Name);
-                if(!match.Success || match.Groups[2].Value != currencyName)
+                Console.WriteLine(match.Groups[2].Value);
+                if (!match.Success || match.Groups[2].Value != currencyName)
                 {
                     continue;
                 }

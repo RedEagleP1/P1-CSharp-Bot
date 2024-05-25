@@ -24,26 +24,25 @@ namespace WebApp.Pages.Modules.CurrencyResets
         public async Task OnGet(ulong guildId)
         {
             Guild = await _db.Guilds.FirstOrDefaultAsync(g => g.Id == guildId);
-            AllCurrencies = _db.Currencies.ToList();
+            AllCurrencies = await _db.Currencies.ToListAsync();
             List<CurrencyResetModel> resetModels = new();
-            var context = DBContextFactory.GetNewContext();
 
             foreach (var currency in AllCurrencies)
             {
                 var newCurrencyReset = await _db.CurrencyResets.FirstOrDefaultAsync(v => v.CurrencyId == currency.Id);
 
-                if (newCurrencyReset == null) 
+                if (newCurrencyReset == null)
                 {
                     newCurrencyReset = new CurrencyReset()
                     {
-                        Id = -1,
                         GuildId = guildId,
                         DaysBetween = 30,
                         Auto = false,
                         CurrencyId = currency.Id,
                     };
-                    //Console.WriteLine(context.ContextId);
-                    //context.CurrencyResets.Add(newCurrencyReset);
+
+                    _db.CurrencyResets.Add(newCurrencyReset);
+                    await _db.SaveChangesAsync();
                 }
 
                 var newResetModel = new CurrencyResetModel()
@@ -58,6 +57,7 @@ namespace WebApp.Pages.Modules.CurrencyResets
             CurrencyResets = resetModels;
         }
 
+
         public async Task OnGetWithAlert(ulong guildId, string message)
         {
             await OnGet(guildId);
@@ -69,11 +69,9 @@ namespace WebApp.Pages.Modules.CurrencyResets
             var Info = await _db.CurrencyResets.FirstOrDefaultAsync(v => v.CurrencyId == CurrencyReset.CurrencyId);
             if (Info == null)
             {
-                Console.WriteLine("oops!");
                 return BadRequest();
             }
 
-            Info.Id = CurrencyReset.Id;
             Info.GuildId = CurrencyReset.GuildId;
             Info.DaysBetween = CurrencyReset.DaysBetween;
             Info.Auto = CurrencyReset.Auto;

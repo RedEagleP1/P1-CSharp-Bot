@@ -21,10 +21,10 @@
 					Currency Name
 				</th>
 				<th>
-					Auto Interval
+					Auto Reset Monthly
 				</th>
 				<th>
-					Auto Reset
+					Auto Interval (Leave at 0 for no auto interval)
 				</th>
 				<th>
 					Reset Manually
@@ -60,12 +60,12 @@
 						<input asp-for="CurrencyReset.DaysBetween" value="@reset.CurrencyReset.DaysBetween">
 					</td>
 					<td>
-						<button type="submit" class="btn btn-primary mx-2">
+						<button type="submit" name="action" value="reset" class="btn btn-primary mx-2">
 							Reset
 						</button>
 					</td>
 					<td>
-						<button type="submit" class="btn btn-primary mx-2">
+						<button type="submit" name="action" value="save" class="btn btn-primary mx-2">
 							Save
 						</button>
 					</td>

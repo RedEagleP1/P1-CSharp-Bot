@@ -1,9 +1,11 @@
 ﻿using Bot.EventHandlers;
 using Discord;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -28,6 +30,7 @@ namespace Bot.PeriodicEvents
             {
                 await RefreshCurrencyAwardLimit();
                 SetRoleMessageAndSurveyRepeatForToday();
+                ResetCurrencyLogic();
             });            
         }
 
@@ -116,6 +119,43 @@ namespace Bot.PeriodicEvents
             foreach(var awardLimit in context.CurrencyAwardLimits)
             {
                 context.CurrencyAwardLimits.Remove(awardLimit);
+            }
+
+            await context.SaveChangesAsync();
+        }
+
+        public static async Task ResetCurrencyLogic()
+        {
+            using var context = DBContextFactory.GetNewContext();
+            var currencyIds = new List<int?>();
+            foreach (var reset in context.CurrencyResets)
+            {
+                reset.DaysLeft--;
+                if (reset.DaysLeft <= 0)
+                {
+                    if (reset.Auto == false)
+                    {
+                        reset.DaysLeft = reset.DaysBetween;
+                    }
+                    else
+                    {
+                        var today = DateTime.UtcNow.AddHours(-6); // CST conversion
+                        var firstDayOfNextMonth = new DateTime(today.Year, today.Month, 1).AddMonths(1);
+                        reset.DaysLeft = (firstDayOfNextMonth - today).Days;
+                    }
+                    currencyIds.Add(reset.CurrencyId);
+                }
+            }
+            //This threw a bug inside of the foreeach loop, so I moved it outside and it now works.
+            foreach (var currency in context.CurrenciesOwned)
+            {
+                if (currency != null)
+                {
+                    if (currencyIds.Contains(currency.CurrencyId))
+                    {
+                        currency.Amount = 0;
+                    }
+                }
             }
 
             await context.SaveChangesAsync();

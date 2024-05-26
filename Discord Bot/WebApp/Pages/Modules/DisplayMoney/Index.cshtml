@@ -1,0 +1,60 @@
+﻿@page
+@using WebApp.Pages.Partials
+@model WebApp.Pages.Modules.DisplayMoney.IndexModel
+@{
+}
+@Html.AntiForgeryToken()
+<nav class="nav">
+    <a class="nav-link active" aria-current="page" asp-page="/Home/Guilds">Guilds</a>
+	<a class="nav-link active" aria-current="page" asp-page="/Home/Modules" asp-route-id="@Model.Guild.Id" asp-route-name="@Model.Guild.Name">Modules</a>
+</nav>
+<br />
+<div>
+	<h2 class="text-primary">Display Money</h2>
+</div>
+<br /><br />
+<div class="container p-3">
+	<table class="table table-bordered table-striped" style="width:100%">
+		<thead>
+			<tr>
+				<th>
+					Currency Name
+				</th>
+				<th>
+					UserName
+				</th>
+				<th>
+					Amount
+				</th>
+			</tr>
+		</thead>
+		<tbody id="TableRows">
+			@foreach (var currency in Model.DisplayLists)
+			{
+			<tr>
+				<td>
+					@currency.CurrencyName
+				</td>
+				<td>
+					@currency.UserName
+				</td>
+				<td>
+					@currency.amount
+				</td>
+			</tr>
+			}		
+		</tbody>
+	</table>
+</div>
+
+@section Scripts
+	{
+	@if (ViewData["Message"] != null)
+	{
+		<script>
+			window.onload = function () {
+				alert("@ViewData["Message"]");
+			};
+		</script>
+	}
+}

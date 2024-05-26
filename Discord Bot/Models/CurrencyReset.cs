@@ -13,5 +13,6 @@ namespace Models
         public int DaysBetween { get; set; }
         public bool Auto { get; set; }
         public int? CurrencyId { get; set; }
+        public int? DaysLeft { get; set; }
     }
 }

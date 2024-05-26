@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Models;
+using System;
 using System.Diagnostics;
 using WebApp.Pages.Partials;
 
@@ -39,6 +40,7 @@ namespace WebApp.Pages.Modules.CurrencyResets
                         DaysBetween = 30,
                         Auto = false,
                         CurrencyId = currency.Id,
+                        DaysLeft = 30,
                     };
 
                     _db.CurrencyResets.Add(newCurrencyReset);
@@ -79,6 +81,16 @@ namespace WebApp.Pages.Modules.CurrencyResets
                 Info.DaysBetween = CurrencyReset.DaysBetween;
                 Info.Auto = CurrencyReset.Auto;
                 Info.CurrencyId = CurrencyReset.CurrencyId;
+                if (Info.Auto)
+                {
+                    var today = DateTime.UtcNow.AddHours(-6); // CST conversion
+                    var firstDayOfNextMonth = new DateTime(today.Year, today.Month, 1).AddMonths(1);
+                    Info.DaysLeft = (firstDayOfNextMonth - today).Days;
+                }
+                else
+                {
+                    Info.DaysLeft = CurrencyReset.DaysBetween;
+                }
 
                 await _db.SaveChangesAsync();
 
@@ -87,6 +99,17 @@ namespace WebApp.Pages.Modules.CurrencyResets
             else
             {
                 var CurInfo = await _db.Currencies.FirstOrDefaultAsync(v => v.Id == Info.CurrencyId);
+
+                foreach (var currency in _db.CurrenciesOwned)
+                {
+                    if (currency != null)
+                    {
+                        if (currency.CurrencyId == Info.CurrencyId)
+                        {
+                            currency.Amount = 0;
+                        }
+                    }
+                }
 
                 await _db.SaveChangesAsync();
 

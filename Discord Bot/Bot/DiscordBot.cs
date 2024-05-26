@@ -52,6 +52,7 @@ namespace Bot
                 new AccountCommand(client),
                 new AccountBackupCommand(client),
                 new ReviewCommand(client),
+                //new DebugCommand(client),
                 new BuyRoleCommand()
             };
 

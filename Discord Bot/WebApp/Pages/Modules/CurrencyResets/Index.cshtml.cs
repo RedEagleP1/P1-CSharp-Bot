@@ -64,7 +64,7 @@ namespace WebApp.Pages.Modules.CurrencyResets
             ViewData["Message"] = message;
         }
 
-        public async Task<IActionResult> OnPostSave(CurrencyReset CurrencyReset)
+        public async Task<IActionResult> OnPostSave(CurrencyReset CurrencyReset, string action)
         {
             var Info = await _db.CurrencyResets.FirstOrDefaultAsync(v => v.CurrencyId == CurrencyReset.CurrencyId);
             if (Info == null)
@@ -72,14 +72,26 @@ namespace WebApp.Pages.Modules.CurrencyResets
                 return BadRequest();
             }
 
-            Info.GuildId = CurrencyReset.GuildId;
-            Info.DaysBetween = CurrencyReset.DaysBetween;
-            Info.Auto = CurrencyReset.Auto;
-            Info.CurrencyId = CurrencyReset.CurrencyId;
+            if (action == "save")
+            {
 
-            await _db.SaveChangesAsync();
+                Info.GuildId = CurrencyReset.GuildId;
+                Info.DaysBetween = CurrencyReset.DaysBetween;
+                Info.Auto = CurrencyReset.Auto;
+                Info.CurrencyId = CurrencyReset.CurrencyId;
 
-            return RedirectToPage("Index", "WithAlert", new { guildId = Info.GuildId, message = $"Saved changes to {Info.GuildId}" });
+                await _db.SaveChangesAsync();
+
+                return RedirectToPage("Index", "WithAlert", new { guildId = Info.GuildId, message = $"Saved changes to {Info.GuildId}" });
+            }
+            else
+            {
+                var CurInfo = await _db.Currencies.FirstOrDefaultAsync(v => v.Id == Info.CurrencyId);
+
+                await _db.SaveChangesAsync();
+
+                return RedirectToPage("Index", "WithAlert", new { guildId = Info.GuildId, message = $"Set {CurInfo.Name} to 0 for ALL users." });
+            }
         }
     }
 

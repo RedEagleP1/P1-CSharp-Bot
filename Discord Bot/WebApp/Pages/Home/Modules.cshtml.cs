@@ -20,6 +20,7 @@ namespace WebApp.Pages.Home
     {
         public static List<Module> Modules = new List<Module>() {
 
+            new Module() {Name = "Display Money", Description = "Look at how much currency everyone on the server has.", PageName="DisplayMoney"},
             new Module() { Name = "Role Messages", Description = "Configure What messages to send when a user gets a role.", PageName = "RoleMessages" },
             new Module() {Name = "Role Surveys", Description = "Configure what survey to send when a user gets a role.", PageName = "RoleSurveys"},
             new Module() {Name = "Role Costs And Rewards", Description = "Set the cost and reward of each role.", PageName="RoleCostsAndRewards"},

@@ -8,8 +8,10 @@ using Microsoft.EntityFrameworkCore;
 using Models;
 using System;
 using System.Diagnostics;
+using System.Text.Json;
 using WebApp.Pages.Modules.CurrencyResets;
 using WebApp.Pages.Partials;
+using System.IO;
 
 namespace WebApp.Pages.Modules.DisplayMoney
 {
@@ -27,27 +29,52 @@ namespace WebApp.Pages.Modules.DisplayMoney
             _db = db;
         }
 
+        private static readonly HttpClient client = new HttpClient();
+
         public async Task OnGet(ulong guildId)
         {
-            var client = DiscordREST.discordRestClient;
             Guild = await _db.Guilds.FirstOrDefaultAsync(g => g.Id == guildId);
             CurrencyOwned = await _db.CurrenciesOwned.ToListAsync();
             List<DisplayList> displaylists = new();
-            var context = DBContextFactory.GetNewContext();
+            var jsonText = System.IO.File.ReadAllText("appsettings.json");
+            var botToken = "";
+
+            client.DefaultRequestHeaders.Clear();
+
+            //Gets information out of the json
+            using (JsonDocument doc = JsonDocument.Parse(jsonText))
+            {
+                JsonElement root = doc.RootElement;
+                botToken = root.GetProperty("Discord").GetProperty("botToken").GetString();
+            }
+            client.DefaultRequestHeaders.Add("Authorization", $"Bot {botToken}");
 
             foreach (CurrencyOwned currencyOwned in CurrencyOwned)
             {
                 var currencyRef = _db.Currencies.FirstOrDefault(g => g.Id == currencyOwned.Id);
 
-                Debug.WriteLine($"Name:{currencyRef.Name} UserName:{currencyOwned.OwnerId} Amount:{currencyOwned.Amount}");
-
+                //This is such a weird way of doing things, but the code works.
                 if (currencyRef != null)
                 {
-                    var user = await client.GetUserAsync(currencyOwned.OwnerId);
+                    //API request, uses bot token for authorization and sends it to a URL to get member information.
+                    //var botToken = "MTIzNzEyODM4MTI4MDI4ODg3MQ.GZlEJr.ksmfYgcIxwArDYKMOB8TxG9tZFs6OfGUwAHzIo";
+                    string url = "https://discord.com/api/v9/users/"+$"{currencyOwned.OwnerId}\n";
+                    var response = await client.GetAsync(url);
+                    var responseData = await response.Content.ReadAsStringAsync();
+                    string username = "";
+
+                    //Gets information out of the json
+                    using (JsonDocument doc = JsonDocument.Parse(responseData))
+                    {
+                        JsonElement root = doc.RootElement;
+                        username = root.GetProperty("username").GetString();
+                    }
+
+                    //Adds to the displaylist including the username of the user from the JSON.
                     DisplayList displayList = new DisplayList()
                     {
                         CurrencyName = currencyRef.Name,
-                        UserName = user.Username,
+                        UserName = username,
                         amount = currencyOwned.Amount,
                     };
                     displaylists.Add(displayList);

@@ -14,7 +14,7 @@ namespace Bot
 {
     public class DiscordBot
     {
-        DiscordSocketClient client;
+        public DiscordSocketClient client { get; private set; }
         private TimerCST timerCST;
 
         public async Task StartBot()

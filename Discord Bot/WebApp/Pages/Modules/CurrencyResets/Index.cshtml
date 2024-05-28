@@ -1,0 +1,89 @@
+﻿@page
+@using WebApp.Pages.Partials
+@model WebApp.Pages.Modules.CurrencyResets.IndexModel
+@{
+}
+@Html.AntiForgeryToken()
+<nav class="nav">
+    <a class="nav-link active" aria-current="page" asp-page="/Home/Guilds">Guilds</a>
+	<a class="nav-link active" aria-current="page" asp-page="/Home/Modules" asp-route-id="@Model.Guild.Id" asp-route-name="@Model.Guild.Name">Modules</a>
+</nav>
+<br />
+<div>
+	<h2 class="text-primary">Currency Resets</h2>
+</div>
+<br /><br />
+<div class="container p-3">
+	<table class="table table-bordered table-striped" style="width:100%">
+		<thead>
+			<tr>
+				<th>
+					Currency Name
+				</th>
+				<th>
+					Auto Reset Monthly
+				</th>
+				<th>
+					Auto Interval (Leave at 0 for no auto interval)
+				</th>
+				<th>
+					Reset Manually
+				</th>
+				<th>
+					Save
+				</th>
+			</tr>
+		</thead>
+		<tbody id="TableRows">
+			@foreach (var reset in Model.CurrencyResets)
+			{
+				<tr>
+					<form method="post" asp-page-handler="Save">
+					<td>
+						@reset.CurrencyName
+						<input type="hidden" asp-for="CurrencyReset.GuildId" value="@reset.CurrencyReset.GuildId">
+						<input type="hidden" asp-for="CurrencyReset.CurrencyId" value="@reset.CurrencyReset.CurrencyId">
+					</td>
+					<td>
+						<div class="form-check form-switch">
+							@if (reset.CurrencyReset.Auto)
+							{
+								<input asp-for="CurrencyReset.Auto" class="form-check-input" type="checkbox" checked />
+							}
+							else
+							{
+								<input asp-for="CurrencyReset.Auto" class="form-check-input" type="checkbox" />
+							}
+						</div>
+					</td>
+					<td>
+						<input asp-for="CurrencyReset.DaysBetween" value="@reset.CurrencyReset.DaysBetween">
+					</td>
+					<td>
+						<button type="submit" name="action" value="reset" class="btn btn-primary mx-2">
+							Reset
+						</button>
+					</td>
+					<td>
+						<button type="submit" name="action" value="save" class="btn btn-primary mx-2">
+							Save
+						</button>
+					</td>
+					</form>
+				</tr>
+			}		
+		</tbody>
+	</table>
+</div>
+
+@section Scripts
+	{
+	@if (ViewData["Message"] != null)
+	{
+		<script>
+			window.onload = function () {
+				alert("@ViewData["Message"]");
+			};
+		</script>
+	}
+}

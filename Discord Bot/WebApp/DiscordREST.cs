@@ -3,7 +3,7 @@ using Models.HelperClasses;
 using Discord;
 public static class DiscordREST
 {
-    static DiscordRestClient discordRestClient;
+    public static DiscordRestClient discordRestClient;
     public static async Task Init(string botToken)
     {
         discordRestClient = new DiscordRestClient();

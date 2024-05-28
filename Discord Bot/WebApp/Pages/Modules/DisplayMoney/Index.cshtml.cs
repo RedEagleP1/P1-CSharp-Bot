@@ -57,7 +57,6 @@ namespace WebApp.Pages.Modules.DisplayMoney
                 if (currencyRef != null)
                 {
                     //API request, uses bot token for authorization and sends it to a URL to get member information.
-                    //var botToken = "MTIzNzEyODM4MTI4MDI4ODg3MQ.GZlEJr.ksmfYgcIxwArDYKMOB8TxG9tZFs6OfGUwAHzIo";
                     string url = "https://discord.com/api/v9/users/"+$"{currencyOwned.OwnerId}\n";
                     var response = await client.GetAsync(url);
                     var responseData = await response.Content.ReadAsStringAsync();

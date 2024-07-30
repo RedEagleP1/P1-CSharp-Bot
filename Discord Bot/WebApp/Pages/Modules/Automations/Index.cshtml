@@ -1,0 +1,118 @@
+﻿@page
+@using WebApp.Pages.Partials
+@model WebApp.Pages.Modules.Automations.IndexModel
+@{
+}
+@Html.AntiForgeryToken()
+<nav class="nav">
+    <a class="nav-link active" aria-current="page" asp-page="/Home/Guilds">Guilds</a>
+	<a class="nav-link active" aria-current="page" asp-page="/Home/Modules" asp-route-id="@Model.Guild.Id" asp-route-name="@Model.Guild.Name">Modules</a>
+</nav>
+<br />
+<div>
+	<h2 class="text-primary">Automations</h2>
+</div>
+<br /><br />
+<div class="container p-3">
+	<table class="table table-bordered table-striped" style="width:100%">
+		<thead>
+			<tr>
+				<th>
+					When
+				</th>
+				<th>
+					If
+				</th>
+				<th>
+					Do
+				</th>
+				<th>
+					After
+				</th>
+			</tr>
+		</thead>
+		<tbody id="TableRows">
+			<tr>
+				<form method="post" asp-page-handler="Save">
+				<td>
+					<div id="Display">
+						<p id="NameDisplay">
+						</p>
+						<input id="Id" type="hidden" value="">
+						@await Html.PartialAsync("/Pages/Partials/_AutomationDropdown.cshtml", new AutomationDropdownModel(){ButtonName = "Select Option", Conditionals = Model.WhenAutomations, AddNoneOption = true, DropdownId = "whenDropdown"})
+					</div>
+				</td>
+				<td id="Top">
+					<div id="Display">
+						<p id="NameDisplay">
+						</p>
+						<input id="Id" type="hidden" value="">
+						@await Html.PartialAsync("/Pages/Partials/_AutomationDropdown.cshtml", new AutomationDropdownModel(){ButtonName = "Select Option", Conditionals = Model.IfAutomations, AddNoneOption = true, DropdownId = "ifDropdown"})
+					</div>
+				</td>
+				<td>
+					<div id="Display">
+						<p id="NameDisplay">
+						</p>
+						<input id="Id" type="hidden" value="">
+						@await Html.PartialAsync("/Pages/Partials/_AutomationDropdown.cshtml", new AutomationDropdownModel(){ButtonName = "Select Option", Conditionals = Model.DoAutomations, AddNoneOption = true, DropdownId = "doDropdown"})
+					</div>
+				</td>
+				<td>
+				</td>
+				<td>
+					<button type="submit" class="btn btn-primary mx-2">
+						Save
+					</button>
+				</td>
+				</form>
+			</tr>
+		</tbody>
+	</table>
+</div>
+
+@section Scripts
+	{
+	<script>
+		$(document).on("click", "#SelectedId", function () {
+			
+			var Id = $(this).val();
+			var Name = $(this).text();
+			var Div = $(this).closest("#Display");
+			if (Div.length != 0) {
+				Div.find("#NameDisplay").text(Name);
+				Div.find("#Id").val(Id);
+				return;
+			}
+		})
+	</script>
+	@if (ViewData["Message"] != null)
+	{
+		<script>
+			window.onload = function () {
+				alert("@ViewData["Message"]");
+			};
+		</script>
+	}
+	
+	<script>
+    $(document).on("click", "#SelectedId", function () {
+
+		console.log("hello");
+		
+        var idInput = document.getElementById("Id");
+
+        if (!idInput.value) {
+            createNewDiv();
+        }
+
+        function createNewDiv() {
+			console.log("hello2");
+            var additionalDivs = $(this).closest("#Top");
+            var newDiv = $(this).closest("#Display");
+			newDiv.innerHTML = '<input type="hidden" value="">';
+            additionalDivs.append(newDiv);
+        }
+    });
+	</script>
+}

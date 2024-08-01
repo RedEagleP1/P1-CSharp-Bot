@@ -39,7 +39,7 @@ namespace WebApp.Pages.Modules.Automations
             ViewData["Message"] = message;
         }
 
-        public async Task<IActionResult> OnPostSave(VoiceChannelCurrencyGain VoiceChannelCurrencyGain)
+        /*public async Task<IActionResult> OnPostSave(VoiceChannelCurrencyGain VoiceChannelCurrencyGain)
         {
             var vc = await _db.VoiceChannelCurrencyGains.FirstOrDefaultAsync(v => v.Id == VoiceChannelCurrencyGain.Id);
             if(vc == null)
@@ -54,7 +54,7 @@ namespace WebApp.Pages.Modules.Automations
 
             await _db.SaveChangesAsync();
             return RedirectToPage("Index", "WithAlert", new { guildId = vc.GuildId, message = $"Saved changes to channel {vc.ChannelName}" });
-        }
+        }*/
     }
     public class VoiceChannelCurrencyGainModel
     {

@@ -32,14 +32,14 @@
 			</tr>
 		</thead>
 		<tbody id="TableRows">
-			<tr>
-				<form method="post" asp-page-handler="Save">
+			<tr id="Row">
 				<td>
 					<div id="Display">
 						<p id="NameDisplay">
 						</p>
 						<input id="Id" type="hidden" value="">
 						@await Html.PartialAsync("/Pages/Partials/_AutomationDropdown.cshtml", new AutomationDropdownModel(){ButtonName = "Select Option", Conditionals = Model.WhenAutomations, AddNoneOption = true, DropdownId = "whenDropdown"})
+						<input id="DoInfo" value="">
 					</div>
 				</td>
 				<td id="Top">
@@ -48,6 +48,10 @@
 						</p>
 						<input id="Id" type="hidden" value="">
 						@await Html.PartialAsync("/Pages/Partials/_AutomationDropdown.cshtml", new AutomationDropdownModel(){ButtonName = "Select Option", Conditionals = Model.IfAutomations, AddNoneOption = true, DropdownId = "ifDropdown"})
+						<input id="IfInfo" value="">
+						<button class="btn btn-primary mx-2" id="Add">
+							Add
+						</button>
 					</div>
 				</td>
 				<td>
@@ -56,17 +60,27 @@
 						</p>
 						<input id="Id" type="hidden" value="">
 						@await Html.PartialAsync("/Pages/Partials/_AutomationDropdown.cshtml", new AutomationDropdownModel(){ButtonName = "Select Option", Conditionals = Model.DoAutomations, AddNoneOption = true, DropdownId = "doDropdown"})
+						<input id="DoInfo" value="">
+						<button class="btn btn-primary mx-2" id="Add">
+							Add
+						</button>
 					</div>
 				</td>
 				<td>
+					<input id="AfterInfo" value="">
 				</td>
 				<td>
 					<button type="submit" class="btn btn-primary mx-2">
 						Save
 					</button>
+					<button type="submit" class="btn btn-danger mx-2" id="delete">
+						Delete
+					</button>
 				</td>
-				</form>
 			</tr>
+			<button type="submit" id="addnew" class="btn btn-primary mx-2">
+				New Item
+			</button>
 		</tbody>
 	</table>
 </div>
@@ -94,25 +108,48 @@
 			};
 		</script>
 	}
-	
+
 	<script>
-    $(document).on("click", "#SelectedId", function () {
+	$(document).on("click", "#Add", function () {
+		createNewDiv($(this));
 
-		console.log("hello");
-		
-        var idInput = document.getElementById("Id");
+		function createNewDiv(element) {
+			var ref = element.closest("#Display");
 
-        if (!idInput.value) {
-            createNewDiv();
-        }
+			var clonedElement = ref.clone();
+			ref.after(clonedElement);
 
-        function createNewDiv() {
-			console.log("hello2");
-            var additionalDivs = $(this).closest("#Top");
-            var newDiv = $(this).closest("#Display");
-			newDiv.innerHTML = '<input type="hidden" value="">';
-            additionalDivs.append(newDiv);
-        }
-    });
+			if (ref.find("#deletechoice").length === 0) {
+
+				var deleteElement = $("#delete").clone();
+				deleteElement.attr('id', 'deletechoice');
+				clonedElement.append(deleteElement);
+			}
+		}
+
+		return;
+	});
+	</script>
+
+	<script>
+		$(document).on("click", "#deletechoice", function () {
+		$(this).closest("#Display").remove();
+		return;
+	});
+	</script>
+
+	<script>
+		$(document).on("click", "#delete", function () {
+		$(this).closest("#Row").remove();
+		return;
+	});
+	</script>
+
+	<script>
+		$(document).on("click", "#addnew", function () {
+			var ref = $("#Row");
+			var newItem = ref.clone();
+			ref.after(newItem);
+		});
 	</script>
 }

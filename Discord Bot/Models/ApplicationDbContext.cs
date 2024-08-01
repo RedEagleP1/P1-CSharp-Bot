@@ -135,7 +135,22 @@ namespace Models
                 .WithMany()
                 .HasForeignKey(v => v.GuildId);
 
-            modelBuilder.Entity<CurrencyReset>()
+            modelBuilder.Entity<Automation>()
+                .HasOne<Guild>()
+                .WithMany()
+                .HasForeignKey(v => v.GuildId);
+
+			modelBuilder.Entity<IdAuto>()
+				.HasOne<Guild>()
+				.WithMany()
+				.HasForeignKey(v => v.AutomationId);
+
+			modelBuilder.Entity<InfoAuto>()
+				.HasOne<Guild>()
+				.WithMany()
+				.HasForeignKey(v => v.AutomationId);
+
+			modelBuilder.Entity<CurrencyReset>()
                 .HasOne<Currency>()
                 .WithMany()
                 .HasForeignKey(v => v.CurrencyId)

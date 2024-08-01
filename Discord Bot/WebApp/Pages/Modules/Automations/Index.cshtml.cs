@@ -11,10 +11,9 @@ namespace WebApp.Pages.Modules.Automations
     public class IndexModel : PageModel
     {
         public Guild Guild { get; set; }
-        public List<VoiceChannelCurrencyGainModel> VoiceChannelCurrencyGains { get; set; }
-        public List<Conditional> WhenAutomations { get; set; }
-        public List<Conditional> DoAutomations { get; set; }
-        public List<Conditional> IfAutomations { get; set; }
+        public List<Automation> WhenAutomations { get; set; }
+        public List<Automation> DoAutomations { get; set; }
+        public List<Automation> IfAutomations { get; set; }
         public VoiceChannelCurrencyGain VoiceChannelCurrencyGain { get; set; }
 
         private readonly ApplicationDbContext _db;
@@ -55,10 +54,5 @@ namespace WebApp.Pages.Modules.Automations
             await _db.SaveChangesAsync();
             return RedirectToPage("Index", "WithAlert", new { guildId = vc.GuildId, message = $"Saved changes to channel {vc.ChannelName}" });
         }*/
-    }
-    public class VoiceChannelCurrencyGainModel
-    {
-        public VoiceChannelCurrencyGain VoiceChannelCurrencyGain { get; set; }
-        public string CurrencyName { get; set; }
     }
 }

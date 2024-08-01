@@ -38,7 +38,7 @@
 						<p id="NameDisplay">
 						</p>
 						<input id="Id" type="hidden" value="">
-						@await Html.PartialAsync("/Pages/Partials/_AutomationDropdown.cshtml", new AutomationDropdownModel(){ButtonName = "Select Option", Conditionals = Model.WhenAutomations, AddNoneOption = true, DropdownId = "whenDropdown"})
+						@await Html.PartialAsync("/Pages/Partials/_AutomationDropdown.cshtml", new AutomationDropdownModel() { ButtonName = "Select Option", Automations = Model.WhenAutomations, AddNoneOption = true, DropdownId = "whenDropdown" })
 						<input id="DoInfo" value="">
 					</div>
 				</td>
@@ -47,7 +47,7 @@
 						<p id="NameDisplay">
 						</p>
 						<input id="Id" type="hidden" value="">
-						@await Html.PartialAsync("/Pages/Partials/_AutomationDropdown.cshtml", new AutomationDropdownModel(){ButtonName = "Select Option", Conditionals = Model.IfAutomations, AddNoneOption = true, DropdownId = "ifDropdown"})
+						@await Html.PartialAsync("/Pages/Partials/_AutomationDropdown.cshtml", new AutomationDropdownModel() { ButtonName = "Select Option", Automations = Model.IfAutomations, AddNoneOption = true, DropdownId = "ifDropdown" })
 						<input id="IfInfo" value="">
 						<button class="btn btn-primary mx-2" id="Add">
 							Add
@@ -59,7 +59,7 @@
 						<p id="NameDisplay">
 						</p>
 						<input id="Id" type="hidden" value="">
-						@await Html.PartialAsync("/Pages/Partials/_AutomationDropdown.cshtml", new AutomationDropdownModel(){ButtonName = "Select Option", Conditionals = Model.DoAutomations, AddNoneOption = true, DropdownId = "doDropdown"})
+						@await Html.PartialAsync("/Pages/Partials/_AutomationDropdown.cshtml", new AutomationDropdownModel(){ButtonName = "Select Option", Automations = Model.DoAutomations, AddNoneOption = true, DropdownId = "doDropdown"})
 						<input id="DoInfo" value="">
 						<button class="btn btn-primary mx-2" id="Add">
 							Add
@@ -140,7 +140,7 @@
 
 	<script>
 		$(document).on("click", "#delete", function () {
-		$(this).closest("#Row").remove();
+		//$(this).closest("#Row").remove();
 		return;
 	});
 	</script>

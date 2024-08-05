@@ -180,28 +180,15 @@ namespace Models.Migrations
                     b.Property<int?>("AutomationId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("AutomationId1")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("AutomationId2")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("AutomationId3")
+                    b.Property<int>("SelectedOption")
                         .HasColumnType("int");
 
                     b.Property<string>("Value")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.HasKey("Id");
 
                     b.HasIndex("AutomationId");
-
-                    b.HasIndex("AutomationId1");
-
-                    b.HasIndex("AutomationId2");
-
-                    b.HasIndex("AutomationId3");
 
                     b.ToTable("IdAutos");
                 });
@@ -709,18 +696,6 @@ namespace Models.Migrations
                     b.HasOne("Models.Automation", null)
                         .WithMany()
                         .HasForeignKey("AutomationId");
-
-                    b.HasOne("Models.Automation", null)
-                        .WithMany("If")
-                        .HasForeignKey("AutomationId1");
-
-                    b.HasOne("Models.Automation", null)
-                        .WithMany("When")
-                        .HasForeignKey("AutomationId2");
-
-                    b.HasOne("Models.Automation", null)
-                        .WithMany("Do")
-                        .HasForeignKey("AutomationId3");
                 });
 
             modelBuilder.Entity("Models.Role", b =>
@@ -854,15 +829,6 @@ namespace Models.Migrations
                         .HasForeignKey("GuildId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Models.Automation", b =>
-                {
-                    b.Navigation("Do");
-
-                    b.Navigation("If");
-
-                    b.Navigation("When");
                 });
 #pragma warning restore 612, 618
         }

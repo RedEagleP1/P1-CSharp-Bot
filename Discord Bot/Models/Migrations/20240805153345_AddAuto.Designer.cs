@@ -11,8 +11,8 @@ using Models;
 namespace Models.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240801195101_AddAutomations")]
-    partial class AddAutomations
+    [Migration("20240805153345_AddAuto")]
+    partial class AddAuto
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -23,9 +23,9 @@ namespace Models.Migrations
 
             modelBuilder.Entity("Models.Automation", b =>
                 {
-                    b.Property<ulong>("Id")
+                    b.Property<int?>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint unsigned");
+                        .HasColumnType("int");
 
                     b.Property<ulong>("GuildId")
                         .HasColumnType("bigint unsigned");
@@ -34,7 +34,7 @@ namespace Models.Migrations
 
                     b.HasIndex("GuildId");
 
-                    b.ToTable("Automation");
+                    b.ToTable("Automations");
                 });
 
             modelBuilder.Entity("Models.Currency", b =>
@@ -179,52 +179,17 @@ namespace Models.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<ulong>("AutomationId")
-                        .HasColumnType("bigint unsigned");
-
-                    b.Property<ulong?>("AutomationId1")
-                        .HasColumnType("bigint unsigned");
-
-                    b.Property<ulong?>("AutomationId2")
-                        .HasColumnType("bigint unsigned");
-
-                    b.Property<ulong>("AutomationId3")
-                        .HasColumnType("bigint unsigned");
-
-                    b.Property<string>("Value")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AutomationId");
-
-                    b.HasIndex("AutomationId1");
-
-                    b.HasIndex("AutomationId2");
-
-                    b.HasIndex("AutomationId3");
-
-                    b.ToTable("IdAuto");
-                });
-
-            modelBuilder.Entity("Models.InfoAuto", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int?>("AutomationId")
                         .HasColumnType("int");
 
-                    b.Property<ulong>("AutomationId")
-                        .HasColumnType("bigint unsigned");
+                    b.Property<int?>("AutomationId1")
+                        .HasColumnType("int");
 
-                    b.Property<ulong?>("AutomationId1")
-                        .HasColumnType("bigint unsigned");
+                    b.Property<int?>("AutomationId2")
+                        .HasColumnType("int");
 
-                    b.Property<ulong?>("AutomationId2")
-                        .HasColumnType("bigint unsigned");
-
-                    b.Property<ulong>("AutomationId3")
-                        .HasColumnType("bigint unsigned");
+                    b.Property<int?>("AutomationId3")
+                        .HasColumnType("int");
 
                     b.Property<string>("Value")
                         .IsRequired()
@@ -240,7 +205,7 @@ namespace Models.Migrations
 
                     b.HasIndex("AutomationId3");
 
-                    b.ToTable("InfoAuto");
+                    b.ToTable("IdAutos");
                 });
 
             modelBuilder.Entity("Models.MessageValidationSuccessTrack", b =>
@@ -743,48 +708,21 @@ namespace Models.Migrations
 
             modelBuilder.Entity("Models.IdAuto", b =>
                 {
-                    b.HasOne("Models.Guild", null)
+                    b.HasOne("Models.Automation", null)
                         .WithMany()
-                        .HasForeignKey("AutomationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("AutomationId");
 
                     b.HasOne("Models.Automation", null)
-                        .WithMany("IdIf")
+                        .WithMany("If")
                         .HasForeignKey("AutomationId1");
 
                     b.HasOne("Models.Automation", null)
-                        .WithMany("IdWhen")
+                        .WithMany("When")
                         .HasForeignKey("AutomationId2");
 
                     b.HasOne("Models.Automation", null)
-                        .WithMany("IdDo")
-                        .HasForeignKey("AutomationId3")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Models.InfoAuto", b =>
-                {
-                    b.HasOne("Models.Guild", null)
-                        .WithMany()
-                        .HasForeignKey("AutomationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Models.Automation", null)
-                        .WithMany("InfoIf")
-                        .HasForeignKey("AutomationId1");
-
-                    b.HasOne("Models.Automation", null)
-                        .WithMany("InfoWhen")
-                        .HasForeignKey("AutomationId2");
-
-                    b.HasOne("Models.Automation", null)
-                        .WithMany("InfoDo")
-                        .HasForeignKey("AutomationId3")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .WithMany("Do")
+                        .HasForeignKey("AutomationId3");
                 });
 
             modelBuilder.Entity("Models.Role", b =>
@@ -922,17 +860,11 @@ namespace Models.Migrations
 
             modelBuilder.Entity("Models.Automation", b =>
                 {
-                    b.Navigation("IdDo");
+                    b.Navigation("Do");
 
-                    b.Navigation("IdIf");
+                    b.Navigation("If");
 
-                    b.Navigation("IdWhen");
-
-                    b.Navigation("InfoDo");
-
-                    b.Navigation("InfoIf");
-
-                    b.Navigation("InfoWhen");
+                    b.Navigation("When");
                 });
 #pragma warning restore 612, 618
         }

@@ -32,6 +32,7 @@
 			</tr>
 		</thead>
 		<tbody id="TableRows">
+			<form method="post" asp-page-handler="Save">
 			<tr id="Row">
 				@foreach (var package in Model.Packages)
 				{
@@ -46,6 +47,7 @@
 									<input id="Id" type="hidden" value="">
 									@await Html.PartialAsync("/Pages/Partials/_AutomationDropdown.cshtml", new AutomationDropdownModel() { ButtonName = "Select Option", Automations = Model.WhenAutomations, AddNoneOption = true, DropdownId = "whenDropdown" })
 									<input id="WhenInfo" value="">
+									<input asp-for="@whens.Value" value="@whens.Value">
 								</div>
 							</td>
 						}
@@ -58,7 +60,6 @@
 								</p>
 								<input id="Id" type="hidden" value="">
 								@await Html.PartialAsync("/Pages/Partials/_AutomationDropdown.cshtml", new AutomationDropdownModel() { ButtonName = "Select Option", Automations = Model.WhenAutomations, AddNoneOption = true, DropdownId = "whenDropdown" })
-								<input id="WhenInfo" value="">
 							</div>
 						</td>
 					}
@@ -72,7 +73,7 @@
 									</p>
 									<input id="Id" type="hidden" value="">
 									@await Html.PartialAsync("/Pages/Partials/_AutomationDropdown.cshtml", new AutomationDropdownModel() { ButtonName = "Select Option", Automations = Model.IfAutomations, AddNoneOption = true, DropdownId = "ifDropdown" })
-									<input id="IfInfo" value="">
+									<input asp-for="@ifs.Value" value="@ifs.Value">
 									<button class="btn btn-primary mx-2" id="Add">
 										Add
 									</button>
@@ -105,7 +106,7 @@
 									</p>
 									<input id="Id" type="hidden" value="">
 									@await Html.PartialAsync("/Pages/Partials/_AutomationDropdown.cshtml", new AutomationDropdownModel() { ButtonName = "Select Option", Automations = Model.DoAutomations, AddNoneOption = true, DropdownId = "doDropdown" })
-									<input id="DoInfo" value="">
+									<input asp-for="@dos.Value" value="@dos.Value">
 									<button class="btn btn-primary mx-2" id="Add">
 										Add
 									</button>
@@ -132,17 +133,16 @@
 						<input id="AfterInfo" value="">
 					</td>
 					<td>
-						<form method="post" asp-page-handler="Save">
 						<button type="submit" class="btn btn-primary mx-2">
 							Save
 						</button>
-						</form>
 						<button type="submit" class="btn btn-danger mx-2" id="delete">
 							Delete
 						</button>
 					</td>
 				}
 			</tr>
+			</form>
 			<button type="submit" id="addnew" class="btn btn-primary mx-2">
 				New Item
 			</button>

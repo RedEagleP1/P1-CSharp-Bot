@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Models.Migrations
 {
-    public partial class AddAuto : Migration
+    public partial class AddAutos : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -35,12 +35,10 @@ namespace Models.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Value = table.Column<string>(type: "longtext", nullable: false)
+                    SelectedOption = table.Column<int>(type: "int", nullable: false),
+                    Value = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    AutomationId = table.Column<int>(type: "int", nullable: true),
-                    AutomationId1 = table.Column<int>(type: "int", nullable: true),
-                    AutomationId2 = table.Column<int>(type: "int", nullable: true),
-                    AutomationId3 = table.Column<int>(type: "int", nullable: true)
+                    AutomationId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -48,21 +46,6 @@ namespace Models.Migrations
                     table.ForeignKey(
                         name: "FK_IdAutos_Automations_AutomationId",
                         column: x => x.AutomationId,
-                        principalTable: "Automations",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_IdAutos_Automations_AutomationId1",
-                        column: x => x.AutomationId1,
-                        principalTable: "Automations",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_IdAutos_Automations_AutomationId2",
-                        column: x => x.AutomationId2,
-                        principalTable: "Automations",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_IdAutos_Automations_AutomationId3",
-                        column: x => x.AutomationId3,
                         principalTable: "Automations",
                         principalColumn: "Id");
                 })
@@ -77,21 +60,6 @@ namespace Models.Migrations
                 name: "IX_IdAutos_AutomationId",
                 table: "IdAutos",
                 column: "AutomationId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_IdAutos_AutomationId1",
-                table: "IdAutos",
-                column: "AutomationId1");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_IdAutos_AutomationId2",
-                table: "IdAutos",
-                column: "AutomationId2");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_IdAutos_AutomationId3",
-                table: "IdAutos",
-                column: "AutomationId3");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

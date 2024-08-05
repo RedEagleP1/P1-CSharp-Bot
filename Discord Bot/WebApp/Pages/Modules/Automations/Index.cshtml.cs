@@ -16,9 +16,8 @@ namespace WebApp.Pages.Modules.Automations
         public List<AutomationInfo> WhenAutomations { get; set; }
         public List<AutomationInfo> DoAutomations { get; set; }
         public List<AutomationInfo> IfAutomations { get; set; }
-
-        public List<Automation> Automations { get; set; }
 		public List<AutomationInfo> AutomationInfos { get; set; }
+        public List<AutomationPackage> Packages { get; set; }
 
 		private readonly ApplicationDbContext _db;
         public IndexModel(ApplicationDbContext db)
@@ -36,7 +35,7 @@ namespace WebApp.Pages.Modules.Automations
             IfAutomations = dropModel.con_If.ToList();
 
 			//Get Info
-			List<Automation> AutomationList = new List<Automation>();
+			List<AutomationPackage> AutomationList = new List<AutomationPackage>();
             var dataHolder = await _db.Automations.ToListAsync();
 
             if (dataHolder != null && dataHolder.Count > 0)
@@ -45,7 +44,34 @@ namespace WebApp.Pages.Modules.Automations
 				{
 					if (item.GuildId == Guild.Id)
 					{
-						AutomationList.Add(item);
+                        var tempItem = new AutomationPackage();
+                        tempItem.Auto = item;
+
+                        var optionHolder = await _db.IdAutos.ToListAsync();
+						foreach (var option in optionHolder)
+                        {
+                            if (option.AutomationId == item.Id)
+                            {
+                                switch(option.SelectedOption)
+                                {
+                                    case 0:
+                                        tempItem.When.Add(option);
+                                        break;
+                                    case 1:
+										tempItem.If.Add(option);
+										break;
+									case 2:
+										tempItem.Do.Add(option);
+										break;
+									case 3:
+										break;
+                                    default:
+                                        break;
+								}
+                            }
+                        }
+
+						AutomationList.Add(tempItem);
 					}
 				}
 			}
@@ -57,11 +83,14 @@ namespace WebApp.Pages.Modules.Automations
                     Id = 0
                 };
 
-				AutomationList.Add(tempItem);
-				var context = DBContextFactory.GetNewContext();
-				context.Automations.Add(tempItem);
+                var tempPackage = new AutomationPackage();
+                tempPackage.Auto = tempItem;
+
+				AutomationList.Add(tempPackage);
+				//var context = DBContextFactory.GetNewContext();
+				//context.Automations.Add(tempItem);
 			}
-            Automations = AutomationList;
+            Packages = AutomationList;
 		}
 
         public async Task OnGetWithAlert(ulong guildId, string message)
@@ -82,4 +111,12 @@ namespace WebApp.Pages.Modules.Automations
             return RedirectToPage("Index", "WithAlert", new { guildId = vc.GuildId, message = $"Saved changes to channel {vc.GuildId}" });
         }
     }
+
+    public class AutomationPackage
+    {
+        public Automation? Auto { get; set; }
+        public List<IdAuto>? When { get; set; }
+        public List<IdAuto>? If { get; set; }
+		public List<IdAuto>? Do { get; set; }
+	}
 }

@@ -3,14 +3,14 @@ using Models;
 
 namespace Models
 {
-    public class Automation
+    public class AutomationInfo
     {
         public int id;
         public string input;
         public string desc;
 
         // Constructor
-        public Automation(int id = -1, string input = "", string desc = "")
+        public AutomationInfo(int id = -1, string input = "", string desc = "")
         {
             this.id = id;
             this.input = input;
@@ -25,24 +25,24 @@ namespace WebApp.Pages.Partials
     {
         public string ButtonName { get; set; }
         public bool AddNoneOption { get; set; }
-        public IEnumerable<Automation> Automations { get; set; }
+        public IEnumerable<AutomationInfo> Automations { get; set; }
         public string DropdownId { get; set; }
 
         //WHENs
-        static Automation when_types = new Automation(0, "", "When a user types.");
-        static Automation when_reacts = new Automation(1, "", "When a user reacts.");
+        static AutomationInfo when_types = new AutomationInfo(0, "", "When a user types.");
+        static AutomationInfo when_reacts = new AutomationInfo(1, "", "When a user reacts.");
 
         //IFs
-        static Automation if_role = new Automation(0, "role", "If they have this role.");
-        static Automation if_channel = new Automation(1, "channel", "If in this channel.");
+        static AutomationInfo if_role = new AutomationInfo(0, "role", "If they have this role.");
+        static AutomationInfo if_channel = new AutomationInfo(1, "channel", "If in this channel.");
 
         //Dos
-        static Automation do_reply = new Automation(0, "text", "Respond with this message.");
-        static Automation do_react = new Automation(1, "emoji", "React with this emoji.");
+        static AutomationInfo do_reply = new AutomationInfo(0, "text", "Respond with this message.");
+        static AutomationInfo do_react = new AutomationInfo(1, "emoji", "React with this emoji.");
 
         //Arrays
-        public Automation[] con_When = { when_types, when_reacts };
-        public Automation[] con_If = { if_role, if_channel };
-        public Automation[] con_Do = { do_reply, do_react };
+        public AutomationInfo[] con_When = { when_types, when_reacts };
+        public AutomationInfo[] con_If = { if_role, if_channel };
+        public AutomationInfo[] con_Do = { do_reply, do_react };
     }
 }

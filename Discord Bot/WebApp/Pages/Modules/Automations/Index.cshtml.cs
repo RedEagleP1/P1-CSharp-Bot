@@ -19,98 +19,138 @@ namespace WebApp.Pages.Modules.Automations
 		public List<AutomationInfo> AutomationInfos { get; set; }
         public List<AutomationPackage> Packages { get; set; }
 
+		public AutomationPackage AutomationPackage { get; set; }
+
 		private readonly ApplicationDbContext _db;
         public IndexModel(ApplicationDbContext db)
         {
             _db = db;
         }
-        public async Task OnGet(ulong guildId)
-        {
-            Guild = await _db.Guilds.FirstOrDefaultAsync(g => g.Id == guildId);
-            var dropModel = new AutomationDropdownModel();
+		public async Task OnGet(ulong guildId)
+		{
+			Guild = await _db.Guilds.FirstOrDefaultAsync(g => g.Id == guildId);
+			var dropModel = new AutomationDropdownModel();
 
-            //Add Lists
-            WhenAutomations = dropModel.con_When.ToList();
-            DoAutomations = dropModel.con_Do.ToList();
-            IfAutomations = dropModel.con_If.ToList();
+			// Add Lists
+			WhenAutomations = dropModel.con_When.ToList();
+			DoAutomations = dropModel.con_Do.ToList();
+			IfAutomations = dropModel.con_If.ToList();
 
-			//Get Info
-			List<AutomationPackage> AutomationList = new List<AutomationPackage>();
-            var dataHolder = await _db.Automations.ToListAsync();
+			// Get Info
+			var dataHolder = await _db.Automations
+				.Where(a => a.GuildId == guildId)
+				.ToListAsync() ?? new List<Automation>();
 
-            if (dataHolder != null && dataHolder.Count > 0)
-            {
-				foreach (var item in dataHolder)
+			var automationIds = dataHolder.Select(a => a.Id).ToList();
+
+			var optionHolder = await _db.IdAutos
+				.Where(i => automationIds.Contains(i.AutomationId))
+				.ToListAsync();
+
+			var AutomationList = new List<AutomationPackage>();
+
+			foreach (var item in dataHolder)
+			{
+				var tempItem = new AutomationPackage { Auto = item };
+
+				var optionsForItem = optionHolder.Where(o => o.AutomationId == item.Id);
+
+				foreach (var option in optionsForItem)
 				{
-					if (item.GuildId == Guild.Id)
+					switch (option.SelectedOption)
 					{
-                        var tempItem = new AutomationPackage();
-                        tempItem.Auto = item;
-
-                        var optionHolder = await _db.IdAutos.ToListAsync();
-						foreach (var option in optionHolder)
-                        {
-                            if (option.AutomationId == item.Id)
-                            {
-                                switch(option.SelectedOption)
-                                {
-                                    case 0:
-                                        tempItem.When.Add(option);
-                                        break;
-                                    case 1:
-										tempItem.If.Add(option);
-										break;
-									case 2:
-										tempItem.Do.Add(option);
-										break;
-									case 3:
-										break;
-                                    default:
-                                        break;
-								}
-                            }
-                        }
-
-						AutomationList.Add(tempItem);
+						case 0:
+							tempItem.When.Add(option);
+							break;
+						case 1:
+							tempItem.If.Add(option);
+							break;
+						case 2:
+							tempItem.Do.Add(option);
+							break;
+						default:
+							break;
 					}
 				}
+
+				AutomationList.Add(tempItem);
 			}
-            else
-            {
-                var tempItem = new Automation()
-                {
-                    GuildId = guildId,
-                    Id = 0
-                };
 
-                var tempPackage = new AutomationPackage();
-                tempPackage.Auto = tempItem;
+			if (!dataHolder.Any())
+			{
+				var tempItem = new Automation
+				{
+					GuildId = guildId,
+					Id = 0
+				};
 
+				var tempPackage = new AutomationPackage { Auto = tempItem };
 				AutomationList.Add(tempPackage);
-				//var context = DBContextFactory.GetNewContext();
-				//context.Automations.Add(tempItem);
+
+				_db.Automations.Add(tempItem);
+				await _db.SaveChangesAsync();
 			}
-            Packages = AutomationList;
+
+			Packages = AutomationList;
 		}
 
-        public async Task OnGetWithAlert(ulong guildId, string message)
+
+		public async Task OnGetWithAlert(ulong guildId, string message)
         {
             await OnGet(guildId);
             ViewData["Message"] = message;
         }
 
-        public async Task<IActionResult> OnPostSave(Automation Automation)
+        public async Task<IActionResult> OnPostSave(AutomationPackage SavedInfo)
         {
-            var vc = await _db.Automations.FirstOrDefaultAsync(v => v.GuildId == Automation.GuildId);
-            if (vc == null)
-            {
-                return BadRequest();
-            }
+			var updateAutomation = await _db.Automations.FirstOrDefaultAsync(v => v.Id == SavedInfo.Auto.Id && v.GuildId == SavedInfo.Auto.GuildId);
 
-            await _db.SaveChangesAsync();
-            return RedirectToPage("Index", "WithAlert", new { guildId = vc.GuildId, message = $"Saved changes to channel {vc.GuildId}" });
-        }
-    }
+			if (updateAutomation == null)
+			{
+				return BadRequest();
+			}
+
+			//When
+			var i = 0;
+
+            foreach (var auto in SavedInfo.When)
+            {
+				var selectedAuto = await _db.IdAutos.FirstOrDefaultAsync(v => v.AutomationId == SavedInfo.Auto.Id && v.Type == 0 && v.Id == i);
+                if (selectedAuto != null)
+                {
+                    selectedAuto = auto;
+                }
+                i++;
+			}
+			//If
+			i = 0;
+
+			foreach (var auto in SavedInfo.If)
+			{
+				var selectedAuto = await _db.IdAutos.FirstOrDefaultAsync(v => v.AutomationId == SavedInfo.Auto.Id && v.Type == 1 && v.Id == i);
+				if (selectedAuto != null)
+				{
+					selectedAuto = auto;
+				}
+				i++;
+			}
+			//Do
+			i = 0;
+
+			foreach (var auto in SavedInfo.Do)
+			{
+				var selectedAuto = await _db.IdAutos.FirstOrDefaultAsync(v => v.AutomationId == SavedInfo.Auto.Id && v.Type == 2 && v.Id == i);
+				if (selectedAuto != null)
+				{
+					selectedAuto = auto;
+				}
+				i++;
+			}
+
+			await _db.SaveChangesAsync();
+			return RedirectToPage("Index", "WithAlert", new { guildId = SavedInfo.Auto.GuildId, message = $"Saved changes to {SavedInfo.Auto.GuildId}" });
+		}
+	}
 
     public class AutomationPackage
     {

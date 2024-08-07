@@ -1,15 +1,14 @@
-using Discord;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Models;
-using System.Diagnostics;
+using System.Reactive.Linq;
 using WebApp.Pages.Partials;
 
 namespace WebApp.Pages.Modules.Automations
 {
-    [Authorize(Policy = "Allowed")]
+	[Authorize(Policy = "Allowed")]
     public class IndexModel : PageModel
     {
         public Guild Guild { get; set; }
@@ -18,7 +17,6 @@ namespace WebApp.Pages.Modules.Automations
         public List<AutomationInfo> IfAutomations { get; set; }
 		public List<AutomationInfo> AutomationInfos { get; set; }
         public List<AutomationPackage> Packages { get; set; }
-
 		public AutomationPackage AutomationPackage { get; set; }
 
 		private readonly ApplicationDbContext _db;
@@ -28,6 +26,7 @@ namespace WebApp.Pages.Modules.Automations
         }
 		public async Task OnGet(ulong guildId)
 		{
+
 			Guild = await _db.Guilds.FirstOrDefaultAsync(g => g.Id == guildId);
 			var dropModel = new AutomationDropdownModel();
 
@@ -73,25 +72,68 @@ namespace WebApp.Pages.Modules.Automations
 					}
 				}
 
-				AutomationList.Add(tempItem);
+				//AutomationList.Add(tempItem);
 			}
 
-			if (!dataHolder.Any())
+			if (dataHolder.Any())
 			{
 				var tempItem = new Automation
 				{
 					GuildId = guildId,
 					Id = 0
 				};
+				var tempWhen = new IdAuto
+				{
+					Id = 0,
+					SelectedOption = -1,
+					Type = 0,
+					Value = "",
+					AutomationId = 0
+				};
+				var tempIf = new IdAuto
+				{
+					Id = 0,
+					SelectedOption = -1,
+					Type = 1,
+					Value = "",
+					AutomationId = 0
+				};
+				var tempDo = new IdAuto
+				{
+					Id = 0,
+					SelectedOption = -1,
+					Type = 2,
+					Value = "",
+					AutomationId = 0
+				};
 
-				var tempPackage = new AutomationPackage { Auto = tempItem };
+				List<IdAuto> tempWhenList = new List<IdAuto>();
+				List<IdAuto> tempIfList = new List<IdAuto>();
+				List<IdAuto> tempDoList = new List<IdAuto>();
+
+				tempWhenList.Add(tempWhen);
+				tempIfList.Add(tempIf);
+				tempDoList.Add(tempDo);
+
+				var tempPackage = new AutomationPackage
+				{
+					Auto = tempItem,
+					When = new List<IdAuto>(tempWhenList),
+					If = new List<IdAuto>(tempIfList),
+					Do = new List<IdAuto>(tempDoList),
+				};
+
 				AutomationList.Add(tempPackage);
 
-				_db.Automations.Add(tempItem);
-				await _db.SaveChangesAsync();
+				//_db.Automations.Add(tempItem);
+				//await _db.SaveChangesAsync();
+
+				Console.WriteLine(AutomationList.Count);
 			}
 
 			Packages = AutomationList;
+
+			//Console.WriteLine(Packages[0].When[0].Id);
 		}
 
 

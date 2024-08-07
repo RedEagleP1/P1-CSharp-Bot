@@ -45,26 +45,7 @@
 					<input asp-for="@Model.AutomationPackage.Auto.Id" value="@packageIndex" hidden>
 					<input asp-for="@Model.AutomationPackage.Auto.GuildId" value="@Model.Guild.Id" hidden>
 
-					@if (package.When != null)
-					{
-						@foreach (var whens in package.When)
-						{
-							<td>
-								<div id="Display">
-									<p id="NameDisplay">
-									</p>
-									<input id="Id" type="hidden" value="">
-									@await Html.PartialAsync("/Pages/Partials/_AutomationDropdown.cshtml", new AutomationDropdownModel() { ButtonName = "Select Option", Automations = Model.WhenAutomations, AddNoneOption = true, DropdownId = "whenDropdown" })
-									<input asp-for="@Model.AutomationPackage.When[index].Value" value="@whens.Value">
-									<input asp-for="@Model.AutomationPackage.When[index].Id" value="index" hidden>
-									<input asp-for="@Model.AutomationPackage.When[index].Type" value="0" hidden>
-									<input asp-for="@Model.AutomationPackage.When[index].SelectedOption" value="@whens.SelectedOption" hidden>
-								</div>
-							</td>
-							index++;
-						}
-					}
-					else
+					@foreach (var whens in package.When)
 					{
 						<td>
 							<div id="Display">
@@ -72,91 +53,51 @@
 								</p>
 								<input id="Id" type="hidden" value="">
 								@await Html.PartialAsync("/Pages/Partials/_AutomationDropdown.cshtml", new AutomationDropdownModel() { ButtonName = "Select Option", Automations = Model.WhenAutomations, AddNoneOption = true, DropdownId = "whenDropdown" })
-								<input asp-for="@Model.AutomationPackage.When[0].Value" value="">
-								<input asp-for="@Model.AutomationPackage.When[0].Id" value="0" hidden>
-								<input asp-for="@Model.AutomationPackage.When[0].Type" value="0" hidden>
-								<input asp-for="@Model.AutomationPackage.When[0].SelectedOption" value="" hidden>
+								<input asp-for="@Model.AutomationPackage.When[index].Value" value="@whens.Value">
+								<input asp-for="@Model.AutomationPackage.When[index].Id" value="index" hidden>
+								<input asp-for="@Model.AutomationPackage.When[index].Type" value="0" hidden>
+								<input asp-for="@Model.AutomationPackage.When[index].SelectedOption" value="@whens.SelectedOption" hidden>
 							</div>
 						</td>
+						index++;
 					}
-					@if (package.If != null)
-					{
-						index=0;
-						@foreach (var ifs in package.If)
-						{
-							<td id="Top">
-								<div id="Display">
-									<p id="NameDisplay">
-									</p>
-									@await Html.PartialAsync("/Pages/Partials/_AutomationDropdown.cshtml", new AutomationDropdownModel() { ButtonName = "Select Option", Automations = Model.IfAutomations, AddNoneOption = true, DropdownId = "ifDropdown" })
-									<input asp-for="@Model.AutomationPackage.If[index].Value" value="@ifs.Value">
-									<input asp-for="@Model.AutomationPackage.If[index].Id" value="index" hidden>
-									<input asp-for="@Model.AutomationPackage.If[index].Type" value="1" hidden>
-									<input asp-for="@Model.AutomationPackage.If[index].SelectedOption" value="@ifs.SelectedOption" hidden>
-									<button class="btn btn-primary mx-2" id="Add">
-										Add
-									</button>
-								</div>
-							</td>
-							index++;
-						}
-					}
-					else
+					index=0;
+					@foreach (var ifs in package.If)
 					{
 						<td id="Top">
 							<div id="Display">
 								<p id="NameDisplay">
 								</p>
-
-									@await Html.PartialAsync("/Pages/Partials/_AutomationDropdown.cshtml", new AutomationDropdownModel() { ButtonName = "Select Option", Automations = Model.IfAutomations, AddNoneOption = true, DropdownId = "ifDropdown" })
-								<input asp-for="@Model.AutomationPackage.If[0].Value" value="">
-								<input asp-for="@Model.AutomationPackage.If[0].Id" value="0" hidden>
-								<input asp-for="@Model.AutomationPackage.If[0].Type" value="1" hidden>
-								<input asp-for="@Model.AutomationPackage.If[0].SelectedOption" value="" hidden>
+								@await Html.PartialAsync("/Pages/Partials/_AutomationDropdown.cshtml", new AutomationDropdownModel() { ButtonName = "Select Option", Automations = Model.IfAutomations, AddNoneOption = true, DropdownId = "ifDropdown" })
+								<input asp-for="@Model.AutomationPackage.If[index].Value" value="@ifs.Value">
+								<input asp-for="@Model.AutomationPackage.If[index].Id" value="index" hidden>
+								<input asp-for="@Model.AutomationPackage.If[index].Type" value="1" hidden>
+								<input asp-for="@Model.AutomationPackage.If[index].SelectedOption" value="@ifs.SelectedOption" hidden>
 								<button class="btn btn-primary mx-2" id="Add">
 									Add
 								</button>
 							</div>
 						</td>
+						index++;
 					}
-					@if (package.Do != null)
-					{
-						index=0;
-						@foreach (var dos in package.Do)
-						{
-							<td>
-								<div id="Display">
-									<p id="NameDisplay">
-									</p>
-									@await Html.PartialAsync("/Pages/Partials/_AutomationDropdown.cshtml", new AutomationDropdownModel() { ButtonName = "Select Option", Automations = Model.DoAutomations, AddNoneOption = true, DropdownId = "doDropdown" })
-									<input asp-for="@Model.AutomationPackage.Do[index]" value="@dos.Value">
-									<input asp-for="@Model.AutomationPackage.Do[index].Id" value="index" hidden>
-									<input asp-for="@Model.AutomationPackage.Do[index].Type" value="2" hidden>
-									<input asp-for="@Model.AutomationPackage.Do[index].SelectedOption" value="@dos.SelectedOption" hidden>
-									<button class="btn btn-primary mx-2" id="Add">
-										Add
-									</button>
-								</div>
-							</td>
-							index++;
-						}
-					}
-					else
+					index=0;
+					@foreach (var dos in package.Do)
 					{
 						<td>
 							<div id="Display">
 								<p id="NameDisplay">
 								</p>
-									@await Html.PartialAsync("/Pages/Partials/_AutomationDropdown.cshtml", new AutomationDropdownModel() { ButtonName = "Select Option", Automations = Model.DoAutomations, AddNoneOption = true, DropdownId = "doDropdown" })
-								<input asp-for="@Model.AutomationPackage.Do[0].Value" value="">
-								<input asp-for="@Model.AutomationPackage.Do[0].Id" value="0" hidden>
-								<input asp-for="@Model.AutomationPackage.Do[0].Type" value="2" hidden>
-								<input asp-for="@Model.AutomationPackage.Do[0].SelectedOption" value="" hidden>
+								@await Html.PartialAsync("/Pages/Partials/_AutomationDropdown.cshtml", new AutomationDropdownModel() { ButtonName = "Select Option", Automations = Model.DoAutomations, AddNoneOption = true, DropdownId = "doDropdown" })
+								<input asp-for="@Model.AutomationPackage.Do[index]" value="@dos.Value">
+								<input asp-for="@Model.AutomationPackage.Do[index].Id" value="index" hidden>
+								<input asp-for="@Model.AutomationPackage.Do[index].Type" value="2" hidden>
+								<input asp-for="@Model.AutomationPackage.Do[index].SelectedOption" value="@dos.SelectedOption" hidden>
 								<button class="btn btn-primary mx-2" id="Add">
 									Add
 								</button>
 							</div>
 						</td>
+						index++;
 					}
 					<td>
 						<input id="AfterInfo" value="">

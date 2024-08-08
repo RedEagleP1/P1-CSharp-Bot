@@ -42,8 +42,8 @@
 					@{int index = 0;
 					}
 
-					<input asp-for="@Model.AutomationPackage.Auto.Id" value="@packageIndex" hidden>
-					<input asp-for="@Model.AutomationPackage.Auto.GuildId" value="@Model.Guild.Id" hidden>
+					<input asp-for="@Model.SavedInfo.Auto.Id" value="@package.Auto.Id" hidden>
+					<input asp-for="@Model.SavedInfo.Auto.GuildId" value="@Model.Guild.Id" hidden>
 					<td id="Top">
 					@foreach (var whens in package.When)
 					{
@@ -51,10 +51,10 @@
 								<p id="NameDisplay">
 								</p>
 								@await Html.PartialAsync("/Pages/Partials/_AutomationDropdown.cshtml", new AutomationDropdownModel() { ButtonName = "Select Option", Automations = Model.WhenAutomations, AddNoneOption = true, DropdownId = "whenDropdown" })
-								<input asp-for="@Model.AutomationPackage.When[index].Value" value="@whens.Value">
-								<input asp-for="@Model.AutomationPackage.When[index].Id" value="0" hidden>
-								<input asp-for="@Model.AutomationPackage.When[index].Type" value="0" hidden>
-								<input asp-for="@Model.AutomationPackage.When[index].SelectedOption" value="@whens.SelectedOption" hidden>
+								<input asp-for="@Model.SavedInfo.When[index].Value" value="@whens.Value">
+								<input asp-for="@Model.SavedInfo.When[index].Id" value="@whens.Id" hidden>
+								<input asp-for="@Model.SavedInfo.When[index].Type" value="@whens.Type" hidden>
+								<input asp-for="@Model.SavedInfo.When[index].SelectedOption" value="@whens.SelectedOption" hidden>
 							</div>
 						index++;
 					}
@@ -68,10 +68,10 @@
 								<p id="NameDisplay">
 								</p>
 								@await Html.PartialAsync("/Pages/Partials/_AutomationDropdown.cshtml", new AutomationDropdownModel() { ButtonName = "Select Option", Automations = Model.IfAutomations, AddNoneOption = true, DropdownId = "ifDropdown" })
-								<input asp-for="@Model.AutomationPackage.If[index].Value" value="@ifs.Value">
-								<input asp-for="@Model.AutomationPackage.If[index].Id" value="0" hidden>
-								<input asp-for="@Model.AutomationPackage.If[index].Type" value="1" hidden>
-								<input asp-for="@Model.AutomationPackage.If[index].SelectedOption" value="@ifs.SelectedOption" hidden>
+								<input asp-for="@Model.SavedInfo.If[index].Value" value="@ifs.Value">
+								<input asp-for="@Model.SavedInfo.If[index].Id" value="@ifs.Id" hidden>
+								<input asp-for="@Model.SavedInfo.If[index].Type" value="@ifs.Type" hidden>
+								<input asp-for="@Model.SavedInfo.If[index].SelectedOption" value="@ifs.SelectedOption" hidden>
 								<button class="btn btn-primary mx-2" id="Add">
 									Add
 								</button>
@@ -88,10 +88,10 @@
 								<p id="NameDisplay">
 								</p>
 								@await Html.PartialAsync("/Pages/Partials/_AutomationDropdown.cshtml", new AutomationDropdownModel() { ButtonName = "Select Option", Automations = Model.DoAutomations, AddNoneOption = true, DropdownId = "doDropdown" })
-								<input asp-for="@Model.AutomationPackage.Do[index].Value" value="@dos.Value">
-								<input asp-for="@Model.AutomationPackage.Do[index].Id" value="0" hidden>
-								<input asp-for="@Model.AutomationPackage.Do[index].Type" value="2" hidden>
-								<input asp-for="@Model.AutomationPackage.Do[index].SelectedOption" value="@dos.SelectedOption" hidden>
+								<input asp-for="@Model.SavedInfo.Do[index].Value" value="@dos.Value">
+								<input asp-for="@Model.SavedInfo.Do[index].Id" value="@dos.Id" hidden>
+								<input asp-for="@Model.SavedInfo.Do[index].Type" value="@dos.Type" hidden>
+								<input asp-for="@Model.SavedInfo.Do[index].SelectedOption" value="@dos.SelectedOption" hidden>
 								<button class="btn btn-primary mx-2" id="Add">
 									Add
 								</button>

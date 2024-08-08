@@ -11,6 +11,7 @@
 		@foreach (var item in Model.Automations)
         {
             <button type="button" class="dropdown-item" id="SelectedId" value="@item.desc">@item.desc</button>
+			<p hidden id="SelectedOption">@item.id</p>
         }
         @if (Model.AddNoneOption)
         {

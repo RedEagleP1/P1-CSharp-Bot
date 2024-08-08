@@ -54,7 +54,7 @@
 								<input asp-for="@Model.SavedInfo.When[index].Value" value="@whens.Value">
 								<input asp-for="@Model.SavedInfo.When[index].Id" value="@whens.Id" hidden>
 								<input asp-for="@Model.SavedInfo.When[index].Type" value="@whens.Type" hidden>
-								<input asp-for="@Model.SavedInfo.When[index].SelectedOption" value="@whens.SelectedOption" hidden>
+								<input asp-for="@Model.SavedInfo.When[index].SelectedOption" value="@whens.SelectedOption" id="dropdownOption">
 							</div>
 						index++;
 					}
@@ -125,16 +125,19 @@
 	{
 	<script>
 		$(document).on("click", "#SelectedId", function () {
-			
 			var Id = $(this).val();
+			var SelectedOption = $("#SelectedOption").text();  // Use this if the hidden <p> has a value
 			var Name = $(this).text();
 			var Div = $(this).closest("#Display");
+
+			console.log(SelectedOption);
+
 			if (Div.length != 0) {
 				Div.find("#NameDisplay").text(Name);
-				Div.find("#Id").val(Id);
+				Div.find("#dropdownOption").val(parseInt(SelectedOption));
 				return;
 			}
-		})
+		});
 	</script>
 	@if (ViewData["Message"] != null)
 	{

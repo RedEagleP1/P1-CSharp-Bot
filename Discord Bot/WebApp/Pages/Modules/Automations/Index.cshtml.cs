@@ -186,8 +186,11 @@ namespace WebApp.Pages.Modules.Automations
 				var selectedAuto = await _db.IdAutos.FirstOrDefaultAsync(v => v.Id == auto.Id);
                 if (selectedAuto != null)
                 {
-                    selectedAuto = auto;
-                }
+					selectedAuto.Id = auto.Id;
+					selectedAuto.SelectedOption = auto.SelectedOption;
+					selectedAuto.Value = auto.Value;
+					selectedAuto.Type = auto.Type;
+				}
 			}
 
 			Console.WriteLine("4!");

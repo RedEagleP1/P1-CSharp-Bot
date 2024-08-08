@@ -56,55 +56,72 @@ namespace WebApp.Pages.Modules.Automations
 
 				foreach (var option in optionsForItem)
 				{
-					switch (option.SelectedOption)
+					var tempId = new IdAuto
+					{
+						AutomationId = option.AutomationId,
+						Id = option.Id,
+						SelectedOption = option.SelectedOption,
+						Type = option.Type,
+						Value = option.Value,
+					};
+
+					List<IdAuto> tempWhenList = new List<IdAuto>();
+					List<IdAuto> tempIfList = new List<IdAuto>();
+					List<IdAuto> tempDoList = new List<IdAuto>();
+
+					switch (tempId.Type)
 					{
 						case 0:
-							tempItem.When.Add(option);
+							tempWhenList.Add(tempId);
 							break;
 						case 1:
-							tempItem.If.Add(option);
+							tempIfList.Add(tempId);
 							break;
 						case 2:
-							tempItem.Do.Add(option);
+							tempDoList.Add(tempId);
 							break;
 						default:
 							break;
 					}
+
+					tempItem.When = tempWhenList;
+					tempItem.If = tempIfList;
+					tempItem.Do = tempDoList;
 				}
 
-				//AutomationList.Add(tempItem);
+				AutomationList.Add(tempItem);
 			}
 
-			if (dataHolder.Any())
+			if (!dataHolder.Any())
 			{
 				var tempItem = new Automation
 				{
-					GuildId = guildId,
-					Id = 0
+					GuildId = guildId
 				};
+
+				_db.Automations.Add(tempItem);
+				await _db.SaveChangesAsync();
+
 				var tempWhen = new IdAuto
 				{
-					Id = 0,
 					SelectedOption = -1,
 					Type = 0,
 					Value = "",
-					AutomationId = 0
+					AutomationId = tempItem.Id
 				};
 				var tempIf = new IdAuto
 				{
-					Id = 0,
 					SelectedOption = -1,
 					Type = 1,
 					Value = "",
-					AutomationId = 0
+					AutomationId = tempItem.Id
 				};
 				var tempDo = new IdAuto
 				{
-					Id = 0,
 					SelectedOption = -1,
 					Type = 2,
 					Value = "",
-					AutomationId = 0
+					AutomationId = tempItem.Id
 				};
 
 				List<IdAuto> tempWhenList = new List<IdAuto>();
@@ -125,15 +142,15 @@ namespace WebApp.Pages.Modules.Automations
 
 				AutomationList.Add(tempPackage);
 
-				//_db.Automations.Add(tempItem);
-				//await _db.SaveChangesAsync();
-
-				Console.WriteLine(AutomationList.Count);
+				_db.IdAutos.Add(tempWhen);
+				_db.IdAutos.Add(tempIf);
+				_db.IdAutos.Add(tempDo);
+				await _db.SaveChangesAsync();
 			}
 
 			Packages = AutomationList;
 
-			//Console.WriteLine(Packages[0].When[0].Id);
+			Console.WriteLine(Packages[0].Do[0].Id);
 		}
 
 

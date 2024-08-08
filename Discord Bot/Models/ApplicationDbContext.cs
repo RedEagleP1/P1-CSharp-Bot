@@ -145,7 +145,8 @@ namespace Models
 			modelBuilder.Entity<IdAuto>()
 				.HasOne<Automation>()
 				.WithMany()
-				.HasForeignKey(v => v.AutomationId);
+				.HasForeignKey(v => v.AutomationId)
+                .IsRequired(false);
 
 			modelBuilder.Entity<CurrencyReset>()
                 .HasOne<Currency>()

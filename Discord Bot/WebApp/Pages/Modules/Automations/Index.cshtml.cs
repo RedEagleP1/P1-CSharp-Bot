@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Models;
+using System.Diagnostics;
 using System.Reactive.Linq;
 using WebApp.Pages.Partials;
 
@@ -54,6 +55,10 @@ namespace WebApp.Pages.Modules.Automations
 
 				var optionsForItem = optionHolder.Where(o => o.AutomationId == item.Id);
 
+				List<IdAuto> tempWhenList = new List<IdAuto>();
+				List<IdAuto> tempIfList = new List<IdAuto>();
+				List<IdAuto> tempDoList = new List<IdAuto>();
+
 				foreach (var option in optionsForItem)
 				{
 					var tempId = new IdAuto
@@ -65,28 +70,24 @@ namespace WebApp.Pages.Modules.Automations
 						Value = option.Value,
 					};
 
-					List<IdAuto> tempWhenList = new List<IdAuto>();
-					List<IdAuto> tempIfList = new List<IdAuto>();
-					List<IdAuto> tempDoList = new List<IdAuto>();
-
-					switch (tempId.Type)
+					if (tempId.Type == 0)
 					{
-						case 0:
-							tempWhenList.Add(tempId);
-							break;
-						case 1:
-							tempIfList.Add(tempId);
-							break;
-						case 2:
-							tempDoList.Add(tempId);
-							break;
-						default:
-							break;
+						tempWhenList.Add(tempId);
+					}
+					else if (tempId.Type == 1)
+					{
+						tempIfList.Add(tempId);
+					}
+					else if (tempId.Type == 2)
+					{
+						tempDoList.Add(tempId);
 					}
 
 					tempItem.When = tempWhenList;
 					tempItem.If = tempIfList;
 					tempItem.Do = tempDoList;
+
+					Console.WriteLine(tempItem.When[0].Id);
 				}
 
 				AutomationList.Add(tempItem);
@@ -150,6 +151,8 @@ namespace WebApp.Pages.Modules.Automations
 
 			Packages = AutomationList;
 
+			Console.WriteLine(Packages[0].When[0].Id);
+			Console.WriteLine(Packages[0].If[0].Id);
 			Console.WriteLine(Packages[0].Do[0].Id);
 		}
 

@@ -150,6 +150,59 @@ namespace WebApp.Pages.Modules.Automations
 			Packages = AutomationList;
 		}
 
+		public async Task CreateAutomation(ulong guildId)
+		{
+			var tempItem = new Automation
+			{
+				GuildId = guildId
+			};
+
+			_db.Automations.Add(tempItem);
+			await _db.SaveChangesAsync();
+
+			var tempWhen = new IdAuto
+			{
+				SelectedOption = -1,
+				Type = 0,
+				Value = "",
+				AutomationId = tempItem.Id
+			};
+			var tempIf = new IdAuto
+			{
+				SelectedOption = -1,
+				Type = 1,
+				Value = "",
+				AutomationId = tempItem.Id
+			};
+			var tempDo = new IdAuto
+			{
+				SelectedOption = -1,
+				Type = 2,
+				Value = "",
+				AutomationId = tempItem.Id
+			};
+
+			List<IdAuto> tempWhenList = new List<IdAuto>();
+			List<IdAuto> tempIfList = new List<IdAuto>();
+			List<IdAuto> tempDoList = new List<IdAuto>();
+
+			tempWhenList.Add(tempWhen);
+			tempIfList.Add(tempIf);
+			tempDoList.Add(tempDo);
+
+			var tempPackage = new AutomationPackage
+			{
+				Auto = tempItem,
+				When = new List<IdAuto>(tempWhenList),
+				If = new List<IdAuto>(tempIfList),
+				Do = new List<IdAuto>(tempDoList),
+			};
+
+			_db.IdAutos.Add(tempWhen);
+			_db.IdAutos.Add(tempIf);
+			_db.IdAutos.Add(tempDo);
+			await _db.SaveChangesAsync();
+		}
 
 		public async Task OnGetWithAlert(ulong guildId, string message)
         {

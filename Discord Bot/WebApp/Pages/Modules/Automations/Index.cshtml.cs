@@ -22,6 +22,9 @@ namespace WebApp.Pages.Modules.Automations
 
 		public ulong guildId { get; set; }
 
+		public Automation ReferenceAuto { get; set; }
+		public int chosenType { get; set; }
+
 		private readonly ApplicationDbContext _db;
         public IndexModel(ApplicationDbContext db)
         {
@@ -92,7 +95,7 @@ namespace WebApp.Pages.Modules.Automations
 				AutomationList.Add(tempItem);
 			}
 
-			if (!dataHolder.Any())
+			/*if (!dataHolder.Any())
 			{
 				var tempItem = new Automation
 				{
@@ -146,7 +149,7 @@ namespace WebApp.Pages.Modules.Automations
 				_db.IdAutos.Add(tempIf);
 				_db.IdAutos.Add(tempDo);
 				await _db.SaveChangesAsync();
-			}
+			}*/
 
 			Packages = AutomationList;
 		}
@@ -213,6 +216,22 @@ namespace WebApp.Pages.Modules.Automations
 
 			await _db.SaveChangesAsync();
 			return RedirectToPage("Index", "WithAlert", new { guildId = guildId, message = $"Added new Automation" });
+		}
+
+		public async Task<IActionResult> OnPostCreateNewAutoId(Automation ReferenceAuto, int chosenType, ulong guildId)
+		{
+			var tempIdAuto = new IdAuto
+			{
+				SelectedOption = -1,
+				Type = chosenType,
+				Value = "",
+				AutomationId = ReferenceAuto.Id
+			};
+
+			_db.IdAutos.Add(tempIdAuto);
+
+			await _db.SaveChangesAsync();
+			return RedirectToPage("Index", "WithAlert", new { guildId = guildId, message = $"Added new option" });
 		}
 
 

@@ -48,13 +48,14 @@
 					@foreach (var whens in package.When)
 					{
 							<div id="Display">
-								<p id="NameDisplay">
-									@if (whens.SelectedOption != -1)
-									{
-										@Model.WhenAutomations[whens.SelectedOption].desc
-									}
-								</p>
-								@await Html.PartialAsync("/Pages/Partials/_AutomationDropdown.cshtml", new AutomationDropdownModel() { ButtonName = "Select Option", Automations = Model.WhenAutomations, AddNoneOption = true, DropdownId = "whenDropdown" })
+								@if (whens.SelectedOption != -1)
+								{
+								@await Html.PartialAsync("/Pages/Partials/_AutomationDropdown.cshtml", new AutomationDropdownModel() { ButtonName = Model.WhenAutomations[whens.SelectedOption].desc, Automations = Model.WhenAutomations, AddNoneOption = true, DropdownId = "whenDropdown" })
+								}
+								else
+								{
+									@await Html.PartialAsync("/Pages/Partials/_AutomationDropdown.cshtml", new AutomationDropdownModel() { ButtonName = "Select Option", Automations = Model.WhenAutomations, AddNoneOption = true, DropdownId = "whenDropdown" })
+								}
 								<input asp-for="@Model.SavedInfo.When[index].Value" value="@whens.Value">
 								<input asp-for="@Model.SavedInfo.When[index].Id" value="@whens.Id" hidden>
 								<input asp-for="@Model.SavedInfo.When[index].Type" value="@whens.Type" hidden>
@@ -69,13 +70,14 @@
 					@foreach (var ifs in package.If)
 					{
 							<div id="Display">
-								<p id="NameDisplay">
-									@if (ifs.SelectedOption != -1)
-									{
-										@Model.IfAutomations[ifs.SelectedOption].desc
-									}
-								</p>
-								@await Html.PartialAsync("/Pages/Partials/_AutomationDropdown.cshtml", new AutomationDropdownModel() { ButtonName = "Select Option", Automations = Model.IfAutomations, AddNoneOption = true, DropdownId = "ifDropdown" })
+								@if (ifs.SelectedOption != -1)
+								{
+										@await Html.PartialAsync("/Pages/Partials/_AutomationDropdown.cshtml", new AutomationDropdownModel() { ButtonName = Model.IfAutomations[ifs.SelectedOption].desc, Automations = Model.IfAutomations, AddNoneOption = true, DropdownId = "ifDropdown" })
+								}
+								else
+								{
+										@await Html.PartialAsync("/Pages/Partials/_AutomationDropdown.cshtml", new AutomationDropdownModel() { ButtonName = "Select Option", Automations = Model.IfAutomations, AddNoneOption = true, DropdownId = "ifDropdown" })
+								}
 								<input asp-for="@Model.SavedInfo.If[index].Value" value="@ifs.Value">
 								<input asp-for="@Model.SavedInfo.If[index].Id" value="@ifs.Id" hidden>
 								<input asp-for="@Model.SavedInfo.If[index].Type" value="@ifs.Type" hidden>
@@ -96,15 +98,16 @@
 					<td id="Top">
 					@foreach (var dos in package.Do)
 					{
-							<div id="Display">
-								<p id="NameDisplay">
+								<div id="Display">
 									@if (dos.SelectedOption != -1)
 									{
-										@Model.DoAutomations[dos.SelectedOption].desc
+										@await Html.PartialAsync("/Pages/Partials/_AutomationDropdown.cshtml", new AutomationDropdownModel() { ButtonName = Model.DoAutomations[dos.SelectedOption].desc, Automations = Model.DoAutomations, AddNoneOption = true, DropdownId = "doDropdown" })
 									}
-								</p>
-								@await Html.PartialAsync("/Pages/Partials/_AutomationDropdown.cshtml", new AutomationDropdownModel() { ButtonName = "Select Option", Automations = Model.DoAutomations, AddNoneOption = true, DropdownId = "doDropdown" })
-								<input asp-for="@Model.SavedInfo.Do[index].Value" value="@dos.Value">
+									else
+									{
+										@await Html.PartialAsync("/Pages/Partials/_AutomationDropdown.cshtml", new AutomationDropdownModel() { ButtonName = "Select Option", Automations = Model.DoAutomations, AddNoneOption = true, DropdownId = "doDropdown" })
+									}
+									<input asp-for="@Model.SavedInfo.Do[index].Value" value="@dos.Value">
 								<input asp-for="@Model.SavedInfo.Do[index].Id" value="@dos.Id" hidden>
 								<input asp-for="@Model.SavedInfo.Do[index].Type" value="@dos.Type" hidden>
 								<input asp-for="@Model.SavedInfo.Do[index].SelectedOption" value="@dos.SelectedOption" id="dropdownOption" hidden>
@@ -158,7 +161,7 @@
 			console.log(Id);
 
 			if (Div.length != 0) {
-				Div.find("#NameDisplay").children[0].text(Name);
+				Div.find("#dropdownMenuButton").text(Name);
 				Div.find("#dropdownOption").val(parseInt(Id));
 				return;
 			}

@@ -80,9 +80,13 @@
 								<input asp-for="@Model.SavedInfo.If[index].Id" value="@ifs.Id" hidden>
 								<input asp-for="@Model.SavedInfo.If[index].Type" value="@ifs.Type" hidden>
 								<input asp-for="@Model.SavedInfo.If[index].SelectedOption" value="@ifs.SelectedOption" id="dropdownOption" hidden>
-								<button class="btn btn-primary mx-2" id="Add">
-									Add
-								</button>
+
+								<form method="post">
+									<button asp-page-handler="CreateNewAutoId" type="submit" class="btn btn-primary mx-2">Create New Do</button>
+									<input asp-for="@Model.ReferenceAuto.Id" value="@package.Auto.Id" hidden>
+									<input asp-for="@Model.chosenType" value="1" hidden>
+									<input asp-for="@Model.guildId" value="@Model.Guild.Id" hidden>
+								</form>
 							</div>
 						index++;
 					}
@@ -104,9 +108,13 @@
 								<input asp-for="@Model.SavedInfo.Do[index].Id" value="@dos.Id" hidden>
 								<input asp-for="@Model.SavedInfo.Do[index].Type" value="@dos.Type" hidden>
 								<input asp-for="@Model.SavedInfo.Do[index].SelectedOption" value="@dos.SelectedOption" id="dropdownOption" hidden>
-								<button class="btn btn-primary mx-2" id="Add">
-									Add
-								</button>
+
+								<form method="post">
+									<button asp-page-handler="CreateNewAutoId" type="submit" class="btn btn-primary mx-2">Create New If</button>
+									<input asp-for="@Model.ReferenceAuto.Id" value="@package.Auto.Id" hidden>
+									<input asp-for="@Model.chosenType" value="2" hidden>
+									<input asp-for="@Model.guildId" value="@Model.Guild.Id" hidden>
+								</form>
 							</div>
 						index++;
 					}
@@ -118,9 +126,12 @@
 						<button type="submit" class="btn btn-primary mx-2">
 							Save
 						</button>
-						<button type="submit" class="btn btn-danger mx-2" id="delete">
-							Delete
-						</button>
+						@if (packageIndex > 0)
+						{
+							<button type="submit" class="btn btn-danger mx-2" id="delete">
+								Delete
+							</button>
+						}
 					</td>
 					</form>
 					@{
@@ -130,7 +141,7 @@
 				}
 			<form method="post">
 				<input asp-for="@Model.guildId" value="@Model.Guild.Id" hidden>
-				<button asp-page-handler="CreateNewAuto" type="submit" class="btn-btn-success">Create</button>
+				<button asp-page-handler="CreateNewAuto" type="submit" class="btn-btn-success">Create New Automation</button>
 			</form>
 		</tbody>
 	</table>
@@ -147,7 +158,7 @@
 			console.log(Id);
 
 			if (Div.length != 0) {
-				Div.find("#NameDisplay").text(Name);
+				Div.find("#NameDisplay").children[0].text(Name);
 				Div.find("#dropdownOption").val(parseInt(Id));
 				return;
 			}
@@ -161,39 +172,4 @@
 			};
 		</script>
 	}
-
-	<script>
-	$(document).on("click", "#Add", function () {
-		createNewDiv($(this));
-
-		function createNewDiv(element) {
-			var ref = element.closest("#Display");
-
-			var clonedElement = ref.clone();
-			ref.after(clonedElement);
-
-			if (ref.find("#deletechoice").length === 0) {
-
-				var deleteElement = $("#delete").clone();
-				deleteElement.attr('id', 'deletechoice');
-				clonedElement.append(deleteElement);
-			}
-		}
-
-		return;
-	});
-	</script>
-
-	<script>
-		$(document).on("click", "#deletechoice", function () {
-		$(this).closest("#Display").remove();
-		return;
-	});
-	</script>
-
-	<script>
-		$(document).on("click", "#delete", function () {
-		return;
-	});
-	</script>
 }

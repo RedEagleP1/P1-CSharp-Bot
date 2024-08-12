@@ -18,7 +18,7 @@ namespace WebApp.Pages.Modules.Automations
         public List<AutomationInfo> IfAutomations { get; set; }
 		public List<AutomationInfo> AutomationInfos { get; set; }
         public List<AutomationPackage> Packages { get; set; }
-		public List<AutomationPackage> SavedInfo { get; set; }
+		public AutomationPackage SavedInfo { get; set; }
 
 		public ulong guildId { get; set; }
 
@@ -216,49 +216,47 @@ namespace WebApp.Pages.Modules.Automations
 		}
 
 
-		public async Task<IActionResult> OnPostSave(List<AutomationPackage> SavedInfo)
+		public async Task<IActionResult> OnPostSave(AutomationPackage SavedInfo)
         {
-			foreach (var item in SavedInfo)
+			var updateAutomation = await _db.Automations.FirstOrDefaultAsync(v => v.Id == SavedInfo.Auto.Id && v.GuildId == SavedInfo.Auto.GuildId);
+
+			Console.WriteLine("1!");
+
+			Console.WriteLine(SavedInfo.Auto.Id);
+
+			if (updateAutomation == null)
 			{
-				var updateAutomation = await _db.Automations.FirstOrDefaultAsync(v => v.Id == item.Auto.Id && v.GuildId == item.Auto.GuildId);
-
-				Console.WriteLine("1!");
-
-				Console.WriteLine(item.Auto.Id);
-
-				if (updateAutomation == null)
-				{
-					return BadRequest();
-				}
-
-				Console.WriteLine("2!");
-
-				//Update Autos
-
-				var combinedLists = new List<IdAuto>();
-				combinedLists.AddRange(item.When);
-				combinedLists.AddRange(item.If);
-				combinedLists.AddRange(item.Do);
-
-				Console.WriteLine("3!");
-
-				foreach (var auto in combinedLists)
-				{
-					var selectedAuto = await _db.IdAutos.FirstOrDefaultAsync(v => v.Id == auto.Id);
-					if (selectedAuto != null)
-					{
-						selectedAuto.Id = auto.Id;
-						selectedAuto.SelectedOption = auto.SelectedOption;
-						selectedAuto.Value = auto.Value;
-						selectedAuto.Type = auto.Type;
-					}
-				}
-
-				Console.WriteLine("4!");
-
-				await _db.SaveChangesAsync();
+				return BadRequest();
 			}
-			return RedirectToPage("Index", "WithAlert", new { guildId = SavedInfo[0].Auto.GuildId, message = $"Saved changes to {SavedInfo[0].Auto.GuildId}" });
+
+			Console.WriteLine("2!");
+
+			//Update Autos
+
+			var combinedLists = new List<IdAuto>();
+			combinedLists.AddRange(SavedInfo.When);
+			combinedLists.AddRange(SavedInfo.If);
+			combinedLists.AddRange(SavedInfo.Do);
+
+			Console.WriteLine("3!");
+
+			foreach (var auto in combinedLists)
+			{
+				var selectedAuto = await _db.IdAutos.FirstOrDefaultAsync(v => v.Id == auto.Id);
+				if (selectedAuto != null)
+				{
+					selectedAuto.Id = auto.Id;
+					selectedAuto.SelectedOption = auto.SelectedOption;
+					selectedAuto.Value = auto.Value;
+					selectedAuto.Type = auto.Type;
+				}
+			}
+
+			Console.WriteLine("4!");
+
+			await _db.SaveChangesAsync();
+
+			return RedirectToPage("Index", "WithAlert", new { guildId = SavedInfo.Auto.GuildId, message = $"Saved changes to {SavedInfo.Auto.GuildId}" });
 		}
 	}
 

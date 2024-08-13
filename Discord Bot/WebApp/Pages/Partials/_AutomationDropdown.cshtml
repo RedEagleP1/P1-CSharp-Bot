@@ -17,34 +17,4 @@
             <button type="button" class="dropdown-item text-danger" id="SelectedId" value="@null">None</button>
         }
 	</div>
-
-
-    @*Setup Input*@
-
-    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-        @Model.ButtonName
-    </button>
-
-    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-        @foreach (var item in Model.Automations)
-        {
-            @*Get all server emojis*@
-            if (@item.input == "emoji"){
-
-            }
-            @*Get all server channels*@
-            else if (@item.input == "channel"){
-
-            }
-            @*Get all server roles*@
-            else if (@item.input == "role"){
-
-            }
-            @*Just text*@
-            else
-            {
-                
-            }
-        }
-    </div>
 </div>

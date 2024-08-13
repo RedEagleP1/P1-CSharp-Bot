@@ -8,9 +8,9 @@ namespace Bot.SlashCommands.Organizations
     /// <summary>
     /// This command allows a team lead to kick a member out of the organization.
     /// </summary>
-    internal class Organizations_RemoveOrgMemberCommand : ISlashCommand
+    internal class Organizations_KickOrgMemberCommand : ISlashCommand
     {
-        const string name = "remove_org_member";
+        const string name = "kick_org_member";
         readonly SlashCommandProperties properties = CreateNewProperties();
 
         public string Name => name;

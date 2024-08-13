@@ -14,113 +14,138 @@
 </div>
 <br /><br />
 <div class="container p-3">
-    <table class="table table-bordered table-striped" style="width:100%">
-        <thead>
-            <tr>
-                <th>When</th>
-                <th>If</th>
-                <th>Do</th>
-                <th>After</th>
-            </tr>
-        </thead>
-        <tbody id="TableRows">
-            @{
-                int packageIndex = 0;
-            }
-            @foreach (var package in Model.Packages)
-            {
-                int index = 0;
-                <tr id="Row">
-                    <td id="Top">
-                        @foreach (var whens in package.When)
-                        {
-                            <form method="post">
-                                <input asp-for="@Model.SavedInfo.Auto.Id" value="@package.Auto.Id" hidden>
-                                <input asp-for="@Model.SavedInfo.Auto.GuildId" value="@Model.Guild.Id" hidden>
-                                <div id="Display">
-                                    @if (whens.SelectedOption != -1)
-                                    {
-                                        @await Html.PartialAsync("/Pages/Partials/_AutomationDropdown.cshtml", new AutomationDropdownModel() { ButtonName = Model.WhenAutomations[whens.SelectedOption].desc, Automations = Model.WhenAutomations, AddNoneOption = true, DropdownId = "whenDropdown" })
-                                    }
-                                    else
-                                    {
-                                        @await Html.PartialAsync("/Pages/Partials/_AutomationDropdown.cshtml", new AutomationDropdownModel() { ButtonName = "Select Option", Automations = Model.WhenAutomations, AddNoneOption = true, DropdownId = "whenDropdown" })
-                                    }
-                                    <input asp-for="@Model.SavedInfo.When[index].Value" value="@whens.Value">
-                                    <input asp-for="@Model.SavedInfo.When[index].Id" value="@whens.Id" hidden>
-                                    <input asp-for="@Model.SavedInfo.When[index].Type" value="@whens.Type" hidden>
-                                    <input asp-for="@Model.SavedInfo.When[index].SelectedOption" value="@whens.SelectedOption" id="dropdownOption" hidden>
-                                </div>
-                                <button asp-page-handler="Save" type="submit" class="btn btn-primary mx-2">Save</button>
-                            </form>
-                            index ++;
-                        }
-                    </td>
-                    index = 0;
-                    <td id="Top">
-                        @foreach (var ifs in package.If)
-                        {
-                            <form method="post">
-                                <div id="Display">
-                                    @if (ifs.SelectedOption != -1)
-                                    {
-                                        @await Html.PartialAsync("/Pages/Partials/_AutomationDropdown.cshtml", new AutomationDropdownModel() { ButtonName = Model.IfAutomations[ifs.SelectedOption].desc, Automations = Model.IfAutomations, AddNoneOption = true, DropdownId = "ifDropdown" })
-                                    }
-                                    else
-                                    {
-                                        @await Html.PartialAsync("/Pages/Partials/_AutomationDropdown.cshtml", new AutomationDropdownModel() { ButtonName = "Select Option", Automations = Model.IfAutomations, AddNoneOption = true, DropdownId = "ifDropdown" })
-                                    }
-                                    <input asp-for="@Model.SavedInfo.If[index].Value" value="@ifs.Value">
-                                    <input asp-for="@Model.SavedInfo.If[index].Id" value="@ifs.Id" hidden>
-                                    <input asp-for="@Model.SavedInfo.If[index].Type" value="@ifs.Type" hidden>
-                                    <input asp-for="@Model.SavedInfo.If[index].SelectedOption" value="@ifs.SelectedOption" id="dropdownOption" hidden>
-                                    <button asp-page-handler="Save" type="submit" class="btn btn-primary mx-2">Save</button>
-                                </div>
-                            </form>
-                            index++;
-                        }
-                    </td>
-                    index = 0;
-                    <td id="Top">
-                        @foreach (var dos in package.Do)
-                        {
-                            <form method="post">
-                                <div id="Display">
-                                    @if (dos.SelectedOption != -1)
-                                    {
-                                        @await Html.PartialAsync("/Pages/Partials/_AutomationDropdown.cshtml", new AutomationDropdownModel() { ButtonName = Model.DoAutomations[dos.SelectedOption].desc, Automations = Model.DoAutomations, AddNoneOption = true, DropdownId = "doDropdown" })
-                                    }
-                                    else
-                                    {
-                                        @await Html.PartialAsync("/Pages/Partials/_AutomationDropdown.cshtml", new AutomationDropdownModel() { ButtonName = "Select Option", Automations = Model.DoAutomations, AddNoneOption = true, DropdownId = "doDropdown" })
-                                    }
-                                    <input asp-for="@Model.SavedInfo.Do[index].Value" value="@dos.Value">
-                                    <input asp-for="@Model.SavedInfo.Do[index].Id" value="@dos.Id" hidden>
-                                    <input asp-for="@Model.SavedInfo.Do[index].Type" value="@dos.Type" hidden>
-                                    <input asp-for="@Model.SavedInfo.Do[index].SelectedOption" value="@dos.SelectedOption" id="dropdownOption" hidden>
-                                    <button asp-page-handler="Save" type="submit" class="btn btn-primary mx-2">Save</button>
-                                </div>
-                            </form>
-                            index++;
-                        }
-                    </td>
-                    <td>
-                        <input id="AfterInfo" value="">
-                    </td>
-                    <td>
-                        <form method="post">
-                            <button asp-page-handler="Save" type="submit" class="btn btn-primary mx-2">Save</button>
-                            @if (packageIndex > 0)
-                            {
-                                <button type="submit" class="btn btn-danger mx-2" id="delete">Delete</button>
-                            }
-                        </form>
-                    </td>
-                </tr>
-                packageIndex++;
-            }
-        </tbody>
-    </table>
+	<table class="table table-bordered table-striped" style="width:100%">
+		<thead>
+			<tr>
+				<th>
+					When
+				</th>
+				<th>
+					If
+				</th>
+				<th>
+					Do
+				</th>
+				<th>
+					After
+				</th>
+			</tr>
+		</thead>
+		<tbody id="TableRows">
+				@{
+					int packageIndex = 0;
+				}
+				@foreach (var package in Model.Packages)
+				{
+					<form method="post">
+					<tr id="Row">
+					@{int index = 0;
+					}
+
+						<input asp-for="@Model.SavedInfo.Auto.Id" value="@package.Auto.Id" hidden>
+						<input asp-for="@Model.SavedInfo.Auto.GuildId" value="@Model.Guild.Id" hidden>
+					<td id="Top">
+					@foreach (var whens in package.When)
+					{
+							<div id="Display">
+								@if (whens.SelectedOption != -1)
+								{
+								@await Html.PartialAsync("/Pages/Partials/_AutomationDropdown.cshtml", new AutomationDropdownModel() { ButtonName = Model.WhenAutomations[whens.SelectedOption].desc, Automations = Model.WhenAutomations, AddNoneOption = true, DropdownId = "whenDropdown" })
+								}
+								else
+								{
+									@await Html.PartialAsync("/Pages/Partials/_AutomationDropdown.cshtml", new AutomationDropdownModel() { ButtonName = "Select Option", Automations = Model.WhenAutomations, AddNoneOption = true, DropdownId = "whenDropdown" })
+								}
+								<input asp-for="@Model.SavedInfo.When[index].Value" value="@whens.Value">
+								<input asp-for="@Model.SavedInfo.When[index].Id" value="@whens.Id" hidden>
+								<input asp-for="@Model.SavedInfo.When[index].Type" value="@whens.Type" hidden>
+								<input asp-for="@Model.SavedInfo.When[index].SelectedOption" value="@whens.SelectedOption" id="dropdownOption" hidden>
+							</div>
+						index++;
+					}
+					</td>
+					@{ index = 0;
+					}
+					<td id="Top">
+					@foreach (var ifs in package.If)
+					{
+							<div id="Display">
+								@if (ifs.SelectedOption != -1)
+								{
+										@await Html.PartialAsync("/Pages/Partials/_AutomationDropdown.cshtml", new AutomationDropdownModel() { ButtonName = Model.IfAutomations[ifs.SelectedOption].desc, Automations = Model.IfAutomations, AddNoneOption = true, DropdownId = "ifDropdown" })
+								}
+								else
+								{
+										@await Html.PartialAsync("/Pages/Partials/_AutomationDropdown.cshtml", new AutomationDropdownModel() { ButtonName = "Select Option", Automations = Model.IfAutomations, AddNoneOption = true, DropdownId = "ifDropdown" })
+								}
+								<input asp-for="@Model.SavedInfo.If[index].Value" value="@ifs.Value">
+								<input asp-for="@Model.SavedInfo.If[index].Id" value="@ifs.Id" hidden>
+								<input asp-for="@Model.SavedInfo.If[index].Type" value="@ifs.Type" hidden>
+								<input asp-for="@Model.SavedInfo.If[index].SelectedOption" value="@ifs.SelectedOption" id="dropdownOption" hidden>
+
+								<form method="post">
+									<button asp-page-handler="CreateNewAutoId" type="submit" class="btn btn-primary mx-2">Create New Do</button>
+									<input asp-for="@Model.ReferenceAuto.Id" value="@package.Auto.Id" hidden>
+									<input asp-for="@Model.chosenType" value="1" hidden>
+									<input asp-for="@Model.guildId" value="@Model.Guild.Id" hidden>
+								</form>
+							</div>
+						index++;
+					}
+					</td>
+					@{ index = 0;
+					}
+					<td id="Top">
+					@foreach (var dos in package.Do)
+					{
+								<div id="Display">
+									@if (dos.SelectedOption != -1)
+									{
+										@await Html.PartialAsync("/Pages/Partials/_AutomationDropdown.cshtml", new AutomationDropdownModel() { ButtonName = Model.DoAutomations[dos.SelectedOption].desc, Automations = Model.DoAutomations, AddNoneOption = true, DropdownId = "doDropdown" })
+									}
+									else
+									{
+										@await Html.PartialAsync("/Pages/Partials/_AutomationDropdown.cshtml", new AutomationDropdownModel() { ButtonName = "Select Option", Automations = Model.DoAutomations, AddNoneOption = true, DropdownId = "doDropdown" })
+									}
+									<input asp-for="@Model.SavedInfo.Do[index].Value" value="@dos.Value">
+								<input asp-for="@Model.SavedInfo.Do[index].Id" value="@dos.Id" hidden>
+								<input asp-for="@Model.SavedInfo.Do[index].Type" value="@dos.Type" hidden>
+								<input asp-for="@Model.SavedInfo.Do[index].SelectedOption" value="@dos.SelectedOption" id="dropdownOption" hidden>
+
+								<form method="post">
+									<button asp-page-handler="CreateNewAutoId" type="submit" class="btn btn-primary mx-2">Create New If</button>
+									<input asp-for="@Model.ReferenceAuto.Id" value="@package.Auto.Id" hidden>
+									<input asp-for="@Model.chosenType" value="2" hidden>
+									<input asp-for="@Model.guildId" value="@Model.Guild.Id" hidden>
+								</form>
+							</div>
+						index++;
+					}
+					</td>
+					<td>
+						<input id="AfterInfo" value="">
+					</td>
+					<td>
+						<button asp-page-handler="Save" type="submit" class="btn btn-primary mx-2">Save</button>
+						@if (packageIndex > 0)
+						{
+							<button type="submit" class="btn btn-danger mx-2" id="delete">
+								Delete
+							</button>
+						}
+					</td>
+					</tr>
+					</form>
+					{
+						packageIndex++;
+					}
+				}
+			<form method="post">
+				<input asp-for="@Model.guildId" value="@Model.Guild.Id" hidden>
+				<button asp-page-handler="CreateNewAuto" type="submit" class="btn-btn-success">Create New Automation</button>
+			</form>
+		</tbody>
+	</table>
 </div>
 
 @section Scripts

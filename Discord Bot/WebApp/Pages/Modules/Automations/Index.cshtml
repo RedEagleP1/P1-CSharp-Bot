@@ -83,12 +83,9 @@
 								<input asp-for="@Model.SavedInfo.If[index].Type" value="@ifs.Type" hidden>
 								<input asp-for="@Model.SavedInfo.If[index].SelectedOption" value="@ifs.SelectedOption" id="dropdownOption" hidden>
 
-								<form method="post">
-									<button asp-page-handler="CreateNewAutoId" type="submit" class="btn btn-primary mx-2">Create New Do</button>
-									<input asp-for="@Model.ReferenceAuto.Id" value="@package.Auto.Id" hidden>
-									<input asp-for="@Model.chosenType" value="1" hidden>
-									<input asp-for="@Model.guildId" value="@Model.Guild.Id" hidden>
-								</form>
+								<button asp-page-handler="CreateNewIf" type="submit" class="btn btn-primary mx-2">Create New If</button>
+								<input asp-for="@Model.ReferenceAuto.Id" value="@package.Auto.Id" hidden>
+								<input asp-for="@Model.guildId" value="@Model.Guild.Id" hidden>
 							</div>
 						index++;
 					}
@@ -112,12 +109,9 @@
 								<input asp-for="@Model.SavedInfo.Do[index].Type" value="@dos.Type" hidden>
 								<input asp-for="@Model.SavedInfo.Do[index].SelectedOption" value="@dos.SelectedOption" id="dropdownOption" hidden>
 
-								<form method="post">
-									<button asp-page-handler="CreateNewAutoId" type="submit" class="btn btn-primary mx-2">Create New If</button>
-									<input asp-for="@Model.ReferenceAuto.Id" value="@package.Auto.Id" hidden>
-									<input asp-for="@Model.chosenType" value="2" hidden>
-									<input asp-for="@Model.guildId" value="@Model.Guild.Id" hidden>
-								</form>
+								<button asp-page-handler="CreateNewDo" type="submit" class="btn btn-primary mx-2">Create New Do</button>
+								<input asp-for="@Model.ReferenceAuto.Id" value="@package.Auto.Id" hidden>
+								<input asp-for="@Model.guildId" value="@Model.Guild.Id" hidden>
 							</div>
 						index++;
 					}
@@ -129,9 +123,15 @@
 						<button asp-page-handler="Save" type="submit" class="btn btn-primary mx-2">Save</button>
 						@if (packageIndex > 0)
 						{
-							<button type="submit" class="btn btn-danger mx-2" id="delete">
-								Delete
-							</button>
+							<button asp-page-handler="DeleteAuto" type="submit" class="btn btn-danger mx-2">Delete</button>
+						}
+						@if (package.If.Count > 1)
+						{
+							<button asp-page-handler="DeleteLastIf" type="submit" class="btn btn-danger mx-2">Delete Last If</button>
+						}
+						@if (package.Do.Count > 1)
+						{
+							<button asp-page-handler="DeleteLastDo" type="submit" class="btn btn-danger mx-2">Delete Last Do</button>
 						}
 					</td>
 					</tr>

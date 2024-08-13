@@ -45,7 +45,7 @@ namespace Bot.SlashCommands.Organizations
                 // Check if the user that invoked this command is in an organization.
                 OrganizationMember? member = await context.OrganizationMembers.FirstOrDefaultAsync(x => x.UserId == command.User.Id);
                 if (member == null)
-                    return "You cannot give from your organization's treasury since you are not in an organization.";
+                    return "You cannot leave since you are not in an organization.";
 
 
                 // Find the organization.

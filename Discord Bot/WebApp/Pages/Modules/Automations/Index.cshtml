@@ -37,8 +37,8 @@
 				}
 				@foreach (var package in Model.Packages)
 				{
+					<form method="post">
 					<tr id="Row">
-					<form method="post" asp-page-handler="Save">
 					@{int index = 0;
 					}
 
@@ -126,9 +126,7 @@
 						<input id="AfterInfo" value="">
 					</td>
 					<td>
-						<button type="submit" class="btn btn-primary mx-2">
-							Save
-						</button>
+						<button asp-page-handler="Save" type="submit" class="btn btn-primary mx-2">Save</button>
 						@if (packageIndex > 0)
 						{
 							<button type="submit" class="btn btn-danger mx-2" id="delete">
@@ -136,11 +134,11 @@
 							</button>
 						}
 					</td>
+					</tr>
 					</form>
-					@{
+					{
 						packageIndex++;
 					}
-					</tr>
 				}
 			<form method="post">
 				<input asp-for="@Model.guildId" value="@Model.Guild.Id" hidden>

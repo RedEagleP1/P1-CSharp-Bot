@@ -95,7 +95,7 @@ namespace WebApp.Pages.Modules.Automations
 				AutomationList.Add(tempItem);
 			}
 
-			/*if (!dataHolder.Any())
+			if (!dataHolder.Any())
 			{
 				var tempItem = new Automation
 				{
@@ -149,7 +149,7 @@ namespace WebApp.Pages.Modules.Automations
 				_db.IdAutos.Add(tempIf);
 				_db.IdAutos.Add(tempDo);
 				await _db.SaveChangesAsync();
-			}*/
+			}
 
 			Packages = AutomationList;
 		}
@@ -218,12 +218,12 @@ namespace WebApp.Pages.Modules.Automations
 			return RedirectToPage("Index", "WithAlert", new { guildId = guildId, message = $"Added new Automation" });
 		}
 
-		public async Task<IActionResult> OnPostCreateNewAutoId(Automation ReferenceAuto, int chosenType, ulong guildId)
+		public async Task<IActionResult> OnPostCreateNewIf(Automation ReferenceAuto, ulong guildId)
 		{
 			var tempIdAuto = new IdAuto
 			{
 				SelectedOption = -1,
-				Type = chosenType,
+				Type = 1,
 				Value = "",
 				AutomationId = ReferenceAuto.Id
 			};
@@ -234,6 +234,52 @@ namespace WebApp.Pages.Modules.Automations
 			return RedirectToPage("Index", "WithAlert", new { guildId = guildId, message = $"Added new option" });
 		}
 
+		public async Task<IActionResult> OnPostCreateNewDo(Automation ReferenceAuto, ulong guildId)
+		{
+			var tempIdAuto = new IdAuto
+			{
+				SelectedOption = -1,
+				Type = 2,
+				Value = "",
+				AutomationId = ReferenceAuto.Id
+			};
+
+			_db.IdAutos.Add(tempIdAuto);
+
+			await _db.SaveChangesAsync();
+			return RedirectToPage("Index", "WithAlert", new { guildId = guildId, message = $"Added new option" });
+		}
+
+		public async Task<IActionResult> OnPostDeleteLastIf(Automation ReferenceAuto, ulong guildId)
+		{
+			var tempIdAuto = await _db.IdAutos.Where(g => g.AutomationId == ReferenceAuto.Id).OrderBy(g => g.Id).LastOrDefaultAsync();
+			_db.IdAutos.Remove(tempIdAuto);
+
+			await _db.SaveChangesAsync();
+			return RedirectToPage("Index", "WithAlert", new { guildId = guildId, message = $"Removed last added option" });
+		}
+
+		public async Task<IActionResult> OnPostDeleteLastDo(Automation ReferenceAuto, ulong guildId)
+		{
+			var tempIdAuto = await _db.IdAutos.Where(g => g.AutomationId == ReferenceAuto.Id).OrderBy(g => g.Id).LastOrDefaultAsync();
+			_db.IdAutos.Remove(tempIdAuto);
+
+			await _db.SaveChangesAsync();
+			return RedirectToPage("Index", "WithAlert", new { guildId = guildId, message = $"Removed last added option" });
+		}
+
+		public async Task<IActionResult> OnPostDeleteAuto(Automation ReferenceAuto, ulong guildId)
+		{
+			var AutoIds = await _db.IdAutos.Where(_db => _db.AutomationId == ReferenceAuto.Id).ToListAsync();
+			foreach (var AutoId in AutoIds)
+			{
+				_db.IdAutos.Remove(AutoId);
+			}
+			_db.Automations.Remove(ReferenceAuto);
+
+			await _db.SaveChangesAsync();
+			return RedirectToPage("Index", "WithAlert", new { guildId = guildId, message = $"Removed Automation" });
+		}
 
 		public async Task<IActionResult> OnPostSave(AutomationPackage SavedInfo)
         {

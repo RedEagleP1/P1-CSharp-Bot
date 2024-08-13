@@ -16,6 +16,7 @@ namespace WebApp.Pages.Modules.Automations
         public List<AutomationInfo> WhenAutomations { get; set; }
         public List<AutomationInfo> DoAutomations { get; set; }
         public List<AutomationInfo> IfAutomations { get; set; }
+		public List<AutomationInfo> AfterAutomations { get; set; }
 		public List<AutomationInfo> AutomationInfos { get; set; }
         public List<AutomationPackage> Packages { get; set; }
 		public AutomationPackage SavedInfo { get; set; }
@@ -62,6 +63,7 @@ namespace WebApp.Pages.Modules.Automations
 				List<IdAuto> tempWhenList = new List<IdAuto>();
 				List<IdAuto> tempIfList = new List<IdAuto>();
 				List<IdAuto> tempDoList = new List<IdAuto>();
+				List<IdAuto> tempAfterList = new List<IdAuto>();
 
 				foreach (var option in optionsForItem)
 				{
@@ -86,10 +88,15 @@ namespace WebApp.Pages.Modules.Automations
 					{
 						tempDoList.Add(tempId);
 					}
+					else if (tempId.Type == 3)
+					{
+						tempAfterList.Add(tempId);
+					}
 
 					tempItem.When = tempWhenList;
 					tempItem.If = tempIfList;
 					tempItem.Do = tempDoList;
+					tempItem.After = tempAfterList;
 				}
 
 				AutomationList.Add(tempItem);
@@ -126,14 +133,23 @@ namespace WebApp.Pages.Modules.Automations
 					Value = "",
 					AutomationId = tempItem.Id
 				};
+				var tempAfter = new IdAuto
+				{
+					SelectedOption = -1,
+					Type = 3,
+					Value = "",
+					AutomationId = tempItem.Id
+				};
 
 				List<IdAuto> tempWhenList = new List<IdAuto>();
 				List<IdAuto> tempIfList = new List<IdAuto>();
 				List<IdAuto> tempDoList = new List<IdAuto>();
+				List<IdAuto> tempAfterList = new List<IdAuto>();
 
 				tempWhenList.Add(tempWhen);
 				tempIfList.Add(tempIf);
 				tempDoList.Add(tempDo);
+				tempAfterList.Add(tempAfter);
 
 				var tempPackage = new AutomationPackage
 				{
@@ -141,6 +157,7 @@ namespace WebApp.Pages.Modules.Automations
 					When = new List<IdAuto>(tempWhenList),
 					If = new List<IdAuto>(tempIfList),
 					Do = new List<IdAuto>(tempDoList),
+					After = new List<IdAuto>(tempAfterList),
 				};
 
 				AutomationList.Add(tempPackage);
@@ -148,6 +165,7 @@ namespace WebApp.Pages.Modules.Automations
 				_db.IdAutos.Add(tempWhen);
 				_db.IdAutos.Add(tempIf);
 				_db.IdAutos.Add(tempDo);
+				_db.IdAutos.Add(tempAfter);
 				await _db.SaveChangesAsync();
 			}
 
@@ -166,8 +184,6 @@ namespace WebApp.Pages.Modules.Automations
 			{
 				GuildId = guildId
 			};
-
-			Console.WriteLine(guildId);
 
 			_db.Automations.Add(tempItem);
 			await _db.SaveChangesAsync();
@@ -193,14 +209,23 @@ namespace WebApp.Pages.Modules.Automations
 				Value = "",
 				AutomationId = tempItem.Id
 			};
+			var tempAfter = new IdAuto
+			{
+				SelectedOption = -1,
+				Type = 3,
+				Value = "",
+				AutomationId = tempItem.Id
+			};
 
 			List<IdAuto> tempWhenList = new List<IdAuto>();
 			List<IdAuto> tempIfList = new List<IdAuto>();
 			List<IdAuto> tempDoList = new List<IdAuto>();
+			List<IdAuto> tempAfterList = new List<IdAuto>();
 
 			tempWhenList.Add(tempWhen);
 			tempIfList.Add(tempIf);
 			tempDoList.Add(tempDo);
+			tempAfterList.Add(tempAfter);
 
 			var tempPackage = new AutomationPackage
 			{
@@ -208,11 +233,13 @@ namespace WebApp.Pages.Modules.Automations
 				When = new List<IdAuto>(tempWhenList),
 				If = new List<IdAuto>(tempIfList),
 				Do = new List<IdAuto>(tempDoList),
+				After = new List<IdAuto>(tempAfterList),
 			};
 
 			_db.IdAutos.Add(tempWhen);
 			_db.IdAutos.Add(tempIf);
 			_db.IdAutos.Add(tempDo);
+			_db.IdAutos.Add(tempAfter);
 
 			await _db.SaveChangesAsync();
 			return RedirectToPage("Index", "WithAlert", new { guildId = guildId, message = $"Added new Automation" });
@@ -285,16 +312,10 @@ namespace WebApp.Pages.Modules.Automations
         {
 			var updateAutomation = await _db.Automations.FirstOrDefaultAsync(v => v.Id == SavedInfo.Auto.Id && v.GuildId == SavedInfo.Auto.GuildId);
 
-			Console.WriteLine("1!");
-
-			Console.WriteLine(SavedInfo.Auto.Id);
-
 			if (updateAutomation == null)
 			{
 				return BadRequest();
 			}
-
-			Console.WriteLine("2!");
 
 			//Update Autos
 
@@ -302,8 +323,7 @@ namespace WebApp.Pages.Modules.Automations
 			combinedLists.AddRange(SavedInfo.When);
 			combinedLists.AddRange(SavedInfo.If);
 			combinedLists.AddRange(SavedInfo.Do);
-
-			Console.WriteLine("3!");
+			combinedLists.AddRange(SavedInfo.After);
 
 			foreach (var auto in combinedLists)
 			{
@@ -317,8 +337,6 @@ namespace WebApp.Pages.Modules.Automations
 				}
 			}
 
-			Console.WriteLine("4!");
-
 			await _db.SaveChangesAsync();
 
 			return RedirectToPage("Index", "WithAlert", new { guildId = SavedInfo.Auto.GuildId, message = $"Saved changes to {SavedInfo.Auto.GuildId}" });
@@ -331,5 +349,6 @@ namespace WebApp.Pages.Modules.Automations
         public List<IdAuto>? When { get; set; }
         public List<IdAuto>? If { get; set; }
 		public List<IdAuto>? Do { get; set; }
+		public List<IdAuto>? After { get; set; }
 	}
 }

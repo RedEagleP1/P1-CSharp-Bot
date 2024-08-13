@@ -1,14 +1,17 @@
-﻿using Discord;
+﻿using System.Threading;
+
+using Discord;
 using Discord.WebSocket;
-using Bot.EventHandlers;
-using Models;
-using System.Threading;
+
 using Microsoft.EntityFrameworkCore;
+
+using Models;
+
+using Bot.EventHandlers;
 using Bot.OneTimeRegister;
 using Bot.SlashCommands;
-using System.Runtime.Serialization.Formatters;
+using Bot.SlashCommands.Organizations;
 using Bot.PeriodicEvents;
-using System.Runtime.CompilerServices;
 
 namespace Bot
 {
@@ -48,24 +51,40 @@ namespace Bot
             List<ISlashCommand> slashCommands = new()
             {
                 new AwardCommand(client),
+                new BuyRoleCommand(),
                 new CurrencyCommand(),
+                //new DebugCommand(client),
                 new AccountCommand(client),
                 new AccountBackupCommand(client),
                 new ReviewCommand(client),
-                //new DebugCommand(client),
-                new BuyRoleCommand()
+
+                // ----------------------------------------------------------------------------------------------------
+                // Organizations Commands
+                // ----------------------------------------------------------------------------------------------------
+                new Organizations_CreateOrgCommand(),
+                new Organizations_DonateToOrgCommand(),
+                new Organizations_OrgInfoCommand(client),
+                new Organizations_JoinOrgCommand(client),
+                new Organizations_LeaveOrgCommand(),
+                new Organizations_PingOrgCommand(),
+                new Organizations_PromoteOrgMemberCommand(),
+                new Organizations_DeleteOrgCommand(client),
+                new Organizations_RemoveOrgMemberCommand(),
+                new Organizations_RenameOrgCommand(),
+                new Organizations_OrgTreasuryGiveCommand(),
             };
 
             List<IEventHandler> eventHandlers = new()
             {
-                new MemberUpdateHandler(client),
+                new ChannelUpdateHandler(client),
                 new CurrentGuildsUpdateHandler(client, slashCommands),
                 new GuildRolesChangeHandler(client),
-                new SlashCommandHandler(client, slashCommands),
+                new MemberUpdateHandler(client),
+                new MessageUpdateHandler(client),
+                new OrganizationJoinRequestHandler(client),
                 new RoleSurveyHandler(client),
-                new ChannelUpdateHandler(client),
+                new SlashCommandHandler(client, slashCommands),
                 new VoiceStateUpdateHandler(client),
-                new MessageUpdateHandler(client)
             };
 
             foreach (var handler in eventHandlers)

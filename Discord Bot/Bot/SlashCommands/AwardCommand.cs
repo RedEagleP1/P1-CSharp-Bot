@@ -81,7 +81,7 @@ namespace Bot.SlashCommands
                 currencyAwardLimit.AmountLeft -= optionValues.amount;
                 await context.SaveChangesAsync();
                 await command.ModifyOriginalResponseAsync(
-                    response => response.Content = $"{optionValues.amount} {optionValues.currency} has been added to user {optionValues.member.Username}");
+                  response => response.Content = $"{optionValues.amount} {optionValues.currency} has been added to user {optionValues.member.Username}");
             }
             finally
             {

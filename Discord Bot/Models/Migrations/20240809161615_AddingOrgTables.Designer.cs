@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Models;
 
@@ -10,9 +11,10 @@ using Models;
 namespace Models.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240809161615_AddingOrgTables")]
+    partial class AddingOrgTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -178,10 +180,6 @@ namespace Models.Migrations
             modelBuilder.Entity("Models.Organization", b =>
                 {
                     b.Property<ulong>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint unsigned");
-
-                    b.Property<ulong>("CurrencyId")
                         .HasColumnType("bigint unsigned");
 
                     b.Property<ulong>("GuildId")
@@ -202,15 +200,12 @@ namespace Models.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("GuildId");
-
                     b.ToTable("Organizations");
                 });
 
             modelBuilder.Entity("Models.OrganizationMember", b =>
                 {
                     b.Property<ulong>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint unsigned");
 
                     b.Property<ulong>("OrganizationId")
@@ -695,16 +690,7 @@ namespace Models.Migrations
 
             modelBuilder.Entity("Models.Organization", b =>
                 {
-                    b.HasOne("Models.Guild", null)
-                        .WithMany()
-                        .HasForeignKey("GuildId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Models.OrganizationMember", b =>
-                {
-                    b.HasOne("Models.Organization", null)
+                    b.HasOne("Models.OrganizationMember", null)
                         .WithMany()
                         .HasForeignKey("Id")
                         .OnDelete(DeleteBehavior.Cascade)

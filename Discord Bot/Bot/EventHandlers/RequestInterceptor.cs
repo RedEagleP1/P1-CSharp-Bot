@@ -29,6 +29,10 @@ namespace Bot.EventHandlers
         public async Task Process()
         {
             await Request.ProcessRequest();
+
+            if (Request.Embed == null)
+                return;
+
             var embedTitle = Request.Embed.Title;
             if(IsForAccount(embedTitle))
             {

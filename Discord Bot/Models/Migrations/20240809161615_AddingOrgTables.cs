@@ -31,7 +31,6 @@ namespace Models.Migrations
                     Name = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     TreasuryAmount = table.Column<ulong>(type: "bigint unsigned", nullable: false),
-                    CurrencyId = table.Column<int>(type: "int", nullable: false),
                     MaxMembers = table.Column<int>(type: "int", nullable: false),
                     GuildId = table.Column<ulong>(type: "bigint unsigned", nullable: false)
                 },

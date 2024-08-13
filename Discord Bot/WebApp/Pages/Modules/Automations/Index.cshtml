@@ -117,7 +117,9 @@
 					}
 					</td>
 					<td>
-						<input id="AfterInfo" value="">
+						<input asp-for="@Model.SavedInfo.After[0].Value" value="@package.After[0].Value">
+						<input asp-for="@Model.SavedInfo.After[0].Id" value="@package.After[0].Id" hidden>
+						<input asp-for="@Model.SavedInfo.After[0].Type" value="@package.After[0].Type" hidden>
 					</td>
 					<td>
 						<button asp-page-handler="Save" type="submit" class="btn btn-primary mx-2">Save</button>

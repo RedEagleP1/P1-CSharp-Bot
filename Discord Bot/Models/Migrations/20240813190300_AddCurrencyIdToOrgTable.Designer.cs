@@ -157,49 +157,6 @@ namespace Models.Migrations
                     b.ToTable("Guilds");
                 });
 
-            modelBuilder.Entity("Models.Legion", b =>
-                {
-                    b.Property<ulong>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint unsigned");
-
-                    b.Property<ulong>("GuildId")
-                        .HasColumnType("bigint unsigned");
-
-                    b.Property<ulong>("LeaderID")
-                        .HasColumnType("bigint unsigned");
-
-                    b.Property<int>("MaxMembers")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("GuildId");
-
-                    b.ToTable("Legions");
-                });
-
-            modelBuilder.Entity("Models.LegionMember", b =>
-                {
-                    b.Property<ulong>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint unsigned");
-
-                    b.Property<ulong>("LegionId")
-                        .HasColumnType("bigint unsigned");
-
-                    b.Property<ulong>("OrganizationId")
-                        .HasColumnType("bigint unsigned");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("LegionMembers");
-                });
-
             modelBuilder.Entity("Models.MessageValidationSuccessTrack", b =>
                 {
                     b.Property<int>("Id")
@@ -734,24 +691,6 @@ namespace Models.Migrations
                     b.HasOne("Models.Guild", null)
                         .WithMany()
                         .HasForeignKey("GuildId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Models.Legion", b =>
-                {
-                    b.HasOne("Models.Guild", null)
-                        .WithMany()
-                        .HasForeignKey("GuildId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Models.LegionMember", b =>
-                {
-                    b.HasOne("Models.Legion", null)
-                        .WithMany()
-                        .HasForeignKey("Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

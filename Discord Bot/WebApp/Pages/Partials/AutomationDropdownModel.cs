@@ -29,8 +29,8 @@ namespace WebApp.Pages.Partials
         public string DropdownId { get; set; }
 
         //WHENs
-        static AutomationInfo when_types = new AutomationInfo(0, "", "When a user types.");
-        static AutomationInfo when_reacts = new AutomationInfo(1, "", "When a user reacts.");
+        static AutomationInfo when_types = new AutomationInfo(0, "text", "When a user types this message.");
+        static AutomationInfo when_reacts = new AutomationInfo(1, "emoji", "When a user reacts with this emoji.");
 
         //IFs
         static AutomationInfo if_role = new AutomationInfo(0, "role", "If they have this role.");

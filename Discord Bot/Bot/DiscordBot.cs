@@ -69,7 +69,7 @@ namespace Bot
                 new Organizations_PingOrgCommand(),
                 new Organizations_PromoteOrgMemberCommand(),
                 new Organizations_DeleteOrgCommand(client),
-                new Organizations_RemoveOrgMemberCommand(),
+                new Organizations_KickOrgMemberCommand(),
                 new Organizations_RenameOrgCommand(),
                 new Organizations_OrgTreasuryGiveCommand(),
             };

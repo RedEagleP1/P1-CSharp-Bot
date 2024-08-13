@@ -31,7 +31,7 @@ namespace Models.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Currencies");
+                    b.ToTable("Currencies", (string)null);
                 });
 
             modelBuilder.Entity("Models.CurrencyAwardLimit", b =>
@@ -53,7 +53,7 @@ namespace Models.Migrations
 
                     b.HasIndex("CurrencyId");
 
-                    b.ToTable("CurrencyAwardLimits");
+                    b.ToTable("CurrencyAwardLimits", (string)null);
                 });
 
             modelBuilder.Entity("Models.CurrencyOwned", b =>
@@ -75,7 +75,7 @@ namespace Models.Migrations
 
                     b.HasIndex("CurrencyId");
 
-                    b.ToTable("CurrenciesOwned");
+                    b.ToTable("CurrenciesOwned", (string)null);
                 });
 
             modelBuilder.Entity("Models.CurrencyReset", b =>
@@ -105,7 +105,7 @@ namespace Models.Migrations
 
                     b.HasIndex("GuildId");
 
-                    b.ToTable("CurrencyResets");
+                    b.ToTable("CurrencyResets", (string)null);
                 });
 
             modelBuilder.Entity("Models.GlobalVoiceCurrencyGain", b =>
@@ -135,7 +135,7 @@ namespace Models.Migrations
 
                     b.HasIndex("GuildId");
 
-                    b.ToTable("GlobalVoiceCurrencyGains");
+                    b.ToTable("GlobalVoiceCurrencyGains", (string)null);
                 });
 
             modelBuilder.Entity("Models.Guild", b =>
@@ -152,7 +152,7 @@ namespace Models.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Guilds");
+                    b.ToTable("Guilds", (string)null);
                 });
 
             modelBuilder.Entity("Models.MessageValidationSuccessTrack", b =>
@@ -172,16 +172,13 @@ namespace Models.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("MessageValidationSuccessTracks");
+                    b.ToTable("MessageValidationSuccessTracks", (string)null);
                 });
 
             modelBuilder.Entity("Models.Organization", b =>
                 {
                     b.Property<ulong>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint unsigned");
-
-                    b.Property<ulong>("CurrencyId")
                         .HasColumnType("bigint unsigned");
 
                     b.Property<ulong>("GuildId")
@@ -204,7 +201,7 @@ namespace Models.Migrations
 
                     b.HasIndex("GuildId");
 
-                    b.ToTable("Organizations");
+                    b.ToTable("Organizations", (string)null);
                 });
 
             modelBuilder.Entity("Models.OrganizationMember", b =>
@@ -221,7 +218,7 @@ namespace Models.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("OrganizationMembers");
+                    b.ToTable("OrganizationMembers", (string)null);
                 });
 
             modelBuilder.Entity("Models.Role", b =>
@@ -240,7 +237,7 @@ namespace Models.Migrations
 
                     b.HasIndex("GuildId");
 
-                    b.ToTable("Roles");
+                    b.ToTable("Roles", (string)null);
                 });
 
             modelBuilder.Entity("Models.RoleCostAndReward", b =>
@@ -273,7 +270,7 @@ namespace Models.Migrations
                     b.HasIndex("RoleId")
                         .IsUnique();
 
-                    b.ToTable("RolesCostAndReward");
+                    b.ToTable("RolesCostAndReward", (string)null);
                 });
 
             modelBuilder.Entity("Models.RoleForSale", b =>
@@ -290,7 +287,7 @@ namespace Models.Migrations
                     b.HasIndex("RoleId")
                         .IsUnique();
 
-                    b.ToTable("RolesForSale");
+                    b.ToTable("RolesForSale", (string)null);
                 });
 
             modelBuilder.Entity("Models.RoleMessage", b =>
@@ -311,7 +308,7 @@ namespace Models.Migrations
                     b.HasIndex("RoleId")
                         .IsUnique();
 
-                    b.ToTable("RoleMessages");
+                    b.ToTable("RoleMessages", (string)null);
                 });
 
             modelBuilder.Entity("Models.RoleMessageAndSurveyRepeat", b =>
@@ -334,7 +331,7 @@ namespace Models.Migrations
                     b.HasIndex("RoleId")
                         .IsUnique();
 
-                    b.ToTable("RoleMessageAndSurveyRepeats");
+                    b.ToTable("RoleMessageAndSurveyRepeats", (string)null);
                 });
 
             modelBuilder.Entity("Models.RoleMessageAndSurveyRepeated", b =>
@@ -354,7 +351,7 @@ namespace Models.Migrations
                     b.HasIndex("RoleId")
                         .IsUnique();
 
-                    b.ToTable("RoleMessagesAndSurveysRepeated");
+                    b.ToTable("RoleMessagesAndSurveysRepeated", (string)null);
                 });
 
             modelBuilder.Entity("Models.RoleSurvey", b =>
@@ -394,7 +391,7 @@ namespace Models.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("RolesSurvey");
+                    b.ToTable("RolesSurvey", (string)null);
                 });
 
             modelBuilder.Entity("Models.RoleSurveyOption", b =>
@@ -417,7 +414,7 @@ namespace Models.Migrations
 
                     b.HasIndex("RoleSurveyId");
 
-                    b.ToTable("RoleSurveyOptions");
+                    b.ToTable("RoleSurveyOptions", (string)null);
                 });
 
             modelBuilder.Entity("Models.RoleSurveyRoleSurveyTrigger", b =>
@@ -432,7 +429,7 @@ namespace Models.Migrations
 
                     b.HasIndex("RoleSurveyOptionId");
 
-                    b.ToTable("RoleSurveyRoleSurveyTriggers");
+                    b.ToTable("RoleSurveyRoleSurveyTriggers", (string)null);
                 });
 
             modelBuilder.Entity("Models.TaskCompletionRecord", b =>
@@ -488,7 +485,7 @@ namespace Models.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("TaskCompletionRecords");
+                    b.ToTable("TaskCompletionRecords", (string)null);
                 });
 
             modelBuilder.Entity("Models.TextChannelMessageValidation", b =>
@@ -586,7 +583,7 @@ namespace Models.Migrations
 
                     b.HasIndex("RoleToGiveSuccess");
 
-                    b.ToTable("TextChannelMessageValidation");
+                    b.ToTable("TextChannelMessageValidation", (string)null);
                 });
 
             modelBuilder.Entity("Models.VoiceChannelCurrencyGain", b =>
@@ -623,7 +620,7 @@ namespace Models.Migrations
 
                     b.HasIndex("GuildId");
 
-                    b.ToTable("VoiceChannelCurrencyGains");
+                    b.ToTable("VoiceChannelCurrencyGains", (string)null);
                 });
 
             modelBuilder.Entity("Models.VoiceChannelTrack", b =>
@@ -646,7 +643,7 @@ namespace Models.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("VoiceChannelTracks");
+                    b.ToTable("VoiceChannelTracks", (string)null);
                 });
 
             modelBuilder.Entity("Models.CurrencyAwardLimit", b =>

@@ -12,7 +12,7 @@ namespace Models.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     [Migration("20240813190300_AddCurrencyIdToOrgTable")]
-    partial class AddLegionTables
+    partial class AddCurrencyIdToOrgTable
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

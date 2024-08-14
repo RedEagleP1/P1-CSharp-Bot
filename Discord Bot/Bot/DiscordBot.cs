@@ -53,7 +53,8 @@ namespace Bot
                 new AccountBackupCommand(client),
                 new ReviewCommand(client),
                 //new DebugCommand(client),
-                new BuyRoleCommand()
+                new BuyRoleCommand(),
+                new SendCommand(client),
             };
 
             List<IEventHandler> eventHandlers = new()

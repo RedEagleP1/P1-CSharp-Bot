@@ -113,7 +113,7 @@ namespace Bot.EventHandlers
         /// Adds the specified user as a new member of the organization.
         /// </summary>
         /// <param name="userId">The Id of the user to add.</param>
-        /// <param name="orgLeadId">The Id of the organization's team lead.</param>
+        /// <param name="org">The organization.</param>
         /// <param name="context">The database context.</param>
         /// <returns>True if the user was added successfully, false otherwise.</returns>
         private async Task<bool> AddUserToOrganization(ulong userId, Organization org, ApplicationDbContext context)
@@ -136,7 +136,7 @@ namespace Bot.EventHandlers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"ERROR: An error occurred while trying to a new member to the \"{org.Name}\" organization.\nException: \"{ex.Message}\"\n    Inner Exception: \"{(ex.InnerException != null ? ex.InnerException.Message : "")}\"");
+                Console.WriteLine($"ERROR: An error occurred while trying to add a new member to the \"{org.Name}\" organization.\nException: \"{ex.Message}\"\n    Inner Exception: \"{(ex.InnerException != null ? ex.InnerException.Message : "")}\"");
                 return false;
             }
 

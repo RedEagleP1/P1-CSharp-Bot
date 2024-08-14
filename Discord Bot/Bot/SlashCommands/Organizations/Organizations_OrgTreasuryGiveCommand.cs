@@ -126,7 +126,7 @@ namespace Bot.SlashCommands.Organizations
 
 
                 // Give currency to the target user.
-                if (currencyOwned == null)
+                if (currencyOwned != null)
                 {
                     currencyOwned.Amount += amountToGive;
                     context.CurrenciesOwned.Update(currencyOwned);

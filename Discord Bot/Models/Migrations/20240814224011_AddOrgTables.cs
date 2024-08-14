@@ -49,7 +49,7 @@ namespace Models.Migrations
                     table.PrimaryKey("PK_OrganizationMembers", x => x.Id);
                     table.ForeignKey(
                         name: "FK_OrganizationMembers_Organizations_Id",
-                        column: x => x.Id,
+                        column: x => x.OrganizationId,
                         principalTable: "Organizations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);

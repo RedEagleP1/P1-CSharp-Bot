@@ -192,7 +192,7 @@ namespace Models
             modelBuilder.Entity<OrganizationMember>()
                 .HasOne<Organization>()
                 .WithMany()
-                .HasForeignKey(o => o.Id);
+                .HasForeignKey(o => o.OrganizationId);
 
             base.OnModelCreating(modelBuilder);
         }

@@ -54,7 +54,7 @@ namespace Bot.EventHandlers
                     // Check if the accept button was clicked.
                     case "accept_join_org":
                         // Make the requester a new member of the organization.
-                        bool result = await AddUserToOrganization(component.Message.Author.Id, org, context);
+                        bool result = await AddUserToOrganization(sender.Id, org, context);
                         if (result)
                         {
                             // Lets sending a direct message saying their join request has been accepted.
@@ -63,7 +63,7 @@ namespace Bot.EventHandlers
                         else
                         {
                             // Lets sending a direct message saying their join request has been denied.
-                            await sender.SendMessageAsync($"Sorry, an error occurred while trying to add you to the \"{org.Name}\" organization. Contact the team lead, <@{teamLead.Id}>.");
+                            await sender.SendMessageAsync($"Sorry, an error occurred while trying to add you to the \"{org.Name}\" organization. Contact the team lead, {teamLead.Username}.");
                             return;
                         }
                         break;
@@ -77,7 +77,7 @@ namespace Bot.EventHandlers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"ERROR: An error occurred while trying to handle the response to this request to join the \"{org.Name}\" organization! JoinRequester=<@{sender.Id}>  TeamLead=<@{teamLead.Id}>:\n\"{ex.Message}\"\nInner Exception: \"{(ex.InnerException != null ? ex.InnerException.Message : "")}\"");
+                Console.WriteLine($"ERROR: An error occurred while trying to handle the response to this request to join the \"{org.Name}\" organization! JoinRequester={sender.Username}  TeamLead={teamLead.Username}:\n\"{ex.Message}\"\nInner Exception: \"{(ex.InnerException != null ? ex.InnerException.Message : "")}\"");
             }
             finally
             {
@@ -120,7 +120,7 @@ namespace Bot.EventHandlers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"ERROR: An error occurred while trying to add you as a new member of the \"{org.Name}\" organization. Contact the team lead, <@{org.LeaderID}>\nException: \"{ex.Message}\"\n    Inner Exception: \"{(ex.InnerException != null ? ex.InnerException.Message : "")}\"");
+                Console.WriteLine($"ERROR: An error occurred while trying to a new member to the \"{org.Name}\" organization.\nException: \"{ex.Message}\"\n    Inner Exception: \"{(ex.InnerException != null ? ex.InnerException.Message : "")}\"");
                 return false;
             }
 
@@ -147,7 +147,7 @@ namespace Bot.EventHandlers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"ERROR: An error occurred while trying to get the user Id of the organization join request.n\"{ex.Message}\"\n    Inner Exception: \"{(ex.InnerException != null ? ex.InnerException.Message : "")}\"");
+                Console.WriteLine($"ERROR: An error occurred while trying to get the user Id from the organization join request.n\"{ex.Message}\"\n    Inner Exception: \"{(ex.InnerException != null ? ex.InnerException.Message : "")}\"");
 
                 return false;
             }

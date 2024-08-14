@@ -46,7 +46,6 @@ namespace WebApp.Pages.Modules.GlobalRewards
 
         public async Task<IActionResult> OnPostSave(GlobalVoiceCurrencyGain GlobalVoiceCurrencyGain)
         {
-            Console.WriteLine($"{GlobalVoiceCurrencyGain.IsEnabled}");
             var globalInfo = await _db.GlobalVoiceCurrencyGains.FirstOrDefaultAsync(v => v.GuildId == GlobalVoiceCurrencyGain.GuildId);
             if (globalInfo == null)
             {

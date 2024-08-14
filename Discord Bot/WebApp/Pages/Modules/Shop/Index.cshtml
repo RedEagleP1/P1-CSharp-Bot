@@ -35,8 +35,54 @@
 			</tr>
 		</thead>
 		<tbody id="TableRows">
-			<tr>
-			</tr>
+			@{
+				int index = 0;
+				foreach (var item in Model.ShopItems)
+				{
+					<tr>
+						<input asp-for="@Model.SavedItems[index].Id" value="@item.Id">
+						<input asp-for="@Model.SavedItems[index].GuildId" value="@item.GuildId">
+						<th>
+							<input asp-for="@Model.SavedItems[index].ItemName" value="@item.ItemName">
+						</th>
+						<th>
+							@if (Model.SavedItems[index].CurrencyId != null)
+							{
+								<input asp-for="@Model.SavedItems[index].CurrencyId" value="@item.CurrencyId">
+							}
+							else
+							{
+								<input asp-for="@Model.SavedItems[index].CurrencyId" value="">
+							}
+						</th>
+						<th>
+							<input asp-for="@Model.SavedItems[index].Cost" value="@item.Cost">
+						</th>
+						<th>
+							@if (Model.SavedItems[index].emojiId != null)
+							{
+								<input asp-for="@Model.SavedItems[index].emojiId" value="@item.emojiId">
+							}
+							else
+							{
+								<input asp-for="@Model.SavedItems[index].emojiId" value="">
+							}
+						</th>
+						<th>
+							@if (Model.SavedItems[index].emojiId != null)
+							{
+								<input asp-for="@Model.SavedItems[index].ItemEffectID" value="@item.ItemEffectID">
+							}
+							else
+							{
+								<input asp-for="@Model.SavedItems[index].ItemEffectID" value="">
+							}
+							<input asp-for="@Model.SavedItems[index].ItemEffectVal" value="">
+						</th>
+					</tr>
+					index++;
+				}
+			}
 		</tbody>
 	</table>
 </div>

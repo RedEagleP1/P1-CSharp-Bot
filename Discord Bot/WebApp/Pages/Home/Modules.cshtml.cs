@@ -29,7 +29,8 @@ namespace WebApp.Pages.Home
             new Module() {Name = "Voice Channel Currency Gain", Description = "Set amount/currency gained for voice channels", PageName = "VoiceChannelCurrencyGains"},
             new Module() {Name = "Text Channel Message Validation", Description = "Set message validation on specific channels", PageName = "TextChannelMessageValidation" },
             new Module() {Name = "Global Rewards", Description = "Set amount/currency gained for ALL voice channels.", PageName="GlobalRewards"},
-            new Module() {Name = "Currency Resets", Description = "Reset specific or all currencies for all users in a guild.", PageName="CurrencyResets"}
+            new Module() {Name = "Currency Resets", Description = "Reset specific or all currencies for all users in a guild.", PageName="CurrencyResets"},
+            new Module() {Name = "Automations", Description = "Set up automations for the server.", PageName="Automations"}
         };
         public string? Name { get; set; }
         public string? Description { get; set; }

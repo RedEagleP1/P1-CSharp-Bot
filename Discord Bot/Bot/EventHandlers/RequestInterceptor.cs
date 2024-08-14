@@ -33,6 +33,7 @@ namespace Bot.EventHandlers
             if (Request.Embed == null)
                 return;
 
+
             var embedTitle = Request.Embed.Title;
             if(IsForAccount(embedTitle))
             {

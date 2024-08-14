@@ -216,56 +216,56 @@ namespace Models.Migrations
                     b.ToTable("MessageValidationSuccessTracks");
                 });
 
-			modelBuilder.Entity("Models.Organization", b =>
-			{
-				b.Property<ulong>("Id")
-					.ValueGeneratedOnAdd()
-					.HasColumnType("bigint unsigned");
+            modelBuilder.Entity("Models.Organization", b =>
+                {
+                    b.Property<ulong>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint unsigned");
 
-				b.Property<ulong>("CurrencyId")
-					.HasColumnType("bigint unsigned");
+                    b.Property<ulong>("CurrencyId")
+                        .HasColumnType("bigint unsigned");
 
-				b.Property<ulong>("GuildId")
-					.HasColumnType("bigint unsigned");
+                    b.Property<ulong>("GuildId")
+                        .HasColumnType("bigint unsigned");
 
-				b.Property<ulong>("LeaderID")
-					.HasColumnType("bigint unsigned");
+                    b.Property<ulong>("LeaderID")
+                        .HasColumnType("bigint unsigned");
 
-				b.Property<int>("MaxMembers")
-					.HasColumnType("int");
+                    b.Property<int>("MaxMembers")
+                        .HasColumnType("int");
 
-				b.Property<string>("Name")
-					.IsRequired()
-					.HasColumnType("longtext");
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
-				b.Property<ulong>("TreasuryAmount")
-					.HasColumnType("bigint unsigned");
+                    b.Property<ulong>("TreasuryAmount")
+                        .HasColumnType("bigint unsigned");
 
-				b.HasKey("Id");
+                    b.HasKey("Id");
 
-				b.HasIndex("GuildId");
+                    b.HasIndex("GuildId");
 
-				b.ToTable("Organizations");
-			});
+                    b.ToTable("Organizations");
+                });
 
-			modelBuilder.Entity("Models.OrganizationMember", b =>
-			{
-				b.Property<ulong>("Id")
-					.ValueGeneratedOnAdd()
-					.HasColumnType("bigint unsigned");
+            modelBuilder.Entity("Models.OrganizationMember", b =>
+                {
+                    b.Property<ulong>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint unsigned");
 
-				b.Property<ulong>("OrganizationId")
-					.HasColumnType("bigint unsigned");
+                    b.Property<ulong>("OrganizationId")
+                        .HasColumnType("bigint unsigned");
 
-				b.Property<ulong>("UserId")
-					.HasColumnType("bigint unsigned");
+                    b.Property<ulong>("UserId")
+                        .HasColumnType("bigint unsigned");
 
-				b.HasKey("Id");
+                    b.HasKey("Id");
 
-				b.ToTable("OrganizationMembers");
-			});
+                    b.ToTable("OrganizationMembers");
+                });
 
-			modelBuilder.Entity("Models.Role", b =>
+            modelBuilder.Entity("Models.Role", b =>
                 {
                     b.Property<ulong>("Id")
                         .HasColumnType("bigint unsigned");
@@ -750,25 +750,25 @@ namespace Models.Migrations
                         .HasForeignKey("AutomationId");
                 });
 
-			modelBuilder.Entity("Models.Organization", b =>
-			{
-				b.HasOne("Models.Guild", null)
-					.WithMany()
-					.HasForeignKey("GuildId")
-					.OnDelete(DeleteBehavior.Cascade)
-					.IsRequired();
-			});
+            modelBuilder.Entity("Models.Organization", b =>
+                {
+                    b.HasOne("Models.Guild", null)
+                        .WithMany()
+                        .HasForeignKey("GuildId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
 
-			modelBuilder.Entity("Models.OrganizationMember", b =>
-			{
-				b.HasOne("Models.Organization", null)
-					.WithMany()
-					.HasForeignKey("Id")
-					.OnDelete(DeleteBehavior.Cascade)
-					.IsRequired();
-			});
+            modelBuilder.Entity("Models.OrganizationMember", b =>
+                {
+                    b.HasOne("Models.Organization", null)
+                        .WithMany()
+                        .HasForeignKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
 
-			modelBuilder.Entity("Models.Role", b =>
+            modelBuilder.Entity("Models.Role", b =>
                 {
                     b.HasOne("Models.Guild", null)
                         .WithMany()

@@ -30,8 +30,6 @@ namespace Bot.EventHandlers
 
         async Task OnButtonExecuted(SocketMessageComponent component)
         {
-            Console.WriteLine("*** ROLE SURVEY HANDLER ***");
-
             _ = Task.Run(async () =>
             {
                 try

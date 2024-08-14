@@ -23,6 +23,8 @@ namespace Bot.EventHandlers
 
         public void Subscribe()
         {
+            Console.WriteLine("*** SLASH COMMAND HANDLER ***");
+
             client.SlashCommandExecuted += OnSlashCommandExecuted;
 
             foreach(var command in slashCommands)
@@ -61,7 +63,18 @@ namespace Bot.EventHandlers
                 return;
             }
 
-            await component.DeferAsync(ephemeral: true);
+
+            try
+            {
+                await component.DeferAsync(ephemeral: true);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Caught:\n" +
+                                  $"    EXCEPTION:\n    \"{ex.Message}\" +" +
+                                  $"    INNER EXCEPTION: \"{(ex.InnerException != null ? ex.InnerException.Message : "")}\"");
+            }
+
 
             _ = Task.Run(async () =>
             {

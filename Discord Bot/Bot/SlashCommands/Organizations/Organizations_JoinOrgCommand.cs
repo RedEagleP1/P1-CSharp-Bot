@@ -69,8 +69,8 @@ namespace Bot.SlashCommands.Organizations
 
                 // Check if the user that invoked this command is already a member of an organization.
                 OrganizationMember? member = await context.OrganizationMembers.FirstOrDefaultAsync(x => x.UserId == command.User.Id);
-                if (member != null)
-                    return "You are already in an organization so you cannot join another.";
+                //if (member != null)
+                //    return "You are already in an organization so you cannot join another.";
 
 
                 // Try to get the id option.

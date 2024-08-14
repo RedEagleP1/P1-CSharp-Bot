@@ -72,9 +72,9 @@ namespace Bot.SlashCommands.Organizations
 
 
                 // Update the user's owned currency.
-                currencyOwned.Amount -= amountToDonate;
                 if (currencyOwned != null)
                 {
+                    currencyOwned.Amount -= amountToDonate;
                     context.CurrenciesOwned.Update(currencyOwned);
                 }
                 else

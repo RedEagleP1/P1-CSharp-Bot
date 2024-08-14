@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,18 +26,23 @@ namespace Bot.EventHandlers
 
         public async Task OnButtonExecuted(SocketMessageComponent component)
         {
-            Console.WriteLine("HANDLE BUTTONS!");
+            Console.WriteLine("*** ORGANIZATION JOIN HANDLER ***");
 
             // Extract the Id of the user requesting to join the organization from the content string.
             // The component.Message.Author object was giving me the Id of the Discord bot instead of the
             // user who triggered this request. That is most likely just because the message to the
             // team lead was indeed sent by the bot.
             ExtractSenderIdFromMessageContent(component.Message.Content, out ulong? senderId);
+            if (senderId == null)
+            {
+                Console.WriteLine("ERROR: Sender Id is null!");
+                return;
+            }
+            
 
             SocketUser teamLead = component.User;
             SocketUser sender = _client.GetUser((ulong) senderId);
 
-            Console.WriteLine($"MSG AUTHOR: {component.Message.Author.Username}    @{senderId}");
             using var context = DBContextFactory.GetNewContext();
 
 
@@ -46,6 +52,9 @@ namespace Bot.EventHandlers
             try
             {
                 org = await GetOrg(component.User.Id, context);
+
+
+                await HideAcceptAndDenyButtons(component);
 
 
                 // We can now check for our custom id
@@ -64,16 +73,19 @@ namespace Bot.EventHandlers
                         {
                             // Lets sending a direct message saying their join request has been denied.
                             await sender.SendMessageAsync($"Sorry, an error occurred while trying to add you to the \"{org.Name}\" organization. Contact the team lead, {teamLead.Username}.");
-                            return;
                         }
                         break;
 
                     // Check if the deny button was clicked.
                     case "deny_join_org":
                         // Lets sending a direct message saying their join request has been denied.
-                        await teamLead.SendMessageAsync($"Sorry, team lead <@{component.User.Id}> has denied your request to join the \"{org.Name}\" organization.");
-                        return;
-                }
+                        await sender.SendMessageAsync($"Sorry, team lead <@{component.User.Id}> has denied your request to join the \"{org.Name}\" organization.");
+
+                        break;
+
+                } // end switch
+
+
             }
             catch (Exception ex)
             {
@@ -82,15 +94,19 @@ namespace Bot.EventHandlers
             finally
             {
                 DBReadWrite.ReleaseLock();
-
-                // Make the buttons disappear now that the team lead has clicked on one of them.
-                await component.DeferAsync();
-                await component.ModifyOriginalResponseAsync(msg =>
-                {
-                    msg.Content = component.Message.Content;
-                    msg.Components = null; // Just remove all components from the message, thus removing the buttons.
-                });
             }
+
+        }
+
+        private async Task HideAcceptAndDenyButtons(SocketMessageComponent component)
+        {
+            // Make the buttons disappear now that the team lead has clicked on one of them.
+            await component.DeferAsync();
+            await component.ModifyOriginalResponseAsync(msg =>
+            {
+                msg.Content = component.Message.Content;
+                msg.Components = null; // Just remove all components from the message, thus removing the buttons.
+            });
         }
 
         /// <summary>

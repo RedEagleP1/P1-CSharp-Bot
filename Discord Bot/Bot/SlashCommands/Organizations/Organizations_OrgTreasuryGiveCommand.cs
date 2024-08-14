@@ -148,7 +148,7 @@ namespace Bot.SlashCommands.Organizations
                 // Get the currency name.
                 Currency? currency = await context.Currencies.FirstOrDefaultAsync(c => c.Id == OrganizationConstants.CURRENCY_ID);
                 if (currency == null)
-                    return "Could not find the currency with this Id.";
+                    return "ERROR: Could not find the currency with this Id.";
 
                 // Return a messaage.
                 return $"The organization \"{org.Name}\" gave {amountToGive} {currency.Name} to ({targetUser.Username})!";

@@ -23,8 +23,6 @@ namespace Bot.EventHandlers
 
         public void Subscribe()
         {
-            Console.WriteLine("*** SLASH COMMAND HANDLER ***");
-
             client.SlashCommandExecuted += OnSlashCommandExecuted;
 
             foreach(var command in slashCommands)

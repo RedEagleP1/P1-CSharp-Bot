@@ -113,7 +113,7 @@ namespace Bot.SlashCommands.Organizations
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"ERROR: An error occurred while trying to send a direct message to the leader of the organization, <@{leader.Id}>:\n" +
+                    Console.WriteLine($"ERROR: An error occurred while trying to send a direct message to the leader of the organization, leader.Name:\n" +
                                 $"\"{ex.Message}\"\n" +
                                 $"Inner Exception: \"{(ex.InnerException != null ? ex.InnerException.Message : "")}\"");
 

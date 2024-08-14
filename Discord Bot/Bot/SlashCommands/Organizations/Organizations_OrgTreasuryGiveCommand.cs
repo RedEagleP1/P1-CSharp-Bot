@@ -126,8 +126,19 @@ namespace Bot.SlashCommands.Organizations
 
 
                 // Give currency to the target user.
-                currencyOwned.Amount += amountToGive;
-                context.CurrenciesOwned.Update(currencyOwned);
+                if (currencyOwned == null)
+                {
+                    currencyOwned.Amount += amountToGive;
+                    context.CurrenciesOwned.Update(currencyOwned);
+                }
+                else
+                {
+                    currencyOwned = new CurrencyOwned();
+                    currencyOwned.OwnerId = targetUser.Id;
+                    currencyOwned.CurrencyId = OrganizationConstants.CURRENCY_ID;
+                    currencyOwned.Amount = amountToGive;
+                    context.CurrenciesOwned.Add(currencyOwned);
+                }
 
 
                 // Save database changes.

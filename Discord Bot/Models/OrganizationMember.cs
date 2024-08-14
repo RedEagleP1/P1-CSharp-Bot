@@ -7,7 +7,6 @@ namespace Models
 	public class OrganizationMember
 	{
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [DefaultValue(1)]
         public ulong Id { get; set; }
         [Required]
         public ulong UserId { get; set; }       

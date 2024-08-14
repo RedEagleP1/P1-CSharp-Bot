@@ -45,10 +45,12 @@ namespace WebApp.Pages.Modules.Shop
                 };
 
                 _db.ShopItems.Add(tempItem);
-                ShopItems.Add(tempItem);
+				newList.Add(tempItem);
 
 				await _db.SaveChangesAsync();
 			}
+
+			ShopItems = newList;
 		}
 
         public async Task OnGetWithAlert(ulong guildId, string message)

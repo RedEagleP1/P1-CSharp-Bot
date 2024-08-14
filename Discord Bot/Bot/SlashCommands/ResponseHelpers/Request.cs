@@ -30,8 +30,11 @@ namespace Bot.SlashCommands.ResponseHelpers
 
         public Request(SocketModal modal)
         {
+            Console.WriteLine("*** B");
             this.modal = modal;
+            Console.WriteLine("*** D");
             IncomingComponentType = ComponentType.Modal;
+            Console.WriteLine("*** C");
         }
         public Request(SocketMessageComponent component)
         {

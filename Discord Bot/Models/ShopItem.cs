@@ -10,6 +10,8 @@ namespace Models
 	{
 		public int? Id { get; set; }
 		public ulong GuildId { get; set; }
+        public string ItemName { get; set; }
+        public ulong emojiId { get; set; }
         public ulong CurrencyId { get; set; }
         public int Cost { get; set; }
         public ulong ItemEffectID { get; set; }

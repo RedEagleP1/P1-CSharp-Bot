@@ -23,7 +23,8 @@ namespace Models
         public DbSet<CurrencyReset> CurrencyResets { get; set; }
 		public DbSet<Automation> Automations { get; set; }
 		public DbSet<IdAuto> IdAutos { get; set; }
-		public DbSet<VoiceChannelTrack> VoiceChannelTracks { get; set; }
+        public DbSet<ShopItem> ShopItems { get; set; }
+        public DbSet<VoiceChannelTrack> VoiceChannelTracks { get; set; }
         public DbSet<TextChannelMessageValidation> TextChannelMessageValidation { get; set; }
         public DbSet<MessageValidationSuccessTrack> MessageValidationSuccessTracks { get; set; }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
@@ -148,7 +149,13 @@ namespace Models
 				.HasForeignKey(v => v.AutomationId)
                 .IsRequired(false);
 
-			modelBuilder.Entity<CurrencyReset>()
+            modelBuilder.Entity<ShopItem>()
+                .HasOne<Guild>()
+                .WithMany()
+                .HasForeignKey(v => v.GuildId)
+                .IsRequired(false);
+
+            modelBuilder.Entity<CurrencyReset>()
                 .HasOne<Currency>()
                 .WithMany()
                 .HasForeignKey(v => v.CurrencyId)

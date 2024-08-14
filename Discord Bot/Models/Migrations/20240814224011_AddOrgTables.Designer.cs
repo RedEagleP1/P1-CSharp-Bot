@@ -11,8 +11,8 @@ using Models;
 namespace Models.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240805165847_AddAutoUpdate")]
-    partial class AddAutoUpdate
+    [Migration("20240814224011_AddOrgTables")]
+    partial class AddOrgTables
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -216,6 +216,55 @@ namespace Models.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("MessageValidationSuccessTracks");
+                });
+
+            modelBuilder.Entity("Models.Organization", b =>
+                {
+                    b.Property<ulong>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint unsigned");
+
+                    b.Property<ulong>("CurrencyId")
+                        .HasColumnType("bigint unsigned");
+
+                    b.Property<ulong>("GuildId")
+                        .HasColumnType("bigint unsigned");
+
+                    b.Property<ulong>("LeaderID")
+                        .HasColumnType("bigint unsigned");
+
+                    b.Property<int>("MaxMembers")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<ulong>("TreasuryAmount")
+                        .HasColumnType("bigint unsigned");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GuildId");
+
+                    b.ToTable("Organizations");
+                });
+
+            modelBuilder.Entity("Models.OrganizationMember", b =>
+                {
+                    b.Property<ulong>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint unsigned");
+
+                    b.Property<ulong>("OrganizationId")
+                        .HasColumnType("bigint unsigned");
+
+                    b.Property<ulong>("UserId")
+                        .HasColumnType("bigint unsigned");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("OrganizationMembers");
                 });
 
             modelBuilder.Entity("Models.Role", b =>
@@ -701,6 +750,24 @@ namespace Models.Migrations
                     b.HasOne("Models.Automation", null)
                         .WithMany()
                         .HasForeignKey("AutomationId");
+                });
+
+            modelBuilder.Entity("Models.Organization", b =>
+                {
+                    b.HasOne("Models.Guild", null)
+                        .WithMany()
+                        .HasForeignKey("GuildId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Models.OrganizationMember", b =>
+                {
+                    b.HasOne("Models.Organization", null)
+                        .WithMany()
+                        .HasForeignKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Models.Role", b =>

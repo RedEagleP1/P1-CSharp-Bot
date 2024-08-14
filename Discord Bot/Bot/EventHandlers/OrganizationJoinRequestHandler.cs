@@ -26,8 +26,6 @@ namespace Bot.EventHandlers
 
         public async Task OnButtonExecuted(SocketMessageComponent component)
         {
-            Console.WriteLine("*** ORGANIZATION JOIN HANDLER ***");
-
             // Extract the Id of the user requesting to join the organization from the content string.
             // The component.Message.Author object was giving me the Id of the Discord bot instead of the
             // user who triggered this request. That is most likely just because the message to the

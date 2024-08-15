@@ -50,34 +50,35 @@ namespace Bot
 
             List<ISlashCommand> slashCommands = new()
             {
+                new AccountBackupCommand(client),
+                new AccountCommand(client),
                 new AwardCommand(client),
                 new BuyRoleCommand(),
                 new CurrencyCommand(),
                 //new DebugCommand(client),
-                new AccountCommand(client),
-                new AccountBackupCommand(client),
                 new ReviewCommand(client),
 
                 // ----------------------------------------------------------------------------------------------------
                 // Legion Commands
                 // ----------------------------------------------------------------------------------------------------
                 new Legions_CreateLegionCommand(),
+                new Legions_DeleteLegionCommand(client),
 
                 // ----------------------------------------------------------------------------------------------------
                 // Organizations Commands
                 // ----------------------------------------------------------------------------------------------------
                 new Organizations_CreateOrgCommand(),
+                new Organizations_DeleteOrgCommand(client),
                 new Organizations_DonateToOrgCommand(),
-                new Organizations_OrgInfoCommand(client),
                 new Organizations_JoinOrgCommand(client),
+                new Organizations_KickOrgMemberCommand(),
                 new Organizations_LeaveOrgCommand(),
+                new Organizations_OrgInfoCommand(client),
+                new Organizations_OrgTreasuryGiveCommand(),
                 new Organizations_PingOrgCommand(),
                 new Organizations_PromoteOrgMemberCommand(),
-                new Organizations_DeleteOrgCommand(client),
-                new Organizations_KickOrgMemberCommand(),
                 new Organizations_RenameOrgCommand(),
-                new Organizations_OrgTreasuryGiveCommand(),
-            };
+};
 
             List<IEventHandler> eventHandlers = new()
             {

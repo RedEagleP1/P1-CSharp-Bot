@@ -21,11 +21,13 @@ namespace WebApp.Pages.Modules.Shop
 
 		public List<ShopItem> ShopItems { get; set; }
 
-        public List<ShopItem> SavedItems { get; set; }
+        public ShopItem SavedItem { get; set; }
 
 		public async Task OnGet(ulong guildId)
         {
-            Guild = await _db.Guilds.FirstOrDefaultAsync(g => g.Id == guildId);
+			Console.WriteLine("HELLO1!");
+
+			Guild = await _db.Guilds.FirstOrDefaultAsync(g => g.Id == guildId);
             
             //Get shop items
             var newList = new List<ShopItem>();
@@ -39,9 +41,9 @@ namespace WebApp.Pages.Modules.Shop
             {
                 var tempItem = new ShopItem() {
                     GuildId = guildId,
-                    ItemName = "",
+                    ItemName = "No name",
                     Cost = 0,
-                    ItemEffectVal = "",
+                    Description = "No description",
                 };
 
                 _db.ShopItems.Add(tempItem);
@@ -59,9 +61,28 @@ namespace WebApp.Pages.Modules.Shop
             ViewData["Message"] = message;
         }
 
-        public async Task<IActionResult> OnPostSave(List<ShopItem> SavedItems)
+        public async Task<IActionResult> OnPostSave(ShopItem SavedItem)
         {
-            return RedirectToPage("Index","WithAlert",new { guildId = 0, message = $"Saved changes to 0" });
+			Console.WriteLine("HELLO2!");
+
+			var updateItem = await _db.ShopItems.FirstOrDefaultAsync(v => v.Id == SavedItem.Id);
+
+			if (updateItem == null)
+			{
+				return BadRequest();
+			}
+
+            updateItem.Id = SavedItem.Id;
+			updateItem.GuildId = SavedItem.GuildId;
+			updateItem.ItemName = SavedItem.ItemName;
+			updateItem.emojiId = SavedItem.emojiId;
+			updateItem.CurrencyId = SavedItem.CurrencyId;
+			updateItem.Cost = SavedItem.Cost;
+			updateItem.Description = SavedItem.Description;
+
+            await _db.SaveChangesAsync();
+
+			return RedirectToPage("Index","WithAlert",new { guildId = SavedItem.GuildId, message = $"Saved changes to {SavedItem.GuildId}" });
         }
     }
 }

@@ -427,42 +427,6 @@ namespace Models.Migrations
                     b.ToTable("RoleSurveyRoleSurveyTriggers");
                 });
 
-            modelBuilder.Entity("Models.ShopItem", b =>
-                {
-                    b.Property<int?>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<int>("Cost")
-                        .HasColumnType("int");
-
-                    b.Property<ulong>("CurrencyId")
-                        .HasColumnType("bigint unsigned");
-
-                    b.Property<ulong>("GuildId")
-                        .HasColumnType("bigint unsigned");
-
-                    b.Property<ulong>("ItemEffectID")
-                        .HasColumnType("bigint unsigned");
-
-                    b.Property<string>("ItemEffectVal")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("ItemName")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<ulong>("emojiId")
-                        .HasColumnType("bigint unsigned");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("GuildId");
-
-                    b.ToTable("ShopItems");
-                });
-
             modelBuilder.Entity("Models.TaskCompletionRecord", b =>
                 {
                     b.Property<int>("Id")
@@ -834,13 +798,6 @@ namespace Models.Migrations
                         .HasForeignKey("RoleSurveyOptionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Models.ShopItem", b =>
-                {
-                    b.HasOne("Models.Guild", null)
-                        .WithMany()
-                        .HasForeignKey("GuildId");
                 });
 
             modelBuilder.Entity("Models.TextChannelMessageValidation", b =>

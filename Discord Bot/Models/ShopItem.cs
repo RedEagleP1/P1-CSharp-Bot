@@ -14,7 +14,6 @@ namespace Models
         public ulong emojiId { get; set; }
         public ulong CurrencyId { get; set; }
         public int Cost { get; set; }
-        public ulong ItemEffectID { get; set; }
-        public string ItemEffectVal { get; set; }
+        public string Description { get; set; }
     }
 }

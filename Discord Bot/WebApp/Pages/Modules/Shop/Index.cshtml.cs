@@ -23,6 +23,8 @@ namespace WebApp.Pages.Modules.Shop
 
         public ShopItem SavedItem { get; set; }
 
+		public List<Currency> AllCurrencies { get; set; }
+
 		public async Task OnGet(ulong guildId)
         {
 			Console.WriteLine("HELLO1!");
@@ -53,6 +55,8 @@ namespace WebApp.Pages.Modules.Shop
 			}
 
 			ShopItems = newList;
+			AllCurrencies = _db.Currencies.ToList();
+            Console.WriteLine(AllCurrencies[0].Name);
 		}
 
         public async Task OnGetWithAlert(ulong guildId, string message)

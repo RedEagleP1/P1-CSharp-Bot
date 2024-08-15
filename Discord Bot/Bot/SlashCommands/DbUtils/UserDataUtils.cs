@@ -31,7 +31,8 @@ namespace Bot.SlashCommands.DbUtils
             if (context.OrganizationMembers.Count() < 1)
                 return null;
 
-            OrganizationMember? orgMember = await context.OrganizationMembers.FirstAsync(x => x.UserId == userId);
+            OrganizationMember? orgMember = context.OrganizationMembers.Count() > 0 ? await context.OrganizationMembers.FirstAsync(x => x.UserId == userId)
+                                                                                    : null;
             if (orgMember != null)
                 return orgMember;
             else
@@ -49,11 +50,13 @@ namespace Bot.SlashCommands.DbUtils
             if (context.LegionMembers.Count() < 1)
                 return null;
 
-            OrganizationMember? orgMember = await context.OrganizationMembers.FirstAsync(x => x.UserId == userId);
+            OrganizationMember? orgMember = context.OrganizationMembers.Count() > 0 ? await context.OrganizationMembers.FirstAsync(x => x.UserId == userId)
+                                                                                    : null;
             if (orgMember == null)
                 return null;
 
-            LegionMember? legionMember = await context.LegionMembers.FirstAsync(x => x.OrganizationId == orgMember.OrganizationId);
+            LegionMember? legionMember = context.LegionMembers.Count() > 0 ? await context.LegionMembers.FirstAsync(x => x.OrganizationId == orgMember.OrganizationId)
+                                                                           : null;
             if (legionMember == null)
                 return null;
             else
@@ -71,11 +74,13 @@ namespace Bot.SlashCommands.DbUtils
             if (context.Legions.Count() < 1)
                 return null;
 
-            OrganizationMember? orgMember = await context.OrganizationMembers.FirstAsync(x => x.UserId == userId);
+            OrganizationMember? orgMember = context.OrganizationMembers.Count() > 0 ? await context.OrganizationMembers.FirstAsync(x => x.UserId == userId)
+                                                                                    : null;
             if (orgMember == null)
                 return null;
 
-            Legion? legion = await context.Legions.FirstAsync(x => x.LeaderID == userId);
+            Legion? legion = context.Legions.Count() > 0 ? await context.Legions.FirstAsync(x => x.LeaderID == userId)
+                                                         : null;
             if (legion == null)
                 return null;
             else
@@ -93,7 +98,8 @@ namespace Bot.SlashCommands.DbUtils
             if (context.Organizations.Count() < 1)
                 return null;
 
-            Organization? organization = await context.Organizations.FirstAsync(x => x.LeaderID == userId);
+            Organization? organization = context.Organizations.Count() > 0 ? await context.Organizations.FirstAsync(x => x.LeaderID == userId)
+                                                                           : null;
             if (organization == null)
                 return null;
             else

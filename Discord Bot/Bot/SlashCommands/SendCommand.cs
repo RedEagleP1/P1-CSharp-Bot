@@ -68,7 +68,7 @@ namespace Bot.SlashCommands
                 var sender = await GetCurrencyOwned(context, command.User.Id, currency.Id);
 
                 //Checks
-                if (sender.Amount >= optionValues.amount && optionValues.amount >= 0)
+                if (sender.Amount >= optionValues.amount && optionValues.amount >= 0 && optionValues.member.Id != command.User.Id)
                 {
                     sender.Amount -= optionValues.amount;
                     recipient.Amount += optionValues.amount;
@@ -77,15 +77,20 @@ namespace Bot.SlashCommands
                     await command.ModifyOriginalResponseAsync(
                         response => response.Content = $"{optionValues.amount} {optionValues.currency} has been added to user {optionValues.member.Username}");
                 }
-                else if (sender.Amount < optionValues.amount && optionValues.amount >= 0)
+                else if (sender.Amount < optionValues.amount && optionValues.amount >= 0 && optionValues.member.Id != command.User.Id)
                 {
                     await command.ModifyOriginalResponseAsync(
                         response => response.Content = $"You don't have enough {optionValues.currency}");
                 }
-                else
+                else if (optionValues.member.Id != command.User.Id)
                 {
 					await command.ModifyOriginalResponseAsync(
 						response => response.Content = $"You can't give negative currency!");
+				}
+                else
+                {
+					await command.ModifyOriginalResponseAsync(
+						response => response.Content = $"You can't give currency to yourself!");
 				}
             }
             finally

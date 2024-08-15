@@ -56,10 +56,12 @@
 							<input asp-for="@Model.SavedItem.emojiId" value=@item.emojiId>
 						</th>
 						<th>
-							<input asp-for="@Model.SavedItem.emojiId" value=@item.emojiId>
+							<input asp-for="@Model.SavedItem.Description" value=@item.Description>
+						</th>
+						<th>
+							<button asp-page-handler="Save" type="submit" class="btn btn-primary mx-2">Save</button>
 						</th>
 					</tr>
-					<button asp-page-handler="Save" type="submit" class="btn btn-primary mx-2">Save</button>
 					</form>
 					index++;
 				}

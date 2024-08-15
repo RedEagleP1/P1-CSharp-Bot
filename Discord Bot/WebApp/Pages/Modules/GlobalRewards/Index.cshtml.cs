@@ -25,17 +25,17 @@ namespace WebApp.Pages.Modules.GlobalRewards
             GlobalVoiceCurrencyGain = await _db.GlobalVoiceCurrencyGains.FirstOrDefaultAsync(g => g.GuildId == guildId);
             if (GlobalVoiceCurrencyGain == null)
             {
-                GlobalVoiceCurrencyGain = new GlobalVoiceCurrencyGain()
+                var newItem = new GlobalVoiceCurrencyGain()
                 {
-                    GuildId = GlobalVoiceCurrencyGain.GuildId,
+                    GuildId = guildId,
                     IsEnabled = false
                 };
-                var context = DBContextFactory.GetNewContext();
-                context.GlobalVoiceCurrencyGains.Add(GlobalVoiceCurrencyGain);
-            }
+                _db.GlobalVoiceCurrencyGains.Add(newItem);
 
-
-            AllCurrencies = _db.Currencies.ToList();
+				GlobalVoiceCurrencyGain = await _db.GlobalVoiceCurrencyGains.FirstOrDefaultAsync(g => g.GuildId == guildId);
+			}
+			await _db.SaveChangesAsync();
+			AllCurrencies = _db.Currencies.ToList();
         }
 
         public async Task OnGetWithAlert(ulong guildId, string message)

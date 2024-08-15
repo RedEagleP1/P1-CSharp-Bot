@@ -47,7 +47,8 @@
 							<input asp-for="@Model.SavedItem.ItemName" value="@item.ItemName">
 						</th>
 						<th>
-							<input asp-for="@Model.SavedItem.CurrencyId" value=@item.CurrencyId>
+							<input asp-for="@Model.SavedItem.CurrencyId" value=@item.CurrencyId hidden>
+								@await Html.PartialAsync("/Pages/Partials/_CurrencyDropdown.cshtml", new CurrencyDropdownPartialModel() { ButtonName = "Select Currency", Currencies = Model.AllCurrencies, AddNoneOption = true })
 						</th>
 						<th>
 							<input asp-for="@Model.SavedItem.Cost" value="@item.Cost">

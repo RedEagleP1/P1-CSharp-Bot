@@ -68,9 +68,10 @@ namespace Bot.SlashCommands.Organizations
 
 
                 // Check if the user that invoked this command is already a member of an organization.
-                OrganizationMember? member = await context.OrganizationMembers.FirstOrDefaultAsync(x => x.UserId == command.User.Id);
-                //if (member != null)
-                //    return "You are already in an organization so you cannot join another.";
+                OrganizationMember? member = context.OrganizationMembers.Count() > 0 ? await context.OrganizationMembers.FirstOrDefaultAsync(x => x.UserId == command.User.Id)
+                                                                                     : null;
+                if (member != null)
+                    return "You are already in an organization so you cannot join another.";
 
 
                 // Try to get the id option.
@@ -88,13 +89,15 @@ namespace Bot.SlashCommands.Organizations
 
 
                 // Check if there is an organization with this Id.
-                Organization? org = await context.Organizations.FirstOrDefaultAsync(x => x.Id == orgId);
+                Organization? org = context.Organizations.Count() > 0 ? await context.Organizations.FirstOrDefaultAsync(x => x.Id == orgId)
+                                                                      : null;
                 if (org == null)
                     return "There is no organization with this Id.";
 
 
                 // Check if the organization has room for a new member
-                List<OrganizationMember> members = await context.OrganizationMembers.Where(x => x.OrganizationId == orgId).ToListAsync();
+                List<OrganizationMember>? members = context.OrganizationMembers.Count() > 0 ? await context.OrganizationMembers.Where(x => x.OrganizationId == orgId).ToListAsync()
+                                                                                            : null;
                 if (members == null || members.Count == 0)
                     return "This organization has no members. There must be an error in the database as this is normally not possible.";
                 if (members.Count >= org.MaxMembers)

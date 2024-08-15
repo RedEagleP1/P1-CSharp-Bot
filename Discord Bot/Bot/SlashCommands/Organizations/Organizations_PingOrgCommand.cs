@@ -1,4 +1,5 @@
-﻿using Discord;
+﻿using Bot.SlashCommands.DbUtils;
+using Discord;
 using Discord.WebSocket;
 using Microsoft.EntityFrameworkCore;
 using Models;
@@ -47,29 +48,23 @@ namespace Bot.SlashCommands.Organizations
 
 
                 // Check if the user that invoked this command is a member of an organization.
-                OrganizationMember? member = await context.OrganizationMembers.FirstOrDefaultAsync(x => x.UserId == command.User.Id);
+                OrganizationMember? member = await UserDataUtils.CheckIfUserIsInAnOrg(command.User.Id, context);
                 if (member == null)
                     return "You cannot ping everyone in your organization since you are not a member of any organization.";
 
 
                 // Find the organization.
-                Organization? org = null;
-                try
-                {
-                    org = await context.Organizations.FirstOrDefaultAsync(o => o.Id == member.OrganizationId);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"ERROR: An error occurred:\n\"{ex.Message}\"\n    Inner Exception: \"{(ex.InnerException != null ? ex.InnerException.Message : "")}\"");
-                    return "An error occurred while finding the organization.";
-                }
+                Organization? org = context.Organizations.Count() > 0 ? await context.Organizations.FirstAsync(o => o.Id == member.OrganizationId)
+                                                                      : null;
                 if (org == null)
                     return "Could not find your organization.";
 
 
-                var members = await context.OrganizationMembers.Where(m => m.OrganizationId == org.Id).ToListAsync();
+                // Get a list of all the organization's members.
+                List<OrganizationMember>? members = context.OrganizationMembers.Count() > 0 ? await context.OrganizationMembers.Where(m => m.OrganizationId == org.Id).ToListAsync()
+                                                                                            : null;
                 if (members == null)
-                    return "Failed to get a list of all members of the organization";
+                    return "Failed to get a list of all members of your organization.";
                 else if (members.Count < 1)
                     return "There are no members in this organization. There is an error in the database since this should not be possible.";
 

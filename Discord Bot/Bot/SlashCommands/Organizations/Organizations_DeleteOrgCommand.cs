@@ -51,8 +51,9 @@ namespace Bot.SlashCommands.Organizations
             var user = client.GetGuild(Settings.P1RepublicGuildId)?.GetUser(command.User.Id);
             if (user == null)
                 return "Could not find user info.";
-            else if (user.Roles.FirstOrDefault(x => x.Name == "Admin") == null)
+            else if (user.Roles.FirstOrDefault(x => x.Name == OrganizationConstants.MODERATOR_ROLE) == null)
                 return "You do not have permission to use this command.";
+
 
             // Try to get the id option.
             SocketSlashCommandDataOption? idOption = command.Data.Options.FirstOrDefault(x => x.Name == "id");
@@ -76,7 +77,8 @@ namespace Bot.SlashCommands.Organizations
 
 
                 // Find the organization
-                Organization? org = await context.Organizations.FirstOrDefaultAsync(x => x.Id == orgId);
+                Organization? org = context.Organizations.Count() > 0 ? await context.Organizations.FirstAsync(x => x.Id == orgId)
+                                                                      : null;
                 if (org == null)
                     return "There is no organization with this Id.";
 

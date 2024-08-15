@@ -13,6 +13,9 @@ namespace Models
         public DbSet<Currency> Currencies { get; set; }
         public DbSet<CurrencyOwned> CurrenciesOwned { get; set; }
         public DbSet<CurrencyAwardLimit> CurrencyAwardLimits { get; set; }
+        public DbSet<Legion> Legions { get; set; }
+        public DbSet<LegionMember> LegionMembers { get; set; }
+
         public DbSet<Organization> Organizations { get; set; }
         public DbSet<OrganizationMember> OrganizationMembers { get; set; }
         public DbSet<RoleCostAndReward> RolesCostAndReward { get; set; }
@@ -191,6 +194,16 @@ namespace Models
                 
             modelBuilder.Entity<OrganizationMember>()
                 .HasOne<Organization>()
+                .WithMany()
+                .HasForeignKey(o => o.Id);
+
+            modelBuilder.Entity<Legion>()
+                .HasOne<Guild>()
+                .WithMany()
+                .HasForeignKey(o => o.GuildId);
+
+            modelBuilder.Entity<LegionMember>()
+                .HasOne<Legion>()
                 .WithMany()
                 .HasForeignKey(o => o.Id);
 

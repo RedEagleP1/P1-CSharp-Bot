@@ -41,22 +41,21 @@ namespace Bot.SlashCommands.Organizations
 
 
                 // Check if the user that invoked this command is a member of an organization.
-                OrganizationMember? member = await context.OrganizationMembers.FirstOrDefaultAsync(x => x.UserId == command.User.Id);
+                OrganizationMember? member = context.OrganizationMembers.Count() > 0 ? await context.OrganizationMembers.FirstAsync(x => x.UserId == command.User.Id)
+                                                                                     : null;
                 if (member == null)
                     return "You are not in an organization.";
 
 
                 // Find the organization.
-                Organization? org = null;
-                try
+                Organization? org = context.Organizations.Count() > 0 ? await context.Organizations.FirstAsync(o => o.Id == member.OrganizationId)
+                                                                      : null;
+                if (org == null)
                 {
-                    org = await context.Organizations.FirstOrDefaultAsync(o => o.Id == member.OrganizationId);
+                    Console.WriteLine($"ERROR: Could not find the organization.");
+                    return "Could not find the organization!";
                 }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"ERROR: An error occurred:\n\"{ex.Message}\"\n    Inner Exception: \"{(ex.InnerException != null ? ex.InnerException.Message : "")}\"");
-                    return "An error occurred while finding the organization.";
-                }
+
                 if (org == null)
                     return "Could not find your organization.";
 
@@ -85,20 +84,10 @@ namespace Bot.SlashCommands.Organizations
 
 
                 // Check if the specified user is a member of this organization.
-                OrganizationMember? memberInfo = null;
-                try
-                {
-                    memberInfo = context.OrganizationMembers.FirstOrDefault(x => x.UserId == targetUser.Id &&
-                                                                                 x.OrganizationId == org.Id);
-
-                    if (memberInfo == null)
-                        return $"The specified user is not a member of your organization ({org.Name}).";
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"ERROR: An error occurred:\n\"{ex.Message}\"\n    Inner Exception: \"{(ex.InnerException != null ? ex.InnerException.Message : "")}\"");
-                    return $"An error occurred while checking if the target user is a member of the \"{org.Name}\" organization.";
-                }
+                OrganizationMember? memberInfo = context.OrganizationMembers.Count() > 0 ? context.OrganizationMembers.FirstOrDefault(x => x.UserId == targetUser.Id && x.OrganizationId == org.Id)
+                                                                                         : null;
+                if (memberInfo == null)
+                    return $"The specified user is not a member of your organization ({org.Name}).";
 
 
                 if (memberInfo.UserId == org.LeaderID)

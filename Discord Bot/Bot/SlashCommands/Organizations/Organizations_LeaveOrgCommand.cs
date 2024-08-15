@@ -43,22 +43,15 @@ namespace Bot.SlashCommands.Organizations
                 using var context = DBContextFactory.GetNewContext();
 
                 // Check if the user that invoked this command is in an organization.
-                OrganizationMember? member = await context.OrganizationMembers.FirstOrDefaultAsync(x => x.UserId == command.User.Id);
+                OrganizationMember? member = context.OrganizationMembers.Count() > 0 ? await context.OrganizationMembers.FirstAsync(x => x.UserId == command.User.Id)
+                                                                                     : null;
                 if (member == null)
                     return "You cannot leave since you are not in an organization.";
 
 
                 // Find the organization.
-                Organization? org = null;
-                try
-                {
-                    org = await context.Organizations.FirstOrDefaultAsync(o => o.Id == member.OrganizationId);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"ERROR: An error occurred:\n\"{ex.Message}\"\n    Inner Exception: \"{(ex.InnerException != null ? ex.InnerException.Message : "")}\"");
-                    return "An error occurred while finding the organization.";
-                }
+                Organization? org = context.Organizations.Count() > 0 ? await context.Organizations.FirstAsync(o => o.Id == member.OrganizationId)
+                                                                      : null;
                 if (org == null)
                     return "Could not find your organization.";
 
@@ -69,8 +62,8 @@ namespace Bot.SlashCommands.Organizations
 
 
                 // Find the user's membership record for this organization.
-                OrganizationMember? orgMember = await context.OrganizationMembers.FirstOrDefaultAsync(x => x.UserId == command.User.Id &&
-                                                                                                           x.OrganizationId == org.Id);
+                OrganizationMember? orgMember = context.OrganizationMembers.Count() > 0 ? await context.OrganizationMembers.FirstAsync(x => x.UserId == command.User.Id && x.OrganizationId == org.Id)
+                                                                                        : null;
                 if (orgMember == null)
                     return "You cannot leave your organization, because you are not a member of one.";
 

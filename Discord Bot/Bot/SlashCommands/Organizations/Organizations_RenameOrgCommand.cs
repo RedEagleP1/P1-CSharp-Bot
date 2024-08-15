@@ -1,4 +1,5 @@
-﻿using Discord;
+﻿using Bot.SlashCommands.DbUtils;
+using Discord;
 using Discord.WebSocket;
 using Microsoft.EntityFrameworkCore;
 using Models;
@@ -43,11 +44,9 @@ namespace Bot.SlashCommands.Organizations
 
 
             // Try to get the name option.
-            SocketSlashCommandDataOption nameOption = command.Data.Options.FirstOrDefault(x => x.Name == "name");
+            SocketSlashCommandDataOption? nameOption = command.Data.Options.FirstOrDefault(x => x.Name == "name");
             if (nameOption == null)
-            {
                 return "Please provide a new name for the new organization.";
-            }
 
             // Check if the name option contains a valid value.
             string? newOrgName = nameOption.Value.ToString();
@@ -64,21 +63,21 @@ namespace Bot.SlashCommands.Organizations
                 using var context = DBContextFactory.GetNewContext();
 
                 // Check if the user who invoked this command is in an organization.
-                OrganizationMember? member = await context.OrganizationMembers.FirstOrDefaultAsync(x => x.UserId == command.User.Id);
+                OrganizationMember? member = await UserDataUtils.CheckIfUserIsInAnOrg(command.User.Id, context);
                 if (member == null)
                     return "You are not in an organization.";
 
 
                 // Check if there is already an organization with this name.
-                Organization? existingOrg = await context.Organizations.AsNoTracking().FirstOrDefaultAsync(x => x.Name == newOrgName);
+                Organization? existingOrg = context.Organizations.Count() > 0 ? await context.Organizations.AsNoTracking().FirstAsync(x => x.Name == newOrgName)
+                                                                              : null;
                 if (existingOrg != null)
-                {
                     return "An organization with this name already exists.";
-                }
 
 
                 // Find the organization that's being renamed.
-                Organization? org = await context.Organizations.FirstOrDefaultAsync(x => x.Id == member.OrganizationId);
+                Organization? org = context.Organizations.Count() > 0 ? await context.Organizations.FirstAsync(x => x.Id == member.OrganizationId)
+                                                                      : null;
                 if (org == null)
                     return "Failed to rename your organization, as it could not be found.";
 
@@ -119,7 +118,7 @@ namespace Bot.SlashCommands.Organizations
         async Task<ulong?> CheckIfUserIsInAnOrg(SocketSlashCommand command)
         {
             using var context = DBContextFactory.GetNewContext();
-            OrganizationMember? member = await context.OrganizationMembers.FirstOrDefaultAsync(x => x.UserId == command.User.Id);
+            OrganizationMember? member = await context.OrganizationMembers.FirstAsync(x => x.UserId == command.User.Id);
             if (member == null)
             {
                 return null;

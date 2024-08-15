@@ -33,6 +33,7 @@ namespace Bot.SlashCommands.ResponseHelpers
             this.modal = modal;
             IncomingComponentType = ComponentType.Modal;
         }
+
         public Request(SocketMessageComponent component)
         {
             this.component = component;

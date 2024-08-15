@@ -13,5 +13,6 @@ namespace Bot.SlashCommands.Organizations
         internal const int MAX_ORG_MEMBERS = 10; // The max number of members that an organization can have.
         internal const int MIN_ORG_NAME_LENGTH = 3; // The minimum length that an organization name must be.
         internal const float MIN_DONATION_AMOUNT = 1f; // The minimum amount that a user can donate to their organization
+        internal const string MODERATOR_ROLE = "Admin"; // This is the role that is allowed to delete organizations.
     }
 }

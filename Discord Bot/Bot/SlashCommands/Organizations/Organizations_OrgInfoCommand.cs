@@ -61,7 +61,8 @@ namespace Bot.SlashCommands.Organizations
                 if (idOption == null)
                 {
                     // No id was provided, so we need to get the Id of the organization the user is in.
-                    OrganizationMember? member = await context.OrganizationMembers.FirstOrDefaultAsync(x => x.UserId == command.User.Id);
+                    OrganizationMember? member = context.OrganizationMembers.Count() > 0 ? await context.OrganizationMembers.FirstAsync(x => x.UserId == command.User.Id)
+                                                                                         : null;
                     if (member == null)
                         return "You are not in an organization. Use this command again, but provide the Id of the organization you want to view info for.";
 
@@ -75,15 +76,18 @@ namespace Bot.SlashCommands.Organizations
 
 
                 // Check if there is an organization with this Id.
-                Organization? org = await context.Organizations.FirstOrDefaultAsync(x => x.Id == orgId);
+                Organization? org = context.Organizations.Count() > 0 ? await context.Organizations.FirstAsync(x => x.Id == orgId)
+                                                                      : null;
                 if (org == null)
                     return "There is no organization with this Id.";
+
 
                 // Find the organization leader
                 SocketUser leader = client.GetUser(org.LeaderID);
 
                 // Get the members of the organization
-                var members = context.OrganizationMembers.Where(x => x.OrganizationId == orgId);
+                List<OrganizationMember>? members = context.OrganizationMembers.Count() > 0 ? await context.OrganizationMembers.Where(x => x.OrganizationId == orgId).ToListAsync()
+                                                                                            : null;
 
 
                 // Create an embed with the organization information

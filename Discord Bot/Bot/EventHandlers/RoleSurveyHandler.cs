@@ -30,13 +30,16 @@ namespace Bot.EventHandlers
 
         async Task OnButtonExecuted(SocketMessageComponent component)
         {
-            //await component.DeferAsync(ephemeral: true);
-
             _ = Task.Run(async () =>
             {
                 try
                 {
+                    Console.WriteLine("*** 0");
+
                     var interceptor = new RequestInterceptor(component);
+
+                    Console.WriteLine("*** A");
+
                     await interceptor.Process();
 
                     if (!interceptor.IsRoleSurveyInteraction)
@@ -65,6 +68,7 @@ namespace Bot.EventHandlers
                         selectedOptionsField.Value = newSelectedOptionsValue;
                     }
 
+
                     if (survey.AllowOptionsMultiSelect)
                     {
                         if (request.IncomingValue != "Done")
@@ -77,12 +81,13 @@ namespace Bot.EventHandlers
                             {
                                 await GiveRoleAsync(request.User.Id, roleId.Value, context);
                             }                           
-
+                            
                             await request.UpdateOriginalMessageAsync(survey.InitialMessage, messagComponent, builder.Build());
                             return;
                         }
 
-                            //do stuff
+
+                        //do stuff
                         var optionsSelectedAsArray = GetOptionsSelectedAsArray(selectedOptions, incomingRoleSurvey_HM.Options.Select(o => o.MainInstance.Text).ToArray());
                         var nextRoleSurvey_HM = await GetNextRoleSurvey_HM(incomingRoleSurvey_HM, optionsSelectedAsArray , request.Embed, context);
                         if(nextRoleSurvey_HM == null)
@@ -93,19 +98,24 @@ namespace Bot.EventHandlers
                             return;
                         }
 
+
                         await RoleSurveyHelper.SendNextRoleSurvey(nextRoleSurvey_HM, interceptor.Request, builder);
                         return;                        
                     }
+
 
                     var optionsSelectedAsArray2 = GetOptionsSelectedAsArray(selectedOptions, incomingRoleSurvey_HM.Options.Select(o => o.MainInstance.Text).ToArray());
                     var nextRoleSurvey_HM2 = await GetNextRoleSurvey_HM(incomingRoleSurvey_HM, optionsSelectedAsArray2, request.Embed, context);
                     if (nextRoleSurvey_HM2 == null)
                     {
+
                         var roleId = incomingRoleSurvey_HM.Options.FirstOrDefault(o => o.MainInstance.Text == request.IncomingValue).MainInstance.RoleId;
                         if (roleId != null)
                         {
                             await GiveRoleAsync(request.User.Id, roleId.Value, context);
                         }
+
+
                         await request.UpdateOriginalMessageAsync(survey.EndMessage, null, builder.Build());
                         return;
                     }

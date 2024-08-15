@@ -30,7 +30,7 @@
 					Emoji
 				</th>
 				<th>
-					Chosen Effect
+					Description
 				</th>
 			</tr>
 		</thead>
@@ -39,26 +39,28 @@
 				int index = 0;
 				foreach (var item in Model.ShopItems)
 				{
+					<form method="post">
 					<tr>
-						<input asp-for="@Model.SavedItems[index].Id" value="@item.Id">
-						<input asp-for="@Model.SavedItems[index].GuildId" value="@item.GuildId">
+						<input asp-for="@Model.SavedItem.Id" value="@item.Id" hidden>
+						<input asp-for="@Model.SavedItem.GuildId" value="@item.GuildId" hidden>
 						<th>
-							<input asp-for="@Model.SavedItems[index].ItemName" value="@item.ItemName">
+							<input asp-for="@Model.SavedItem.ItemName" value="@item.ItemName">
 						</th>
 						<th>
-							<input asp-for="@Model.SavedItems[index].CurrencyId" value="">
+							<input asp-for="@Model.SavedItem.CurrencyId" value=@item.CurrencyId>
 						</th>
 						<th>
-							<input asp-for="@Model.SavedItems[index].Cost" value="@item.Cost">
+							<input asp-for="@Model.SavedItem.Cost" value="@item.Cost">
 						</th>
 						<th>
-							<input asp-for="@Model.SavedItems[index].emojiId" value="">
+							<input asp-for="@Model.SavedItem.emojiId" value=@item.emojiId>
 						</th>
 						<th>
-							<input asp-for="@Model.SavedItems[index].ItemEffectID" value="@item.ItemEffectID">
-							<input asp-for="@Model.SavedItems[index].ItemEffectVal" value="">
+							<input asp-for="@Model.SavedItem.emojiId" value=@item.emojiId>
 						</th>
 					</tr>
+					<button asp-page-handler="Save" type="submit" class="btn btn-primary mx-2">Save</button>
+					</form>
 					index++;
 				}
 			}

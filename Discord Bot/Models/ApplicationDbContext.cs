@@ -152,8 +152,7 @@ namespace Models
             modelBuilder.Entity<ShopItem>()
                 .HasOne<Guild>()
                 .WithMany()
-                .HasForeignKey(v => v.GuildId)
-                .IsRequired(false);
+                .HasForeignKey(v => v.GuildId);
 
             modelBuilder.Entity<CurrencyReset>()
                 .HasOne<Currency>()

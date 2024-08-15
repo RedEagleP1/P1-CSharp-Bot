@@ -48,7 +48,7 @@
 						</th>
 						<th>
 							<input asp-for="@Model.SavedItem.CurrencyId" value=@item.CurrencyId hidden>
-								@await Html.PartialAsync("/Pages/Partials/_CurrencyDropdown.cshtml", new CurrencyDropdownPartialModel() { ButtonName = "Select Currency", Currencies = Model.AllCurrencies, AddNoneOption = true })
+								@await Html.PartialAsync("/Pages/Partials/_CurrencyDropdown.cshtml", new CurrencyDropdownPartialModel() { ButtonName = Model.AllCurrencies[@item.CurrencyId].Name, Currencies = Model.AllCurrencies, AddNoneOption = true })
 						</th>
 						<th>
 							<input asp-for="@Model.SavedItem.Cost" value="@item.Cost">
@@ -81,4 +81,20 @@
 			};
 		</script>
 	}
+
+	<script>
+		$(document).on("click", "#SelectedId", function () {
+			var Id = $(this).val();
+			var Name = $(this).text();
+			var Div = $(this).closest("#Display");
+
+			console.log(Id);
+
+			if (Div.length != 0) {
+				Div.find("#dropdownMenuButton").text(Name);
+				Div.find("#dropdownOption").val(parseInt(Id));
+				return;
+			}
+		});
+	</script>
 }

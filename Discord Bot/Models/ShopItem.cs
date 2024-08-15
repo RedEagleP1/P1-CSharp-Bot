@@ -12,7 +12,7 @@ namespace Models
 		public ulong GuildId { get; set; }
         public string ItemName { get; set; }
         public ulong emojiId { get; set; }
-        public ulong CurrencyId { get; set; }
+        public int CurrencyId { get; set; }
         public int Cost { get; set; }
         public string Description { get; set; }
     }

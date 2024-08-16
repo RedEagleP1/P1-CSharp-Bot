@@ -61,6 +61,7 @@
 						</th>
 						<th>
 							<button asp-page-handler="Save" type="submit" class="btn btn-primary mx-2">Save</button>
+							<button asp-page-handler="Delete" type="submit" class="btn btn-danger mx-2">Delete</button>
 						</th>
 					</tr>
 					</form>
@@ -68,6 +69,10 @@
 				}
 			}
 		</tbody>
+		<form method="post">
+			<input asp-for="@Model.guildId" value="@Model.Guild.Id" hidden>
+			<button asp-page-handler="CreateNewItem" type="submit" class="btn-btn-success">Create New Shop Item</button>
+		</form>
 	</table>
 </div>
 

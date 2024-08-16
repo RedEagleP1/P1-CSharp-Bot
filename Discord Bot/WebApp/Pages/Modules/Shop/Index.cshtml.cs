@@ -25,10 +25,10 @@ namespace WebApp.Pages.Modules.Shop
 
 		public List<Currency> AllCurrencies { get; set; }
 
+		public ulong guildId { get; set; }
+
 		public async Task OnGet(ulong guildId)
         {
-			Console.WriteLine("HELLO1!");
-
 			Guild = await _db.Guilds.FirstOrDefaultAsync(g => g.Id == guildId);
             
             //Get shop items
@@ -59,16 +59,41 @@ namespace WebApp.Pages.Modules.Shop
             Console.WriteLine(AllCurrencies[0].Name);
 		}
 
-        public async Task OnGetWithAlert(ulong guildId, string message)
+        public async Task<IActionResult> OnPostCreateNewItem(ulong guildId)
+        {
+			var tempItem = new ShopItem()
+			{
+				GuildId = guildId,
+				ItemName = "No name",
+				Cost = 0,
+				Description = "No description",
+			};
+			_db.ShopItems.Add(tempItem);
+
+			await _db.SaveChangesAsync();
+			return RedirectToPage("Index", "WithAlert", new { guildId = guildId, message = $"Added new ShopItem" });
+		}
+
+
+		public async Task OnGetWithAlert(ulong guildId, string message)
         {
             await OnGet(guildId);
             ViewData["Message"] = message;
         }
 
-        public async Task<IActionResult> OnPostSave(ShopItem SavedItem)
-        {
-			Console.WriteLine("HELLO2!");
+		public async Task<IActionResult> OnPostDelete(ShopItem SavedItem)
+		{
+			var updateItem = await _db.ShopItems.FirstOrDefaultAsync(v => v.Id == SavedItem.Id);
 
+			_db.ShopItems.Remove(updateItem);
+
+			await _db.SaveChangesAsync();
+
+			return RedirectToPage("Index", "WithAlert", new { guildId = SavedItem.GuildId, message = $"Deleted Shop item" });
+		}
+
+		public async Task<IActionResult> OnPostSave(ShopItem SavedItem)
+        {
 			var updateItem = await _db.ShopItems.FirstOrDefaultAsync(v => v.Id == SavedItem.Id);
 
 			if (updateItem == null)

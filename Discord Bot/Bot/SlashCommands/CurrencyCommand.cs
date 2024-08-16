@@ -99,8 +99,8 @@ namespace Bot.SlashCommands
         {
             var currencyOptionBuilder = new SlashCommandOptionBuilder()
                 .WithName("currency")
-                    .WithDescription("Name of the currency")
-                    .WithRequired(true);
+                .WithDescription("Name of the currency")
+                .WithRequired(true);
 
             var context = DBContextFactory.GetNewContext();
             var allCurrencies = context.Currencies.Select(c => c.Name).ToList();

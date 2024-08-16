@@ -11,8 +11,8 @@ using Models;
 namespace Models.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240525172945_CurrencyReset")]
-    partial class CurrencyReset
+    [Migration("20240814222911_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -20,6 +20,22 @@ namespace Models.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "6.0.12")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
+
+            modelBuilder.Entity("Models.Automation", b =>
+                {
+                    b.Property<int?>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<ulong>("GuildId")
+                        .HasColumnType("bigint unsigned");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GuildId");
+
+                    b.ToTable("Automations");
+                });
 
             modelBuilder.Entity("Models.Currency", b =>
                 {
@@ -95,6 +111,9 @@ namespace Models.Migrations
                     b.Property<int>("DaysBetween")
                         .HasColumnType("int");
 
+                    b.Property<int?>("DaysLeft")
+                        .HasColumnType("int");
+
                     b.Property<ulong>("GuildId")
                         .HasColumnType("bigint unsigned");
 
@@ -154,6 +173,31 @@ namespace Models.Migrations
                     b.ToTable("Guilds");
                 });
 
+            modelBuilder.Entity("Models.IdAuto", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int?>("AutomationId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SelectedOption")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AutomationId");
+
+                    b.ToTable("IdAutos");
+                });
+
             modelBuilder.Entity("Models.MessageValidationSuccessTrack", b =>
                 {
                     b.Property<int>("Id")
@@ -172,6 +216,55 @@ namespace Models.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("MessageValidationSuccessTracks");
+                });
+
+            modelBuilder.Entity("Models.Organization", b =>
+                {
+                    b.Property<ulong>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint unsigned");
+
+                    b.Property<ulong>("CurrencyId")
+                        .HasColumnType("bigint unsigned");
+
+                    b.Property<ulong>("GuildId")
+                        .HasColumnType("bigint unsigned");
+
+                    b.Property<ulong>("LeaderID")
+                        .HasColumnType("bigint unsigned");
+
+                    b.Property<int>("MaxMembers")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<ulong>("TreasuryAmount")
+                        .HasColumnType("bigint unsigned");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GuildId");
+
+                    b.ToTable("Organizations");
+                });
+
+            modelBuilder.Entity("Models.OrganizationMember", b =>
+                {
+                    b.Property<ulong>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint unsigned");
+
+                    b.Property<ulong>("OrganizationId")
+                        .HasColumnType("bigint unsigned");
+
+                    b.Property<ulong>("UserId")
+                        .HasColumnType("bigint unsigned");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("OrganizationMembers");
                 });
 
             modelBuilder.Entity("Models.Role", b =>
@@ -599,6 +692,15 @@ namespace Models.Migrations
                     b.ToTable("VoiceChannelTracks");
                 });
 
+            modelBuilder.Entity("Models.Automation", b =>
+                {
+                    b.HasOne("Models.Guild", null)
+                        .WithMany()
+                        .HasForeignKey("GuildId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Models.CurrencyAwardLimit", b =>
                 {
                     b.HasOne("Models.Currency", null)
@@ -639,6 +741,31 @@ namespace Models.Migrations
                     b.HasOne("Models.Guild", null)
                         .WithMany()
                         .HasForeignKey("GuildId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Models.IdAuto", b =>
+                {
+                    b.HasOne("Models.Automation", null)
+                        .WithMany()
+                        .HasForeignKey("AutomationId");
+                });
+
+            modelBuilder.Entity("Models.Organization", b =>
+                {
+                    b.HasOne("Models.Guild", null)
+                        .WithMany()
+                        .HasForeignKey("GuildId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Models.OrganizationMember", b =>
+                {
+                    b.HasOne("Models.Organization", null)
+                        .WithMany()
+                        .HasForeignKey("Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

@@ -60,7 +60,7 @@ namespace Bot.SlashCommands.Organizations
             
 
                 // Check if there is already an organization with this name.
-                Organization? org = context.Organizations.Count() > 0 ? await context.Organizations.AsNoTracking().FirstAsync(x => x.Name == orgName)
+                Organization? org = context.Organizations.Count() > 0 ? await context.Organizations.AsNoTracking().FirstOrDefaultAsync(x => x.Name == orgName)
                                                                       : null;
                 if (org != null)
                     return "An organization with this name already exists.";
@@ -87,7 +87,7 @@ namespace Bot.SlashCommands.Organizations
 
 
                 // Get the id of the new org.
-                Organization? result = context.Organizations.Count() > 0 ? await context.Organizations.FirstAsync(x => x.Name == orgName)
+                Organization? result = context.Organizations.Count() > 0 ? await context.Organizations.FirstOrDefaultAsync(x => x.Name == orgName)
                                                                         : null;                                                                           
                 if (result == null)
                     return $"Failed to create new organization \"{orgName}\".";
@@ -114,25 +114,6 @@ namespace Bot.SlashCommands.Organizations
                 DBReadWrite.ReleaseLock();
             }
 
-        }
-        
-        /// <summary>
-        /// Checks if the user is in an organization.
-        /// </summary>
-        /// <param name="command">The command object.</param>
-        /// <returns>null if the user is not in an organization, or the id of the organization they are in.</returns>
-        async Task<ulong?> CheckIfUserIsInAnOrg(SocketSlashCommand command)
-        {
-            using var context = DBContextFactory.GetNewContext();
-            OrganizationMember? member = await context.OrganizationMembers.FirstAsync(x => x.UserId == command.User.Id);
-            if (member == null)
-            {
-                return null;
-            }
-            else
-            {
-                return member.OrganizationId;
-            }
         }
 
         static SlashCommandProperties CreateNewProperties()

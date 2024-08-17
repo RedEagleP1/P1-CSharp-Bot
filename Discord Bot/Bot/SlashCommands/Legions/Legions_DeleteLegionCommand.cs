@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 
-namespace Bot.SlashCommands.Organizations
+namespace Bot.SlashCommands.Legions
 {
     /// <summary>
     /// This command deletes the specified legion from the database.
@@ -77,7 +77,7 @@ namespace Bot.SlashCommands.Organizations
 
 
                 // Find the legion
-                Legion? legion = context.Legions.Count() > 0 ? await context.Legions.FirstAsync(x => x.Id == legionId)
+                Legion? legion = context.Legions.Count() > 0 ? await context.Legions.FirstOrDefaultAsync(x => x.Id == legionId)
                                                              : null;
                 if (legion == null)
                     return "There is no legion with this Id.";

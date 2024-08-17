@@ -77,7 +77,7 @@ namespace Bot.SlashCommands.Organizations
 
 
                 // Find the organization
-                Organization? org = context.Organizations.Count() > 0 ? await context.Organizations.FirstAsync(x => x.Id == orgId)
+                Organization? org = context.Organizations.Count() > 0 ? await context.Organizations.FirstOrDefaultAsync(x => x.Id == orgId)
                                                                       : null;
                 if (org == null)
                     return "There is no organization with this Id.";

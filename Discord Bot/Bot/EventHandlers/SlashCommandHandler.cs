@@ -68,7 +68,7 @@ namespace Bot.EventHandlers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Caught:\n" +
+                Console.WriteLine($"SlashCommandHandler.OnButtonExecuted() Caught:\n" +
                                   $"    EXCEPTION:\n    \"{ex.Message}\" +" +
                                   $"    INNER EXCEPTION: \"{(ex.InnerException != null ? ex.InnerException.Message : "")}\"");
             }

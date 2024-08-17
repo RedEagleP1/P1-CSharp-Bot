@@ -19,7 +19,6 @@ namespace Models
         [Required]
         public int MaxMembers { get; set; }
         [Required]
-        [ForeignKey("GuildId")]
         public ulong GuildId { get; set; }
     }
 }

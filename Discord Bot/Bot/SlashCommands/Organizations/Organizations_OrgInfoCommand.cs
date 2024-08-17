@@ -1,12 +1,15 @@
-﻿using Discord;
+﻿using Bot.SlashCommands.DbUtils;
+using Discord;
 using Discord.WebSocket;
 using Microsoft.EntityFrameworkCore;
 using Models;
+using System.Text;
 
 namespace Bot.SlashCommands.Organizations
 {
     /// <summary>
     /// This command displays information about the specified organization.
+    /// If no org Id is supplied, this command will display information about the user's organization if they are in one.
     /// </summary>
     internal class Organizations_OrgInfoCommand : ISlashCommand
     {
@@ -43,7 +46,7 @@ namespace Bot.SlashCommands.Organizations
 
         async Task<string> GetMessage(SocketSlashCommand command)
         {
-            // First, check if the user has permission to use this command.
+            // First, find the user.
             var user = client.GetGuild(Settings.P1RepublicGuildId)?.GetUser(command.User.Id);
             if (user == null)
                 return "Could not find user info.";
@@ -61,10 +64,10 @@ namespace Bot.SlashCommands.Organizations
                 if (idOption == null)
                 {
                     // No id was provided, so we need to get the Id of the organization the user is in.
-                    OrganizationMember? member = context.OrganizationMembers.Count() > 0 ? await context.OrganizationMembers.FirstAsync(x => x.UserId == command.User.Id)
+                    OrganizationMember? member = context.OrganizationMembers.Count() > 0 ? await context.OrganizationMembers.FirstOrDefaultAsync(x => x.UserId == command.User.Id)
                                                                                          : null;
                     if (member == null)
-                        return "You are not in an organization. Use this command again, but provide the Id of the organization you want to view info for.";
+                        return "You cannot view info on your own organization since you're not in one. Use this command again, and provide the Id of the organization you want to view info for.";
 
                     orgId = member.OrganizationId;
                 }
@@ -76,10 +79,10 @@ namespace Bot.SlashCommands.Organizations
 
 
                 // Check if there is an organization with this Id.
-                Organization? org = context.Organizations.Count() > 0 ? await context.Organizations.FirstAsync(x => x.Id == orgId)
+                Organization? org = context.Organizations.Count() > 0 ? await context.Organizations.FirstOrDefaultAsync(x => x.Id == orgId)
                                                                       : null;
                 if (org == null)
-                    return "There is no organization with this Id.";
+                    return $"There is no organization with Id {orgId}.";
 
 
                 // Find the organization leader
@@ -88,23 +91,23 @@ namespace Bot.SlashCommands.Organizations
                 // Get the members of the organization
                 List<OrganizationMember>? members = context.OrganizationMembers.Count() > 0 ? await context.OrganizationMembers.Where(x => x.OrganizationId == orgId).ToListAsync()
                                                                                             : null;
+                int memberCount = members != null ? members.Count : 0;
 
-
-                // Create an embed with the organization information
-                var embedBuilder = new EmbedBuilder();
-                embedBuilder
+                // Fill out the EmbedBuilder.
+                EmbedBuilder embedBuilder = new EmbedBuilder()
                     .WithAuthor(command.User.Username, command.User.GetAvatarUrl() ?? command.User.GetDefaultAvatarUrl())
-                    .WithTitle("Organization Information")
+                    .WithTitle("Organization Information")                    
                     .WithDescription($"**Name:** {org.Name} \n " +
                                      $"**ID:** {org.Id} \n " +
                                      $"**Treasury Amount:** {org.TreasuryAmount} \n " +
                                      $"**Leader:** {leader.Username} \n " +
-                                     $"**Members:** {members.Count()} / {org.MaxMembers}")
+                                     $"**Members Count:** {memberCount} / {org.MaxMembers}")
+                    .AddField("Members:", OrgDataUtils.GetMemberPingsList(command.User.Id, members)) // This adds the members list into the embed.
                     .WithColor(Color.Blue)
                     .WithCurrentTimestamp();
 
 
-                // Insert it into the response
+                // Insert the embed into the response
                 await command.ModifyOriginalResponseAsync(response =>
                 {
                     response.Content = "";
@@ -131,7 +134,7 @@ namespace Bot.SlashCommands.Organizations
         {
             return new SlashCommandBuilder()
                 .WithName(name)
-                .WithDescription("Displays information about the organization with the specified Id.")
+                .WithDescription("Displays information about the organization with the specified Id, or the user's organization.")
                 .AddOption("id", ApplicationCommandOptionType.Integer, "The Id of the organization to display information about", false)
                 .Build();
         }

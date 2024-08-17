@@ -7,7 +7,6 @@ namespace Models
 	public class Legion
 	{
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [DefaultValue(1)]
         public ulong Id { get; set; }
 
         [Required]
@@ -17,7 +16,6 @@ namespace Models
         [Required]
         public int MaxMembers { get; set; }
         [Required]
-        [ForeignKey("GuildId")]
         public ulong GuildId { get; set; }
     }
 }

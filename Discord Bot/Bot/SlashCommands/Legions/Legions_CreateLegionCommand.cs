@@ -4,7 +4,7 @@ using Discord.WebSocket;
 using Microsoft.EntityFrameworkCore;
 using Models;
 
-namespace Bot.SlashCommands.Organizations
+namespace Bot.SlashCommands.Legions
 {
     /// <summary>
     /// This command creates a new legion.
@@ -42,7 +42,7 @@ namespace Bot.SlashCommands.Organizations
                 using var context = DBContextFactory.GetNewContext();
 
                 // Check if the user is already a legion leader.
-                if (!OrganizationConstants.ALLOW_USER_TO_JOIN_MULTIPLE_ORGS)
+                if (!LegionConstants.ALLOW_ORG_TO_JOIN_MULTIPLE_LEGIONS)
                 {
                     Legion? tempLegion = UserDataUtils.CheckIfUserIsALegionLeader(command.User.Id, context).Result;
                     if (tempLegion != null)
@@ -61,16 +61,18 @@ namespace Bot.SlashCommands.Organizations
                     return "Please provide a name for the new legion.";
                 }
 
+
                 // Check if the name option contains a valid value.
                 string? legionName = nameOption.Value.ToString();
-                if (legionName == null || legionName.Length < OrganizationConstants.MIN_ORG_NAME_LENGTH)
+                if (legionName == null || legionName.Length < LegionConstants.MIN_LEGION_NAME_LENGTH)
                 {
-                    return $"Please provide a name that is at least {OrganizationConstants.MIN_ORG_NAME_LENGTH} characters long for the new legion.";
+                    return $"Please provide a name that is at least {LegionConstants.MIN_LEGION_NAME_LENGTH} characters long for the new legion.";
                 }
                 legionName = legionName.Trim();
-            
+
+
                 // Check if there is already an legion with this name.
-                Legion? tempLegion2 = context.Legions.Count() > 0 ? await context.Legions.AsNoTracking().FirstAsync(x => x.Name == legionName)
+                Legion? tempLegion2 = context.Legions.Count() > 0 ? await context.Legions.AsNoTracking().FirstOrDefaultAsync(x => x.Name == legionName)
                                                                   : null;
                 if (tempLegion2 != null)
                 {
@@ -91,14 +93,14 @@ namespace Bot.SlashCommands.Organizations
                 newLegion.Name = legionName.Trim();
                 newLegion.LeaderID = command.User.Id;
                 newLegion.GuildId = guildId;
-                newLegion.MaxMembers = OrganizationConstants.MAX_ORG_MEMBERS;
+                newLegion.MaxMembers = LegionConstants.MAX_LEGION_MEMBERS;
                 context.Legions.Add(newLegion);
 
                 await context.SaveChangesAsync();
 
 
                 // Get the id of the new legion.
-                Legion? legion = context.Legions.Count() > 0 ? await context.Legions.FirstAsync(x => x.Name == legionName)
+                Legion? legion = context.Legions.Count() > 0 ? await context.Legions.FirstOrDefaultAsync(x => x.Name == legionName)
                                                              : null;
                 if (legion == null)
                     return $"Failed to create new legion \"{legionName}\".";

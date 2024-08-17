@@ -11,7 +11,6 @@ namespace Models
         [Required]
         public ulong UserId { get; set; }       
         [Required]
-        [ForeignKey("OrganizationId")]
         public ulong OrganizationId { get; set; }
 
     }

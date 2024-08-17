@@ -54,7 +54,7 @@ namespace Bot.SlashCommands.Organizations
                 Organization? org = context.Organizations.Count() > 0 ? await context.Organizations.FirstOrDefaultAsync(o => o.Id == member.OrganizationId)
                                                                       : null;
                 if (org == null)
-                    return "Could not find your organization.";
+                    return $"Could not find an organization with Id {member.OrganizationId}.";
 
 
                 // Check if this command was invoked by the organization's leader.
@@ -133,7 +133,7 @@ namespace Bot.SlashCommands.Organizations
                 Currency? currency = context.Currencies.Count() > 0 ? await context.Currencies.FirstOrDefaultAsync(c => c.Id == OrganizationConstants.CURRENCY_ID)
                                                                     : null;
                 if (currency == null)
-                    return "Could not find the currency with this Id.";
+                    return $"Could not find the currency with Id {OrganizationConstants.CURRENCY_ID}.";
 
                 // Return a messaage.
                 return $"The organization \"{org.Name}\" gave {amountToGive} {currency.Name} to ({targetUser.Username})!";

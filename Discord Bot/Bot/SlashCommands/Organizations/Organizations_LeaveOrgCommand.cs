@@ -43,17 +43,17 @@ namespace Bot.SlashCommands.Organizations
                 using var context = DBContextFactory.GetNewContext();
 
                 // Check if the user that invoked this command is in an organization.
-                OrganizationMember? member = context.OrganizationMembers.Count() > 0 ? await context.OrganizationMembers.FirstAsync(x => x.UserId == command.User.Id)
+                OrganizationMember? member = context.OrganizationMembers.Count() > 0 ? await context.OrganizationMembers.FirstOrDefaultAsync(x => x.UserId == command.User.Id)
                                                                                      : null;
                 if (member == null)
                     return "You cannot leave since you are not in an organization.";
 
 
                 // Find the organization.
-                Organization? org = context.Organizations.Count() > 0 ? await context.Organizations.FirstAsync(o => o.Id == member.OrganizationId)
+                Organization? org = context.Organizations.Count() > 0 ? await context.Organizations.FirstOrDefaultAsync(o => o.Id == member.OrganizationId)
                                                                       : null;
                 if (org == null)
-                    return "Could not find your organization.";
+                    return $"Could not find an organization with Id {member.OrganizationId}.";
 
 
                 // Check if this command was invoked by the organization's leader.
@@ -62,7 +62,7 @@ namespace Bot.SlashCommands.Organizations
 
 
                 // Find the user's membership record for this organization.
-                OrganizationMember? orgMember = context.OrganizationMembers.Count() > 0 ? await context.OrganizationMembers.FirstAsync(x => x.UserId == command.User.Id && x.OrganizationId == org.Id)
+                OrganizationMember? orgMember = context.OrganizationMembers.Count() > 0 ? await context.OrganizationMembers.FirstOrDefaultAsync(x => x.UserId == command.User.Id && x.OrganizationId == org.Id)
                                                                                         : null;
                 if (orgMember == null)
                     return "You cannot leave your organization, because you are not a member of one.";

@@ -64,7 +64,7 @@ namespace Bot.SlashCommands.Organizations
 
 
                 // Check if the user has enough currency to donate the specified amount.
-                CurrencyOwned? currencyOwned = context.CurrenciesOwned.Count() > 0 ? await context.CurrenciesOwned.FirstAsync(x => x.OwnerId == command.User.Id && x.CurrencyId == OrganizationConstants.CURRENCY_ID)
+                CurrencyOwned? currencyOwned = context.CurrenciesOwned.Count() > 0 ? await context.CurrenciesOwned.FirstOrDefaultAsync(x => x.OwnerId == command.User.Id && x.CurrencyId == OrganizationConstants.CURRENCY_ID)
                                                                                    : null;
                 float amountOwned = 0;
                 if (currencyOwned != null)
@@ -92,12 +92,12 @@ namespace Bot.SlashCommands.Organizations
 
 
                 // Find the organization.
-                Organization? org = context.Organizations.Count() > 0 ? await context.Organizations.FirstAsync(o => o.Id == member.OrganizationId)
+                Organization? org = context.Organizations.Count() > 0 ? await context.Organizations.FirstOrDefaultAsync(o => o.Id == member.OrganizationId)
                                                                       : null;
                 if (org == null)
                 {
-                    Console.WriteLine($"ERROR: Could not find the organization.");
-                    return "Could not find the organization.";
+                    Console.WriteLine($"ERROR: Could not find the organization with Id {member.OrganizationId}.");
+                    return $"Could not find an organization with Id {member.OrganizationId}.";
                 }
 
 
@@ -110,10 +110,10 @@ namespace Bot.SlashCommands.Organizations
             
 
                 // Get the currency name.
-                Currency? currency = context.Currencies.Count() > 0 ? await context.Currencies.FirstAsync(c => c.Id == OrganizationConstants.CURRENCY_ID)
+                Currency? currency = context.Currencies.Count() > 0 ? await context.Currencies.FirstOrDefaultAsync(c => c.Id == OrganizationConstants.CURRENCY_ID)
                                                                     : null;
                 if (currency == null)
-                    return "Could not find the currency with this Id.";
+                    return $"Could not find the currency with Id {OrganizationConstants.CURRENCY_ID}.";
 
                 // Return a messaage.
                 return $"You donated {amountToDonate} {currency.Name} to your organization ({org.Name})!";

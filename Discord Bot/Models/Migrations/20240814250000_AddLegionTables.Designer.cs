@@ -751,7 +751,7 @@ namespace Models.Migrations
                 {
                     b.HasOne("Models.Legion", null)
                         .WithMany()
-                        .HasForeignKey("Id")
+                        .HasForeignKey("LegionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

@@ -9,9 +9,10 @@ using Models;
 
 using Bot.EventHandlers;
 using Bot.OneTimeRegister;
+using Bot.PeriodicEvents;
 using Bot.SlashCommands;
 using Bot.SlashCommands.Organizations;
-using Bot.PeriodicEvents;
+using Bot.SlashCommands.Legions;
 
 namespace Bot
 {
@@ -63,6 +64,13 @@ namespace Bot
                 // ----------------------------------------------------------------------------------------------------
                 new Legions_CreateLegionCommand(),
                 new Legions_DeleteLegionCommand(client),
+                new Legions_JoinLegionCommand(client),
+                new Legions_KickLegionOrgCommand(),
+                new Legions_LeaveLegionCommand(),
+                new Legions_LegionInfoCommand(client),
+                new Legions_PingLegionCommand(client),
+                new Legions_PromoteLegionMemberCommand(),
+                new Legions_RenameLegionCommand(),
 
                 // ----------------------------------------------------------------------------------------------------
                 // Organizations Commands
@@ -75,7 +83,7 @@ namespace Bot
                 new Organizations_LeaveOrgCommand(),
                 new Organizations_OrgInfoCommand(client),
                 new Organizations_OrgTreasuryGiveCommand(),
-                new Organizations_PingOrgCommand(),
+                new Organizations_PingOrgCommand(client),
                 new Organizations_PromoteOrgMemberCommand(),
                 new Organizations_RenameOrgCommand(),
 };
@@ -85,6 +93,7 @@ namespace Bot
                 new ChannelUpdateHandler(client),
                 new CurrentGuildsUpdateHandler(client, slashCommands),
                 new GuildRolesChangeHandler(client),
+                new LegionJoinRequestHandler(client),
                 new MemberUpdateHandler(client),
                 new MessageUpdateHandler(client),
                 new OrganizationJoinRequestHandler(client),

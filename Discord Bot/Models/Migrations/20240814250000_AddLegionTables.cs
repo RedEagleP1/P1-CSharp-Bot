@@ -47,7 +47,7 @@ namespace Models.Migrations
                     table.PrimaryKey("PK_LegionMembers", x => x.Id);
                     table.ForeignKey(
                         name: "FK_LegionMembers_Legions_Id",
-                        column: x => x.Id,
+                        column: x => x.LegionId,
                         principalTable: "Legions",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);

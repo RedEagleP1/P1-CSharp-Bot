@@ -26,9 +26,9 @@ namespace Models
         public DbSet<VoiceChannelCurrencyGain> VoiceChannelCurrencyGains { get; set; }
         public DbSet<GlobalVoiceCurrencyGain> GlobalVoiceCurrencyGains { get; set; }
         public DbSet<CurrencyReset> CurrencyResets { get; set; }
-		public DbSet<Automation> Automations { get; set; }
-		public DbSet<IdAuto> IdAutos { get; set; }
-		public DbSet<VoiceChannelTrack> VoiceChannelTracks { get; set; }
+    	public DbSet<Automation> Automations { get; set; }
+    	public DbSet<IdAuto> IdAutos { get; set; }
+  	public DbSet<VoiceChannelTrack> VoiceChannelTracks { get; set; }
         public DbSet<TextChannelMessageValidation> TextChannelMessageValidation { get; set; }
         public DbSet<MessageValidationSuccessTrack> MessageValidationSuccessTracks { get; set; }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)

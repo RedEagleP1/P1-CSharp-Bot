@@ -195,7 +195,7 @@ namespace Models
             modelBuilder.Entity<OrganizationMember>()
                 .HasOne<Organization>()
                 .WithMany()
-                .HasForeignKey(om => om.OrganizationId);
+                .HasForeignKey(o => o.OrganizationId);
 
             modelBuilder.Entity<Legion>()
                 .HasOne<Guild>()
@@ -205,7 +205,7 @@ namespace Models
             modelBuilder.Entity<LegionMember>()
                 .HasOne<Legion>()
                 .WithMany()
-                .HasForeignKey(lm => lm.LegionId);
+                .HasForeignKey(o => o.LegionId);
 
             base.OnModelCreating(modelBuilder);
         }

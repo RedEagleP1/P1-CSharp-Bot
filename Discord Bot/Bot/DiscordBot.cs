@@ -11,6 +11,7 @@ using Bot.EventHandlers;
 using Bot.OneTimeRegister;
 using Bot.SlashCommands;
 using Bot.SlashCommands.Organizations;
+using Bot.SlashCommands.Shop;
 using Bot.PeriodicEvents;
 
 namespace Bot
@@ -73,6 +74,11 @@ namespace Bot
                 new Organizations_KickOrgMemberCommand(),
                 new Organizations_RenameOrgCommand(),
                 new Organizations_OrgTreasuryGiveCommand(),
+
+                // ----------------------------------------------------------------------------------------------------
+                // Shop Commands
+                // ----------------------------------------------------------------------------------------------------
+                new Shop_DisplayCommand(client),
             };
 
             List<IEventHandler> eventHandlers = new()
@@ -82,8 +88,9 @@ namespace Bot
                 new GuildRolesChangeHandler(client),
                 new MemberUpdateHandler(client),
                 new MessageUpdateHandler(client),
-                new OrganizationJoinRequestHandler(client),
-                new RoleSurveyHandler(client),
+				new ShopButton(client),
+				//new OrganizationJoinRequestHandler(client),
+				new RoleSurveyHandler(client),
                 new SlashCommandHandler(client, slashCommands),
                 new VoiceStateUpdateHandler(client),
             };

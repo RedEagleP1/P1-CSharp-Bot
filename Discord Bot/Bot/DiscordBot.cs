@@ -58,6 +58,7 @@ namespace Bot
                 new CurrencyCommand(),
                 //new DebugCommand(client),
                 new ReviewCommand(client),
+				new SendCommand(client),
 
                 // ----------------------------------------------------------------------------------------------------
                 // Legion Commands

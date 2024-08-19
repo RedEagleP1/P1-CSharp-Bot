@@ -7,20 +7,22 @@ using Models;
 namespace Bot.SlashCommands.Organizations
 {
     /// <summary>
-    /// This command allows a team lead to kick a member out of the organization.
+    /// This command allows a legion leader to promote someone else to be the legion leader.
     /// </summary>
-    internal class Organizations_KickOrgMemberCommand : ISlashCommand
+    internal class Legions_PromoteLegionMemberCommand : ISlashCommand
     {
-        const string name = "kick_org_member";
+        const string name = "promote_legion_member";
         readonly SlashCommandProperties properties = CreateNewProperties();
 
         public string Name => name;
         public SlashCommandProperties Properties => properties;
 
+        private bool hadError = false;
+
 
         public async Task HandleCommand(SocketSlashCommand command)
         {
-            await command.DeferAsync(true);
+            await command.DeferAsync();
             _ = Task.Run(async () =>
             {
                 string message = await GetMessage(command);
@@ -28,23 +30,26 @@ namespace Bot.SlashCommands.Organizations
                 await command.ModifyOriginalResponseAsync(response =>
                 {
                     response.Content = message;
+                    response.Flags = hadError ? MessageFlags.Ephemeral : MessageFlags.None;
                 });
             });
         }
 
 
         async Task<string> GetMessage(SocketSlashCommand command)
-        {            
+        {
+            hadError = true;
+
             await DBReadWrite.LockReadWrite();
             try
             {
                 using var context = DBContextFactory.GetNewContext();
 
 
-                // Check if the user that invoked this command is an organization leader.
-                Organization? org = await OrgDataUtils.GetOrgFromLeaderId(command.User.Id, context);
-                if (org == null)
-                    return "You are not an organization leader.";
+                // Check if the user that invoked this command is a legion leader.
+                Legion? legion = await UserDataUtils.CheckIfUserIsALegionLeader(command.User.Id, context);
+                if (legion == null)
+                    return "You are not a legion leader.";
 
                 
                 // Try to get the specified user.
@@ -65,26 +70,27 @@ namespace Bot.SlashCommands.Organizations
                 }
 
 
-                // Check if the specified user is a member of this organization.
-                OrganizationMember? memberInfo = context.OrganizationMembers.Count() > 0 ? await context.OrganizationMembers.FirstOrDefaultAsync(x => x.UserId == targetUser.Id && x.OrganizationId == org.Id)
-                                                                                         : null;
-                if (memberInfo == null)
-                    return $"The specified user is not a member of your organization ({org.Name}).";
+                // Check if the specified user is a member of this legion.
+                LegionMember? tempLegionMember = await UserDataUtils.CheckIfUserIsInALegion(targetUser.Id, context);
+                if (tempLegionMember == null)
+                    return $"The specified user is not a member of the \"{legion.Name}\" legion.";
 
 
-                if (memberInfo.UserId == org.LeaderID)
-                    return $"You cannot kick yourself out of the organization. As the team leader, you must promote someone else to be team lead first and then use the leave command.";
+                if (targetUser.Id == legion.LeaderID)
+                    return $"You can't promote yourself. You already are the leader of the \"{legion.Name}\" legion.";
 
 
-                // Kick the target user.
-                context.OrganizationMembers.Remove(memberInfo);
+                // Promote the target user.
+                legion.LeaderID = targetUser.Id;
+                context.Legions.Update(legion);
 
                 // Save changes to database.
                 await context.SaveChangesAsync();
 
 
                 // Return the succes message.
-                return $"<@{targetUser.Id}> has been kicked out of the \"{org.Name}\" organization.";
+                hadError = false;
+                return $"<@{targetUser.Id}> has been promoted to be the leader of the \"{legion.Name}\" legion!";
             }
             catch (Exception ex)
             {
@@ -101,8 +107,8 @@ namespace Bot.SlashCommands.Organizations
         {
             return new SlashCommandBuilder()
                 .WithName(name)
-                .WithDescription("Allows a team lead to kick a member out of the organization.")
-                .AddOption("member", ApplicationCommandOptionType.User, "The member who will be kicked out", isRequired: true)
+                .WithDescription("Allows a legion leader to promote someone else to be the new legion leader.")
+                .AddOption("member", ApplicationCommandOptionType.User, "The member who will be promoted", isRequired: true)
                 .Build();
         }
     }

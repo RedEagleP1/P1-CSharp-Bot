@@ -34,11 +34,7 @@ namespace Bot.EventHandlers
             {
                 try
                 {
-                    Console.WriteLine("*** 0");
-
                     var interceptor = new RequestInterceptor(component);
-
-                    Console.WriteLine("*** A");
 
                     await interceptor.Process();
 

@@ -6,15 +6,15 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 
-namespace Bot.SlashCommands.Organizations
+namespace Bot.SlashCommands.Legions
 {
     /// <summary>
-    /// This command removes the specified organization from the database.
-    /// It also removes all member entries for that organization from the OrganizationMembers table.
+    /// This command deletes the specified legion from the database.
+    /// It also removes all member entries for that legion from the LegionMembers table.
     /// </summary>
-    internal class Organizations_DeleteOrgCommand : ISlashCommand
+    internal class Legions_DeleteLegionCommand : ISlashCommand
     {
-        const string name = "delete_org";
+        const string name = "delete_legion";
         readonly SlashCommandProperties properties = CreateNewProperties();
 
         private DiscordSocketClient client;
@@ -23,7 +23,7 @@ namespace Bot.SlashCommands.Organizations
         public SlashCommandProperties Properties => properties;
 
 
-        public Organizations_DeleteOrgCommand(DiscordSocketClient client)
+        public Legions_DeleteLegionCommand(DiscordSocketClient client)
         {
             this.client = client;
         }
@@ -51,61 +51,61 @@ namespace Bot.SlashCommands.Organizations
             var user = client.GetGuild(Settings.P1RepublicGuildId)?.GetUser(command.User.Id);
             if (user == null)
                 return "Could not find user info.";
-            else if (user.Roles.FirstOrDefault(x => x.Name == OrganizationConstants.MODERATOR_ROLE) == null)
+            else if (user.Roles.FirstOrDefault(x => x.Name == LegionConstants.MODERATOR_ROLE) == null)
                 return "You do not have permission to use this command.";
 
 
             // Try to get the id option.
             SocketSlashCommandDataOption? idOption = command.Data.Options.FirstOrDefault(x => x.Name == "id");
-            ulong orgId = 0;
+            ulong legionId = 0;
             if (idOption == null)
             {
-                return "Please provide the Id of organization you want to delete.";
+                return "Please provide the Id of legion you want to delete.";
             }
             else
             {
                 // This double cast looks silly, but when I casted directly to ulong it kept crashing with an invalid cast error for some reason.
-                orgId = (ulong)(long)idOption.Value;
+                legionId = (ulong)(long)idOption.Value;
             }
 
 
             await DBReadWrite.LockReadWrite();
             try
             {
-                // Check if there is an organization with this Id.
+                // Check if there is an legion with this Id.
                 using var context = DBContextFactory.GetNewContext();
 
 
-                // Find the organization
-                Organization? org = context.Organizations.Count() > 0 ? await context.Organizations.FirstOrDefaultAsync(x => x.Id == orgId)
-                                                                      : null;
-                if (org == null)
-                    return "There is no organization with this Id.";
+                // Find the legion
+                Legion? legion = context.Legions.Count() > 0 ? await context.Legions.FirstOrDefaultAsync(x => x.Id == legionId)
+                                                             : null;
+                if (legion == null)
+                    return "There is no legion with this Id.";
 
 
-                // First, find all member entries for this organization.
-                if (context.OrganizationMembers.Count() > 0)
+                // First, find all member entries for this legion.
+                if (context.LegionMembers.Count() > 0)
                 {
-                    var result = context.OrganizationMembers.Where(x => x.OrganizationId == orgId);
+                    var result = context.LegionMembers.Where(x => x.LegionId == legionId);
 
                     if (result != null && result.Count() > 0)
                     {
                         // And delete them.
-                        foreach (OrganizationMember member in result)
+                        foreach (LegionMember member in result)
                         {
-                            context.OrganizationMembers.Remove(member);
+                            context.LegionMembers.Remove(member);
                         }
                     }
                 }
 
 
-                // Now simply delete the organization.
-                context.Organizations.Remove(org);
+                // Now simply delete the legion.
+                context.Legions.Remove(legion);
 
                 // Finally, save the changes.
                 await context.SaveChangesAsync();
 
-                return $"Removed the organization \"{org.Name}\" from the database.";
+                return $"Removed the legion \"{legion.Name}\" from the database.";
             }
             catch (Exception ex)
             {
@@ -122,8 +122,8 @@ namespace Bot.SlashCommands.Organizations
         {
             return new SlashCommandBuilder()
                 .WithName(name)
-                .WithDescription("Deletes the organization with the specified Id.")
-                .AddOption("id", ApplicationCommandOptionType.Integer, "The Id of the organization to delete", true)
+                .WithDescription("Deletes the legion with the specified Id.")
+                .AddOption("id", ApplicationCommandOptionType.Integer, "The Id of the legion to delete", true)
                 .Build();
         }
     }

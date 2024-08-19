@@ -1,4 +1,5 @@
-﻿using Discord;
+﻿using Bot.SlashCommands.DbUtils;
+using Discord;
 using Discord.WebSocket;
 using Microsoft.EntityFrameworkCore;
 using Models;
@@ -41,7 +42,8 @@ namespace Bot.SlashCommands.Organizations
             {
                 using var context = DBContextFactory.GetNewContext();
 
-                OrganizationMember? member = await context.OrganizationMembers.FirstOrDefaultAsync(x => x.UserId == command.User.Id);
+                // Check if the user is in an organization.
+                OrganizationMember? member = await UserDataUtils.CheckIfUserIsInAnOrg(command.User.Id, context);
                 if (member == null)
                     return "You cannot donate to your organization since you are not in one.";
 
@@ -62,8 +64,8 @@ namespace Bot.SlashCommands.Organizations
 
 
                 // Check if the user has enough currency to donate the specified amount.
-                CurrencyOwned? currencyOwned = await context.CurrenciesOwned.FirstOrDefaultAsync(x => x.OwnerId == command.User.Id && 
-                                                                                                      x.CurrencyId == OrganizationConstants.CURRENCY_ID);
+                CurrencyOwned? currencyOwned = context.CurrenciesOwned.Count() > 0 ? await context.CurrenciesOwned.FirstOrDefaultAsync(x => x.OwnerId == command.User.Id && x.CurrencyId == OrganizationConstants.CURRENCY_ID)
+                                                                                   : null;
                 float amountOwned = 0;
                 if (currencyOwned != null)
                     amountOwned = currencyOwned.Amount;
@@ -90,22 +92,17 @@ namespace Bot.SlashCommands.Organizations
 
 
                 // Find the organization.
-                Organization? org = null;
-                try
-                {
-                    org = await context.Organizations.FirstOrDefaultAsync(o => o.Id == member.OrganizationId);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"ERROR: An error occurred:\n\"{ex.Message}\"\n    Inner Exception: \"{(ex.InnerException != null ? ex.InnerException.Message : "")}\"");
-                    return "An error occurred while finding the organization.";
-                }
+                Organization? org = context.Organizations.Count() > 0 ? await context.Organizations.FirstOrDefaultAsync(o => o.Id == member.OrganizationId)
+                                                                      : null;
                 if (org == null)
-                    return "Could not find your organization.";
+                {
+                    Console.WriteLine($"ERROR: Could not find the organization with Id {member.OrganizationId}.");
+                    return $"Could not find an organization with Id {member.OrganizationId}.";
+                }
 
 
+                // Update the organization's treasury amount.
                 org.TreasuryAmount += amountToDonate;
-
                 context.Organizations.Update(org);
 
                 // Save database changes.
@@ -113,9 +110,10 @@ namespace Bot.SlashCommands.Organizations
             
 
                 // Get the currency name.
-                Currency? currency = await context.Currencies.FirstOrDefaultAsync(c => c.Id == OrganizationConstants.CURRENCY_ID);
+                Currency? currency = context.Currencies.Count() > 0 ? await context.Currencies.FirstOrDefaultAsync(c => c.Id == OrganizationConstants.CURRENCY_ID)
+                                                                    : null;
                 if (currency == null)
-                    return "Could not find the currency with this Id.";
+                    return $"Could not find the currency with Id {OrganizationConstants.CURRENCY_ID}.";
 
                 // Return a messaage.
                 return $"You donated {amountToDonate} {currency.Name} to your organization ({org.Name})!";

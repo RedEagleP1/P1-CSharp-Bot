@@ -30,9 +30,11 @@ namespace WebApp.Pages.Modules.Shop
 		public async Task OnGet(ulong guildId)
         {
 			Guild = await _db.Guilds.FirstOrDefaultAsync(g => g.Id == guildId);
-            
-            //Get shop items
-            var newList = new List<ShopItem>();
+
+			AllCurrencies = _db.Currencies.ToList();
+
+			//Get shop items
+			var newList = new List<ShopItem>();
 
             newList = await _db.ShopItems
 				.Where(a => a.GuildId == guildId)
@@ -46,7 +48,8 @@ namespace WebApp.Pages.Modules.Shop
                     ItemName = "No name",
                     Cost = 0,
                     Description = "No description",
-                };
+					CurrencyId = AllCurrencies[0].Id,
+				};
 
                 _db.ShopItems.Add(tempItem);
 				newList.Add(tempItem);
@@ -55,18 +58,19 @@ namespace WebApp.Pages.Modules.Shop
 			}
 
 			ShopItems = newList;
-			AllCurrencies = _db.Currencies.ToList();
-            Console.WriteLine(AllCurrencies[0].Name);
 		}
 
         public async Task<IActionResult> OnPostCreateNewItem(ulong guildId)
         {
+			AllCurrencies = _db.Currencies.ToList();
+
 			var tempItem = new ShopItem()
 			{
 				GuildId = guildId,
 				ItemName = "No name",
 				Cost = 0,
 				Description = "No description",
+				CurrencyId = AllCurrencies[0].Id,
 			};
 			_db.ShopItems.Add(tempItem);
 

@@ -175,7 +175,7 @@ namespace Bot.SlashCommands.Organizations
                 // Get the members of the organization
                 List<OrganizationMember>? orgMembers = context.OrganizationMembers.Count() > 0 ? await context.OrganizationMembers.Where(x => x.OrganizationId == org.Id).ToListAsync()
                                                                                                : null;
-                int memberCount = orgs != null ? orgs.Count : 0;
+                int memberCount = orgs != null ? orgMembers.Count : 0;
 
 
                 string teamLead = client.GetUser(org.LeaderID).Username;

@@ -37,72 +37,11 @@ namespace Bot.EventHandlers
 				switch (parts[0])
                 {
                     case "shopBack":
-						await component.DeferAsync();
-						await component.ModifyOriginalResponseAsync(async msg =>
-						{
-							using var context = DBContextFactory.GetNewContext();
-							var embedBuilder = new EmbedBuilder();
-
-							List<ShopItem> itemReferences = await context.ShopItems.Where(x => x.GuildId == component.GuildId).ToListAsync();
-
-							var index = int.Parse(parts[1]);
-							var CurrencyRef = await context.Currencies.FirstAsync(x => x.Id == itemReferences[index].CurrencyId);
-							embedBuilder
-							.WithAuthor(component.User.Username, component.User.GetAvatarUrl() ?? component.User.GetDefaultAvatarUrl())
-							.WithTitle($"{itemReferences[index].ItemName}")
-							.WithDescription($"**ID:** {itemReferences[index].Id} \n " +
-											$"**Currency Type:** {CurrencyRef.Name} \n " +
-											$"**Cost:** {itemReferences[index].Cost} \n " +
-											$"**Description:** {itemReferences[index].Description}")
-							.WithColor(Color.Blue)
-							.WithCurrentTimestamp();
-
-							var buttonBuilder = new ComponentBuilder()
-					            .WithButton(customId: $"shopBack_{index-1}", emote: new Emoji("⬅"))
-					            .WithButton(customId: $"shopFore_{index+1}", emote: new Emoji("➡️"));
-
-
-							msg.Embed = embedBuilder.Build();
-							msg.Components = buttonBuilder.Build();
-						});
-					break;
+						await UpdateShop(component, parts);
+						break;
 
                     case "shopFore":
-						try
-						{
-							await component.DeferAsync();
-
-							await component.ModifyOriginalResponseAsync(async msg =>
-							{
-								using var context = DBContextFactory.GetNewContext();
-								var embedBuilder = new EmbedBuilder();
-
-								List<ShopItem> itemReferences = context.ShopItems
-									.Where(x => x.GuildId == component.GuildId)
-									.ToList();
-
-								var index = int.Parse(parts[1]);
-								var CurrencyRef = await context.Currencies.FirstAsync(x => x.Id == itemReferences[index].CurrencyId);
-
-								embedBuilder
-									.WithAuthor(component.User.Username, component.User.GetAvatarUrl() ?? component.User.GetDefaultAvatarUrl())
-									.WithTitle($"{itemReferences[index].ItemName}")
-									.WithDescription($"**ID:** {itemReferences[index].Id} \n " +
-													$"**Currency Type:** {CurrencyRef.Name} \n " +
-													$"**Cost:** {itemReferences[index].Cost} \n " +
-													$"**Description:** {itemReferences[index].Description}")
-									.WithColor(Color.Blue)
-									.WithCurrentTimestamp();
-
-								msg.Embed = embedBuilder.Build();
-
-								msg.Content = " ";
-							});
-						}
-						catch (Exception ex)
-						{
-							Console.WriteLine($"An error occurred: {ex.Message}");
-						}
+						await UpdateShop(component, parts);
 						break;
                 }
             }
@@ -115,5 +54,45 @@ namespace Bot.EventHandlers
                 DBReadWrite.ReleaseLock();
             }
         }
-    }
+		private async Task UpdateShop(IComponentInteraction component, string[] parts)
+		{
+			try
+			{
+				await Task.Run(async () =>
+				{
+					Console.WriteLine("test1");
+					using var context = DBContextFactory.GetNewContext();
+					var embedBuilder = new EmbedBuilder();
+
+					List<ShopItem> itemReferences = context.ShopItems
+						.Where(x => x.GuildId == component.GuildId)
+						.ToList();
+
+					var index = int.Parse(parts[1]);
+					var CurrencyRef = await context.Currencies.FirstAsync(x => x.Id == itemReferences[index].CurrencyId);
+
+					embedBuilder
+						.WithAuthor(component.User.Username, component.User.GetAvatarUrl() ?? component.User.GetDefaultAvatarUrl())
+						.WithTitle($"{itemReferences[index].ItemName}")
+						.WithDescription($"**ID:** {itemReferences[index].Id} \n " +
+										 $"**Currency Type:** {CurrencyRef.Name} \n " +
+										 $"**Cost:** {itemReferences[index].Cost} \n " +
+										 $"**Description:** {itemReferences[index].Description}")
+						.WithColor(Color.Blue)
+						.WithCurrentTimestamp();
+
+					await component.ModifyOriginalResponseAsync(msg =>
+					{
+						Console.WriteLine("test2");
+						msg.Embed = embedBuilder.Build();
+						msg.Content = " ";
+					});
+				});
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"An error occurred: {ex.Message}");
+			}
+		}
+	}
 }

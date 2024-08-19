@@ -1,4 +1,5 @@
-﻿using Bot.SlashCommands.Organizations;
+﻿using Bot.SlashCommands.DbUtils;
+using Bot.SlashCommands.Organizations;
 using Discord;
 using Discord.WebSocket;
 using Microsoft.EntityFrameworkCore;
@@ -44,24 +45,16 @@ namespace Bot.SlashCommands.Organizations
 
 
                 // Check if the user who invoked this command is in an organization.
-                OrganizationMember? member = await context.OrganizationMembers.FirstOrDefaultAsync(x => x.UserId == command.User.Id);
+                OrganizationMember? member = await UserDataUtils.CheckIfUserIsInAnOrg(command.User.Id, context);
                 if (member == null)
                     return "You are not in an organization.";
 
 
                 // Find the organization.
-                Organization? org = null;
-                try
-                {
-                    org = await context.Organizations.FirstOrDefaultAsync(o => o.Id == member.OrganizationId);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"ERROR: An error occurred:\n\"{ex.Message}\"\n    Inner Exception: \"{(ex.InnerException != null ? ex.InnerException.Message : "")}\"");
-                    return "An error occurred while finding the organization.";
-                }
+                Organization? org = context.Organizations.Count() > 0 ? await context.Organizations.FirstOrDefaultAsync(o => o.Id == member.OrganizationId)
+                                                                      : null;
                 if (org == null)
-                    return "Could not find your organization.";
+                    return $"Could not find an organization with Id {member.OrganizationId}.";
 
 
                 // Check if this command was invoked by the organization's leader.
@@ -108,17 +101,8 @@ namespace Bot.SlashCommands.Organizations
 
 
                 // Find the owned currency data for this user.
-                CurrencyOwned? currencyOwned = null;
-                try
-                {
-                    currencyOwned = await context.CurrenciesOwned.FirstOrDefaultAsync(x => x.OwnerId == targetUser.Id && x.CurrencyId == OrganizationConstants.CURRENCY_ID);                
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"ERROR: An error occurred:\n\"{ex.Message}\"\n    Inner Exception: \"{(ex.InnerException != null ? ex.InnerException.Message : "")}\"");
-                    return "An error occurred while finding the target user's owned currencies info.";
-                }
-
+                CurrencyOwned? currencyOwned = context.CurrenciesOwned.Count() > 0 ? await context.CurrenciesOwned.FirstOrDefaultAsync(x => x.OwnerId == targetUser.Id && x.CurrencyId == OrganizationConstants.CURRENCY_ID)
+                                                                                   : null;
          
                 // Update the organization's treasury amount.
                 org.TreasuryAmount -= amountToGive;
@@ -146,9 +130,10 @@ namespace Bot.SlashCommands.Organizations
             
 
                 // Get the currency name.
-                Currency? currency = await context.Currencies.FirstOrDefaultAsync(c => c.Id == OrganizationConstants.CURRENCY_ID);
+                Currency? currency = context.Currencies.Count() > 0 ? await context.Currencies.FirstOrDefaultAsync(c => c.Id == OrganizationConstants.CURRENCY_ID)
+                                                                    : null;
                 if (currency == null)
-                    return "ERROR: Could not find the currency with this Id.";
+                    return $"Could not find the currency with Id {OrganizationConstants.CURRENCY_ID}.";
 
                 // Return a messaage.
                 return $"The organization \"{org.Name}\" gave {amountToGive} {currency.Name} to ({targetUser.Username})!";

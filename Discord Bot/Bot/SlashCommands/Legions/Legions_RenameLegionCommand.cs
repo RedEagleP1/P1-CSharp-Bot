@@ -1,4 +1,5 @@
 ﻿using Bot.SlashCommands.DbUtils;
+using Bot.SlashCommands.Legions;
 using Discord;
 using Discord.WebSocket;
 using Microsoft.EntityFrameworkCore;
@@ -8,12 +9,12 @@ using System.Security.Cryptography;
 namespace Bot.SlashCommands.Organizations
 {
     /// <summary>
-    /// This command renames the organization of the team lead who invoked it.
-    /// Only the team lead may use this command.
+    /// This command renames the legion of the legion leader who invoked it.
+    /// Only the legion leader may use this command.
     /// </summary>
-    internal class Organizations_RenameOrgCommand : ISlashCommand
+    internal class Legions_RenameLegionCommand : ISlashCommand
     {
-        const string name = "rename_org";
+        const string name = "rename_legion";
         readonly SlashCommandProperties properties = CreateNewProperties();
 
         public string Name => name;
@@ -46,15 +47,15 @@ namespace Bot.SlashCommands.Organizations
             // Try to get the name option.
             SocketSlashCommandDataOption? nameOption = command.Data.Options.FirstOrDefault(x => x.Name == "name");
             if (nameOption == null)
-                return "Please provide a new name for the organization.";
+                return "Please provide a new name for the legion.";
 
             // Check if the name option contains a valid value.
-            string? newOrgName = nameOption.Value.ToString();
-            if (newOrgName == null || newOrgName.Length < OrganizationConstants.MIN_ORG_NAME_LENGTH)
+            string? newLegionName = nameOption.Value.ToString();
+            if (newLegionName == null || newLegionName.Length < LegionConstants.MIN_LEGION_NAME_LENGTH)
             {
-                return $"Please provide a new name that is at least {OrganizationConstants.MIN_ORG_NAME_LENGTH} characters long for the organization.";
+                return $"Please provide a new name that is at least {LegionConstants.MIN_LEGION_NAME_LENGTH} characters long for the legion.";
             }
-            newOrgName = newOrgName.Trim();
+            newLegionName = newLegionName.Trim();
 
 
             await DBReadWrite.LockReadWrite();
@@ -62,40 +63,29 @@ namespace Bot.SlashCommands.Organizations
             {
                 using var context = DBContextFactory.GetNewContext();
 
-                // Check if the user who invoked this command is in an organization.
-                OrganizationMember? member = await UserDataUtils.CheckIfUserIsInAnOrg(command.User.Id, context);
-                if (member == null)
-                    return "You are not in an organization.";
+                // Check if the user who invoked this command is a legion leader.
+                Legion? legion = await UserDataUtils.CheckIfUserIsALegionLeader(command.User.Id, context);
+                if (legion == null)
+                    return "You are not a legion leader.";
 
 
-                // Check if there is already an organization with this name.
-                Organization? existingOrg = context.Organizations.Count() > 0 ? await context.Organizations.AsNoTracking().FirstOrDefaultAsync(x => x.Name == newOrgName)
+                // Check if there is already an legion with this name.
+                Legion? existingLegion = context.Legions.Count() > 0 ? await context.Legions.AsNoTracking().FirstOrDefaultAsync(x => x.Name == newLegionName)
                                                                               : null;
-                if (existingOrg != null)
-                    return "An organization with this name already exists.";
+                if (existingLegion != null)
+                    return "A legion with this name already exists.";
 
 
-                // Find the organization that's being renamed.
-                Organization? org = context.Organizations.Count() > 0 ? await context.Organizations.FirstOrDefaultAsync(x => x.Id == member.OrganizationId)
-                                                                      : null;
-                if (org == null)
-                    return "Failed to rename your organization, as it could not be found.";
-
-
-                if (command.User.Id != org.LeaderID)
-                    return "Only the leader of your organization may use this command.";
-
-
-                // Change the organization's name.
-                string oldName = org.Name;
-                org.Name = newOrgName;
-                context.Organizations.Update(org);
+                // Change the legion's name.
+                string oldName = legion.Name;
+                legion.Name = newLegionName;
+                context.Legions.Update(legion);
 
                 // Save changes to database.
                 await context.SaveChangesAsync();
                
                 hadError = false;
-                return $"The organization \"{oldName}\" has been renamed to \"{newOrgName}\".";
+                return $"The legion \"{oldName}\" has been renamed to \"{newLegionName}\".";
 
             }
             catch (Exception ex)
@@ -109,7 +99,7 @@ namespace Bot.SlashCommands.Organizations
             }
 
         }
-        
+
         static SlashCommandProperties CreateNewProperties()
         {
             return new SlashCommandBuilder()

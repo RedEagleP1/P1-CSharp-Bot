@@ -1,4 +1,5 @@
-﻿using Discord;
+﻿using Bot.SlashCommands.DbUtils;
+using Discord;
 using Discord.WebSocket;
 using Microsoft.EntityFrameworkCore;
 using Models;
@@ -30,7 +31,7 @@ namespace Bot.EventHandlers
             // The component.Message.Author object was giving me the Id of the Discord bot instead of the
             // user who triggered this request. That is most likely just because the message to the
             // team lead was indeed sent by the bot.
-            ExtractSenderIdFromMessageContent(component.Message.Content, out ulong? senderId);
+            OrgDataUtils.ExtractSenderIdFromMessageContent(component.Message.Content, out ulong? senderId);
             if (senderId == null)
             {
                 Console.WriteLine("ERROR: Sender Id is null!");
@@ -49,7 +50,12 @@ namespace Bot.EventHandlers
             await DBReadWrite.LockReadWrite();
             try
             {
-                org = await GetOrg(component.User.Id, context);
+                org = await OrgDataUtils.GetOrgFromLeaderId(component.User.Id, context);
+                if (org == null)
+                {
+                    Console.WriteLine("ERROR: OrganizationJoinRequestHandler failed. The organization is null!");
+                    return;
+                }
 
 
                 await HideAcceptAndDenyButtons(component);
@@ -118,10 +124,6 @@ namespace Bot.EventHandlers
         {
             try
             {
-                OrganizationMember newMember = new OrganizationMember();
-                newMember.UserId = userId;
-
-
                 // Add the user as a new member of the organization.
                 context.OrganizationMembers.Add(new OrganizationMember()
                 {
@@ -134,60 +136,12 @@ namespace Bot.EventHandlers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"ERROR: An error occurred while trying to add a new member to the \"{org.Name}\" organization.\nException: \"{ex.Message}\"\n    Inner Exception: \"{(ex.InnerException != null ? ex.InnerException.Message : "")}\"");
+                Console.WriteLine($"ERROR: An error occurred while trying to add <@{userId}> as a new member of the \"{org.Name}\" organization.\nException: \"{ex.Message}\"\n    Inner Exception: \"{(ex.InnerException != null ? ex.InnerException.Message : "")}\"");
                 return false;
             }
 
 
             return true;
-        }
-
-        private bool ExtractSenderIdFromMessageContent(string msgContent, out ulong? senderId)
-        {
-            senderId = null;
-
-            try
-            {
-                int firstSpace = msgContent.IndexOf(" ");
-
-                string temp = msgContent.Substring(0, firstSpace - 1);
-
-                // Trim off the leading "<@" and trailing ">"
-                temp = temp.Substring(2, temp.Length - 2);
-
-                senderId = ulong.Parse(temp);
-
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"ERROR: An error occurred while trying to get the user Id from the organization join request.n\"{ex.Message}\"\n    Inner Exception: \"{(ex.InnerException != null ? ex.InnerException.Message : "")}\"");
-
-                return false;
-            }
-        }
-
-        private async Task<Organization> GetOrg(ulong orgLeadId, ApplicationDbContext context)
-        {
-            // Find the team lead's organization membership record.
-            OrganizationMember? orgLead = await context.OrganizationMembers.FirstOrDefaultAsync(m => m.UserId == orgLeadId);
-            if (orgLead == null)
-            {
-                Console.WriteLine("ERROR: This team lead Id points to a user that isn't a member of any organization!");
-                return new Organization() { Name = "[ERROR: INVALID TEAM LEAD ID!]" };
-            }
-
-            // Find the organization.
-            Organization? org = await context.Organizations.FirstOrDefaultAsync(o => o.Id == orgLead.OrganizationId);
-            if (org == null)
-            {
-                Console.WriteLine("ERROR: Could not find the organization!");
-                return new Organization() { Name = "[ERROR: COULD NOT FIND ORGANIZATION!]" };
-            }
-
-
-            // Return the organization.
-            return org;
         }
 
     }

@@ -75,8 +75,8 @@ namespace Bot.SlashCommands.Shop
 
                 // Create the buttons
                 var buttonBuilder = new ComponentBuilder()
-					.WithButton(customId: $"shopBack_{index-1}", emote: new Emoji("⬅"))
-	                .WithButton(customId: $"shopFore_{index+1}", emote: new Emoji("➡️"));
+					.WithButton(customId: $"shopBtn_{index-1}", emote: new Emoji("⬅"), disabled:true)
+	                .WithButton(customId: $"shopBtn_{index+1}", emote: new Emoji("➡️"));
 
 
 				// Insert it into the response

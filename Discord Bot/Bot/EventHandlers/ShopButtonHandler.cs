@@ -34,15 +34,9 @@ namespace Bot.EventHandlers
             {
                 var parts = component.Data.CustomId.Split('_');
 
-				switch (parts[0])
+				if (parts[0] == "shopBtn")
                 {
-                    case "shopBack":
-						await UpdateShop(component, parts);
-						break;
-
-                    case "shopFore":
-						await UpdateShop(component, parts);
-						break;
+					await UpdateShop(component, parts);
                 }
             }
             catch (Exception ex)
@@ -58,40 +52,48 @@ namespace Bot.EventHandlers
 		{
 			try
 			{
-				await Task.Run(async () =>
+				using var context = DBContextFactory.GetNewContext();
+				var embedBuilder = new EmbedBuilder();
+
+				List<ShopItem> itemReferences = context.ShopItems
+					.Where(x => x.GuildId == component.GuildId)
+					.ToList();
+
+				var index = int.Parse(parts[1]);
+				var CurrencyRef = await context.Currencies.FirstAsync(x => x.Id == itemReferences[index].CurrencyId);
+
+				embedBuilder
+					.WithAuthor(component.User.Username, component.User.GetAvatarUrl() ?? component.User.GetDefaultAvatarUrl())
+					.WithTitle($"{itemReferences[index].ItemName}")
+					.WithDescription($"**ID:** {itemReferences[index].Id} \n " +
+									 $"**Currency Type:** {CurrencyRef.Name} \n " +
+									 $"**Cost:** {itemReferences[index].Cost} \n " +
+									 $"**Description:** {itemReferences[index].Description}")
+					.WithColor(Color.Blue)
+					.WithCurrentTimestamp();
+
+				var backCap = false;
+				var frontCap = false;
+
+				if (index >= itemReferences.Count-1)
 				{
-					Console.WriteLine("test1");
-					using var context = DBContextFactory.GetNewContext();
-					var embedBuilder = new EmbedBuilder();
+					frontCap = true;
+				}
+				else if (index == 0)
+				{
+					backCap = true;
+				}
 
-					List<ShopItem> itemReferences = context.ShopItems
-						.Where(x => x.GuildId == component.GuildId)
-						.ToList();
+				var buttonBuilder = new ComponentBuilder()
+					.WithButton(customId: $"shopBtn_{index - 1}", emote: new Emoji("⬅"), disabled: backCap)
+					.WithButton(customId: $"shopBtn_{index + 1}", emote: new Emoji("➡️"), disabled: frontCap);
 
-					var index = int.Parse(parts[1]);
-					var CurrencyRef = await context.Currencies.FirstAsync(x => x.Id == itemReferences[index].CurrencyId);
-
-					embedBuilder
-						.WithAuthor(component.User.Username, component.User.GetAvatarUrl() ?? component.User.GetDefaultAvatarUrl())
-						.WithTitle($"{itemReferences[index].ItemName}")
-						.WithDescription($"**ID:** {itemReferences[index].Id} \n " +
-										 $"**Currency Type:** {CurrencyRef.Name} \n " +
-										 $"**Cost:** {itemReferences[index].Cost} \n " +
-										 $"**Description:** {itemReferences[index].Description}")
-						.WithColor(Color.Blue)
-						.WithCurrentTimestamp();
-
-					await component.ModifyOriginalResponseAsync(msg =>
-					{
-						Console.WriteLine("test2");
-						msg.Embed = embedBuilder.Build();
-						msg.Content = " ";
-					});
-				});
+				await component.RespondAsync(embed: embedBuilder.Build(), components:buttonBuilder.Build());
+				await component.Message.DeleteAsync();
 			}
 			catch (Exception ex)
 			{
-				Console.WriteLine($"An error occurred: {ex.Message}");
+				Console.WriteLine($"An error occurred: {ex}");
 			}
 		}
 	}

@@ -11,7 +11,7 @@ namespace Models
 		public int? Id { get; set; }
 		public ulong GuildId { get; set; }
         public string ItemName { get; set; }
-        public ulong emojiId { get; set; }
+        public string emojiId { get; set; }
         public int CurrencyId { get; set; }
         public int Cost { get; set; }
         public string Description { get; set; }

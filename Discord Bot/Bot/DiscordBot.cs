@@ -89,7 +89,7 @@ namespace Bot
                 new MemberUpdateHandler(client),
                 new MessageUpdateHandler(client),
 				new ShopButton(client),
-				//new OrganizationJoinRequestHandler(client),
+				new OrganizationJoinRequestHandler(client),
 				new RoleSurveyHandler(client),
                 new SlashCommandHandler(client, slashCommands),
                 new VoiceStateUpdateHandler(client),

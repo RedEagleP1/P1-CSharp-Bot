@@ -61,14 +61,21 @@ namespace Bot.SlashCommands.Shop
 
                 var index = 0;
 				var CurrencyRef = await context.Currencies.FirstAsync(x => x.Id == itemReferences[index].CurrencyId);
+                var EditedDesc = itemReferences[index].Description;
 
-                embedBuilder
+                if (EditedDesc.Length > 20)
+                {
+                    EditedDesc = EditedDesc.Substring(0, 20);
+                    EditedDesc += "...";
+                }
+
+				embedBuilder
                     .WithAuthor(command.User.Username, command.User.GetAvatarUrl() ?? command.User.GetDefaultAvatarUrl())
-                    .WithTitle($"{itemReferences[index].ItemName}")
-                    .WithDescription($"**ID:** {itemReferences[index].Id} \n " +
-                                     $"**Currency Type:** {CurrencyRef.Name} \n " +
+					.WithTitle($"{itemReferences[index].ItemName} :{itemReferences[index].emojiId}:")
+					.WithDescription($"**ID:** {itemReferences[index].Id} \n " +
+									 $"**Currency Type:** {CurrencyRef.Name} \n " +
                                      $"**Cost:** {itemReferences[index].Cost} \n " +
-                                     $"**Description:** {itemReferences[index].Description}")
+                                     $"**Description:** {EditedDesc}")
                     .WithColor(Color.Blue)
                     .WithCurrentTimestamp();
 

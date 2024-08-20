@@ -79,6 +79,7 @@ namespace Bot
                 // Shop Commands
                 // ----------------------------------------------------------------------------------------------------
                 new Shop_DisplayCommand(client),
+                new Shop_DisplayItemCommand(client),
             };
 
             List<IEventHandler> eventHandlers = new()
@@ -89,6 +90,7 @@ namespace Bot
                 new MemberUpdateHandler(client),
                 new MessageUpdateHandler(client),
 				new ShopButton(client),
+                new ShopBuyButton(client),
 				new OrganizationJoinRequestHandler(client),
 				new RoleSurveyHandler(client),
                 new SlashCommandHandler(client, slashCommands),

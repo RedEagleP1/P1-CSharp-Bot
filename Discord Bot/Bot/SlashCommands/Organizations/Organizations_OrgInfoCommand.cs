@@ -115,7 +115,7 @@ namespace Bot.SlashCommands.Organizations
                                      $"**ID:** {org.Id} \n " +
                                      $"**Treasury Amount:** {org.TreasuryAmount} \n " +
                                      $"**Leader:** {leader.Username} \n " +
-                                     $"**Members Count:** {memberCount} / {teamSettings.MaxOrgsPerLegion}")
+                                     $"**Members Count:** {memberCount} / {teamSettings.MaxMembersPerOrg}")
                     .AddField("Members:", OrgDataUtils.GetMemberPingsList(command.User.Id, client, members)) // This adds the members list into the embed.
                     .WithColor(Color.Blue)
                     .WithCurrentTimestamp();

@@ -96,12 +96,24 @@ namespace Bot.SlashCommands.Organizations
                     return "There is no organization with this Id.";
 
 
-                // Check if the organization has room for a new member
-                List<OrganizationMember>? members = context.OrganizationMembers.Count() > 0 ? await context.OrganizationMembers.Where(x => x.OrganizationId == orgId).ToListAsync()
+				// Get the relevant team settings record.
+				TeamSettings? teamSettings = TeamSettingsUtils.GetTeamSettingsForGuild(org.GuildId, context);
+				if (teamSettings == null)
+				{
+					teamSettings = TeamSettings.CreateDefault(org.GuildId);
+
+                    // Add the new team settings record into the database.
+			        context.TeamSettings.Add(teamSettings);
+                    await context.SaveChangesAsync();
+				}
+
+
+				// Check if the organization has room for a new member
+				List<OrganizationMember>? members = context.OrganizationMembers.Count() > 0 ? await context.OrganizationMembers.Where(x => x.OrganizationId == orgId).ToListAsync()
                                                                                             : null;
                 if (members == null || members.Count == 0)
                     return "This organization has no members. There must be an error in the database as this is normally not possible.";
-                if (members.Count >= org.MaxMembers)
+                if (members.Count >= teamSettings.MaxMembersPerOrg)
                     return "Sorry, you cannot join as this organization is already full.";
 
 

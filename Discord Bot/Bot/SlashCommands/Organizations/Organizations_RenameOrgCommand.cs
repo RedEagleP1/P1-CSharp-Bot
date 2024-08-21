@@ -50,9 +50,9 @@ namespace Bot.SlashCommands.Organizations
 
             // Check if the name option contains a valid value.
             string? newOrgName = nameOption.Value.ToString();
-            if (newOrgName == null || newOrgName.Length < OrganizationConstants.MIN_ORG_NAME_LENGTH)
+            if (newOrgName == null || newOrgName.Length < Organization.DEFAULT_MIN_ORG_NAME_LENGTH)
             {
-                return $"Please provide a new name that is at least {OrganizationConstants.MIN_ORG_NAME_LENGTH} characters long for the organization.";
+                return $"Please provide a new name that is at least {Organization.DEFAULT_MIN_ORG_NAME_LENGTH} characters long for the organization.";
             }
             newOrgName = newOrgName.Trim();
 

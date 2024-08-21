@@ -1,0 +1,84 @@
+﻿@page
+@model WebApp.Pages.Modules.TeamSettings.IndexModel
+
+@Html.AntiForgeryToken()
+<nav class="nav">
+    <a class="nav-link active" aria-current="page" asp-page="/Home/Guilds">Guilds</a>
+	<a class="nav-link active" aria-current="page" asp-page="/Home/Modules" asp-route-id="@Model.Guild.Id" asp-route-name="@Model.Guild.Name">Modules</a>
+</nav>
+<br />
+<div>
+	<h2 class="text-primary">Team Settings</h2>
+</div>
+<br /><br />
+<div class="container p-3">
+	<form method="post">
+		<table class="table table-bordered table-striped" style="width:100%">
+			<thead>
+				<tr>
+					<th>
+						Guild
+					</th>
+					<th>
+						Orgs Per Legion
+					</th>
+					<th>
+						Members Per Org
+					</th>
+					<th>
+						<!-- This empty header cell is here so the header row has the same number of cells as the row below. Otherwise part of the border will be missing. -->
+					</th>
+				</tr>
+			</thead>
+			<tbody id="TableRows">
+				<tr>
+					<td>
+						<input asp-for="TeamSettingsValues.Id" value="@Model.TeamSettingsValues.Id" hidden>
+						<input asp-for="TeamSettingsValues.GuildId" value="@Model.TeamSettingsValues.GuildId" hidden>
+
+						@Model.Guild.Name
+					</td>
+					<td>
+						<input asp-for="TeamSettingsValues.MaxOrgsPerLegion" type="number" value="@Model.TeamSettingsValues.MaxOrgsPerLegion" style="width:100%"/>
+						<span asp-validation-for="TeamSettingsValues.MaxOrgsPerLegion" class="text-danger"></span>
+					</td>
+					<td>
+						<input asp-for="TeamSettingsValues.MaxMembersPerOrg" type="number" value="@Model.TeamSettingsValues.MaxMembersPerOrg" style="width:100%"/>
+						<span asp-validation-for="TeamSettingsValues.MaxMembersPerOrg" class="text-danger"></span>
+					</td>
+					<td>
+						<button asp-page-handler="Save" type="submit" class="btn btn-primary mx-2">Save</button>
+					</td>
+				</tr>
+				
+			</tbody>
+		</table>
+	</form>
+</div>
+
+@section Scripts
+{
+	<script>
+		$(document).on("click", "#SelectedId", function () {
+			var Id = $(this).val();
+			var Name = $(this).text();
+			var Div = $(this).closest("#Display");
+
+			console.log(Id);
+
+			if (Div.length != 0) {
+				Div.find("#dropdownMenuButton").text(Name);
+				Div.find("#dropdownOption").val(parseInt(Id));
+				return;
+			}
+		});
+	</script>
+	@if (ViewData["Message"] != null)
+	{
+		<script>
+			window.onload = function () {
+				alert("@ViewData["Message"]");
+			};
+		</script>
+	}
+}

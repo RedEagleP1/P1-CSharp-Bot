@@ -95,10 +95,23 @@ namespace Bot.SlashCommands.Legions
                     return "There is no legion with this Id.";
 
 
-                // Check if the legion has room for a new member
-                List<LegionMember>? members = context.LegionMembers.Count() > 0 ? await context.LegionMembers.Where(x => x.LegionId == legionId).ToListAsync()
+
+				// Get the relevant team settings record.
+				TeamSettings? teamSettings = TeamSettingsUtils.GetTeamSettingsForGuild(org.GuildId, context);
+				if (teamSettings == null)
+				{
+					teamSettings = TeamSettings.CreateDefault(org.GuildId);
+
+					// Add the new team settings record into the database.
+					context.TeamSettings.Add(teamSettings);
+					await context.SaveChangesAsync();
+				}
+
+
+				// Check if the legion has room for a new member
+				List<LegionMember>? members = context.LegionMembers.Count() > 0 ? await context.LegionMembers.Where(x => x.LegionId == legionId).ToListAsync()
                                                                                 : null;
-                if (members != null && members.Count >= legion.MaxMembers)
+                if (members != null && members.Count >= teamSettings.MaxOrgsPerLegion)
                     return "Sorry, you cannot join as this legion is already full.";
 
 

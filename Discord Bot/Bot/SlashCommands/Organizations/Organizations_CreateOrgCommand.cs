@@ -42,7 +42,7 @@ namespace Bot.SlashCommands.Organizations
                 using var context = DBContextFactory.GetNewContext();
 
                 OrganizationMember? memberTest = await UserDataUtils.CheckIfUserIsInAnOrg(command.User.Id, context);
-                if (!OrganizationConstants.ALLOW_USER_TO_JOIN_MULTIPLE_ORGS && memberTest != null)
+                if (!Organization.ALLOW_USER_TO_JOIN_MULTIPLE_ORGS && memberTest != null)
                     return "You are already in an organization so you cannot create a new one.";
 
 
@@ -53,8 +53,8 @@ namespace Bot.SlashCommands.Organizations
 
                 // Check if the name option contains a valid value.
                 string? orgName = nameOption.Value.ToString();
-                if (orgName == null || orgName.Length < OrganizationConstants.MIN_ORG_NAME_LENGTH)
-                    return $"Please provide a name that is at least {OrganizationConstants.MIN_ORG_NAME_LENGTH} characters long for the new organization.";
+                if (orgName == null || orgName.Length < Organization.DEFAULT_MIN_ORG_NAME_LENGTH)
+                    return $"Please provide a name that is at least {Organization.DEFAULT_MIN_ORG_NAME_LENGTH} characters long for the new organization.";
 
                 orgName = orgName.Trim();
             
@@ -72,17 +72,30 @@ namespace Bot.SlashCommands.Organizations
                     return $"Failed to create new organization \"{orgName}\". GuildId is null.";
                 else
                     guildId = (ulong) command.GuildId;
-            
+
+
+                // Get the relevant team settings record.
+                TeamSettings? teamSettings = TeamSettingsUtils.GetTeamSettingsForGuild(guildId, context);
+                bool createdNewTeamSettings = false;
+                if (teamSettings == null)
+                {
+                    createdNewTeamSettings = true;
+                    teamSettings = TeamSettings.CreateDefault(guildId);
+                }
 
                 // First, add the new organization to the orgs table.
                 Organization newOrg = new Organization();
                 newOrg.Name = orgName.Trim();
                 newOrg.LeaderID = command.User.Id;
-                newOrg.CurrencyId = OrganizationConstants.CURRENCY_ID;
+                newOrg.CurrencyId = Organization.DEFAULT_CURRENCY_ID;
                 newOrg.GuildId = guildId;
-                newOrg.MaxMembers = OrganizationConstants.MAX_ORG_MEMBERS;
                 context.Organizations.Add(newOrg);
 
+                // If we created a new team settings record, then add it to the database.
+                if (createdNewTeamSettings)
+                    context.TeamSettings.Add(teamSettings);
+
+                // Save changes to the database.
                 await context.SaveChangesAsync();
 
 

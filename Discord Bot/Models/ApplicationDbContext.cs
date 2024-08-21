@@ -26,9 +26,10 @@ namespace Models
         public DbSet<VoiceChannelCurrencyGain> VoiceChannelCurrencyGains { get; set; }
         public DbSet<GlobalVoiceCurrencyGain> GlobalVoiceCurrencyGains { get; set; }
         public DbSet<CurrencyReset> CurrencyResets { get; set; }
-    	public DbSet<Automation> Automations { get; set; }
-    	public DbSet<IdAuto> IdAutos { get; set; }
-  	public DbSet<VoiceChannelTrack> VoiceChannelTracks { get; set; }
+        public DbSet<Automation> Automations { get; set; }
+        public DbSet<IdAuto> IdAutos { get; set; }
+        public DbSet<TeamSettings> TeamSettings { get; set; }
+  	    public DbSet<VoiceChannelTrack> VoiceChannelTracks { get; set; }
         public DbSet<TextChannelMessageValidation> TextChannelMessageValidation { get; set; }
         public DbSet<MessageValidationSuccessTrack> MessageValidationSuccessTracks { get; set; }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
@@ -147,13 +148,19 @@ namespace Models
                 .WithMany()
                 .HasForeignKey(v => v.GuildId);
 
-			modelBuilder.Entity<IdAuto>()
-				.HasOne<Automation>()
-				.WithMany()
-				.HasForeignKey(v => v.AutomationId)
+            modelBuilder.Entity<IdAuto>()
+                .HasOne<Automation>()
+                .WithMany()
+                .HasForeignKey(v => v.AutomationId)
                 .IsRequired(false);
 
-			modelBuilder.Entity<CurrencyReset>()
+            modelBuilder.Entity<CurrencyReset>()
+                .HasOne<Currency>()
+                .WithMany()
+                .HasForeignKey(v => v.CurrencyId)
+                .IsRequired(false);
+
+            modelBuilder.Entity<CurrencyReset>()
                 .HasOne<Currency>()
                 .WithMany()
                 .HasForeignKey(v => v.CurrencyId)
@@ -163,6 +170,11 @@ namespace Models
                 .HasOne<Guild>()
                 .WithMany()
                 .HasForeignKey(v => v.GuildId);
+
+            modelBuilder.Entity<TeamSettings>()
+                .HasOne<Guild>()
+                .WithMany()
+                .HasForeignKey(ts => ts.GuildId);
 
             modelBuilder.Entity<TextChannelMessageValidation>()
                 .HasOne<Guild>()

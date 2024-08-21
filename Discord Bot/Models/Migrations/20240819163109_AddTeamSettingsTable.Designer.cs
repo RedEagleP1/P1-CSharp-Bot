@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Models;
 
@@ -10,9 +11,10 @@ using Models;
 namespace Models.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240819163109_AddTeamSettingsTable")]
+    partial class AddTeamSettingsTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -208,6 +210,9 @@ namespace Models.Migrations
                     b.Property<ulong>("LeaderID")
                         .HasColumnType("bigint unsigned");
 
+                    b.Property<int>("MaxMembers")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -272,6 +277,9 @@ namespace Models.Migrations
 
                     b.Property<ulong>("LeaderID")
                         .HasColumnType("bigint unsigned");
+
+                    b.Property<int>("MaxMembers")
+                        .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -583,10 +591,10 @@ namespace Models.Migrations
                         .HasColumnType("bigint unsigned");
 
                     b.Property<int>("MaxMembersPerOrg")
-                        .HasColumnType("int");
+                        .HasColumnType("bigint unsigned");
 
                     b.Property<int>("MaxOrgsPerLegion")
-                        .HasColumnType("int");
+                        .HasColumnType("bigint unsigned");
 
                     b.HasKey("Id");
 

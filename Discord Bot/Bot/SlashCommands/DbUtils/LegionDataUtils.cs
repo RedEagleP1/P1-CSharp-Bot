@@ -16,19 +16,15 @@ namespace Bot.SlashCommands.DbUtils
         /// </summary>
         /// <param name="leaderId">The Id of the legion leader whose legion is to be retrieved.</param>
         /// <param name="context">The database context</param>
-        /// <returns>The legion of the specified legion leader, or a dummy Legion object with an error message in the name field and -1 in the MaxMembers field.</returns>
-        public static async Task<Legion> GetLegionFromLeaderId(ulong leaderId, ApplicationDbContext context)
+        /// <returns>The legion of the specified legion leader, or null if the legion was not found.</returns>
+        public static async Task<Legion?> GetLegionFromLeaderId(ulong leaderId, ApplicationDbContext context)
         {
             // Find the legion.
             Legion? legion = await context.Legions.FirstAsync(lg => lg.LeaderID == leaderId);
             if (legion == null)
             {
                 Console.WriteLine($"ERROR: Could not find the legion with LeaderId={leaderId}!");
-                return new Legion()
-                {
-                    Name = "[ERROR: COULD NOT FIND LEGION!]",
-                    MaxMembers = -1,
-                };
+                return null;
             }
 
 

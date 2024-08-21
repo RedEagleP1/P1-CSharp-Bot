@@ -64,7 +64,7 @@ namespace Bot.SlashCommands.Organizations
 
 
                 // Check if the user has enough currency to donate the specified amount.
-                CurrencyOwned? currencyOwned = context.CurrenciesOwned.Count() > 0 ? await context.CurrenciesOwned.FirstOrDefaultAsync(x => x.OwnerId == command.User.Id && x.CurrencyId == OrganizationConstants.CURRENCY_ID)
+                CurrencyOwned? currencyOwned = context.CurrenciesOwned.Count() > 0 ? await context.CurrenciesOwned.FirstOrDefaultAsync(x => x.OwnerId == command.User.Id && x.CurrencyId == Organization.DEFAULT_CURRENCY_ID)
                                                                                    : null;
                 float amountOwned = 0;
                 if (currencyOwned != null)
@@ -84,7 +84,7 @@ namespace Bot.SlashCommands.Organizations
                     currencyOwned = new CurrencyOwned
                     {
                         OwnerId = command.User.Id,
-                        CurrencyId = OrganizationConstants.CURRENCY_ID,
+                        CurrencyId = Organization.DEFAULT_CURRENCY_ID,
                         Amount = currencyOwned.Amount
                     };
                     context.CurrenciesOwned.Add(currencyOwned);
@@ -110,10 +110,10 @@ namespace Bot.SlashCommands.Organizations
             
 
                 // Get the currency name.
-                Currency? currency = context.Currencies.Count() > 0 ? await context.Currencies.FirstOrDefaultAsync(c => c.Id == OrganizationConstants.CURRENCY_ID)
+                Currency? currency = context.Currencies.Count() > 0 ? await context.Currencies.FirstOrDefaultAsync(c => c.Id == Organization.DEFAULT_CURRENCY_ID)
                                                                     : null;
                 if (currency == null)
-                    return $"Could not find the currency with Id {OrganizationConstants.CURRENCY_ID}.";
+                    return $"Could not find the currency with Id {Organization.DEFAULT_CURRENCY_ID}.";
 
                 // Return a messaage.
                 return $"You donated {amountToDonate} {currency.Name} to your organization ({org.Name})!";

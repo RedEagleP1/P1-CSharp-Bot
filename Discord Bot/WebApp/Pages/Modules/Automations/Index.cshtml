@@ -29,6 +29,9 @@
 				<th>
 					After
 				</th>
+				<th>
+					<!-- This empty header cell is here so the header row has the same number of cells as the row below. Otherwise part of the border will be missing. -->
+				</th>
 			</tr>
 		</thead>
 		<tbody id="TableRows">
@@ -104,7 +107,7 @@
 									{
 										@await Html.PartialAsync("/Pages/Partials/_AutomationDropdown.cshtml", new AutomationDropdownModel() { ButtonName = "Select Option", Automations = Model.DoAutomations, AddNoneOption = true, DropdownId = "doDropdown" })
 									}
-									<input asp-for="@Model.SavedInfo.Do[index].Value" value="@dos.Value">
+								<input asp-for="@Model.SavedInfo.Do[index].Value" value="@dos.Value">
 								<input asp-for="@Model.SavedInfo.Do[index].Id" value="@dos.Id" hidden>
 								<input asp-for="@Model.SavedInfo.Do[index].Type" value="@dos.Type" hidden>
 								<input asp-for="@Model.SavedInfo.Do[index].SelectedOption" value="@dos.SelectedOption" id="dropdownOption" hidden>

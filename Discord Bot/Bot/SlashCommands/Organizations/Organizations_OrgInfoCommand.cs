@@ -88,8 +88,22 @@ namespace Bot.SlashCommands.Organizations
                 // Find the organization leader
                 SocketUser leader = client.GetUser(org.LeaderID);
 
-                // Get the members of the organization
-                List<OrganizationMember>? members = context.OrganizationMembers.Count() > 0 ? await context.OrganizationMembers.Where(x => x.OrganizationId == orgId).ToListAsync()
+
+
+				// Get the relevant team settings record.
+				TeamSettings? teamSettings = TeamSettingsUtils.GetTeamSettingsForGuild(org.GuildId, context);
+				if (teamSettings == null)
+				{
+					teamSettings = TeamSettings.CreateDefault(org.GuildId);
+
+					// Add the new team settings record into the database.
+					context.TeamSettings.Add(teamSettings);
+					await context.SaveChangesAsync();
+				}
+
+
+				// Get the members of the organization
+				List<OrganizationMember>? members = context.OrganizationMembers.Count() > 0 ? await context.OrganizationMembers.Where(x => x.OrganizationId == orgId).ToListAsync()
                                                                                             : null;
                 int memberCount = members != null ? members.Count : 0;
 
@@ -101,8 +115,8 @@ namespace Bot.SlashCommands.Organizations
                                      $"**ID:** {org.Id} \n " +
                                      $"**Treasury Amount:** {org.TreasuryAmount} \n " +
                                      $"**Leader:** {leader.Username} \n " +
-                                     $"**Members Count:** {memberCount} / {org.MaxMembers}")
-                    .AddField("Members:", OrgDataUtils.GetMemberPingsList(command.User.Id, members)) // This adds the members list into the embed.
+                                     $"**Members Count:** {memberCount} / {teamSettings.MaxMembersPerOrg}")
+                    .AddField("Members:", OrgDataUtils.GetMemberPingsList(command.User.Id, client, members)) // This adds the members list into the embed.
                     .WithColor(Color.Blue)
                     .WithCurrentTimestamp();
 

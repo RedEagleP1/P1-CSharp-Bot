@@ -51,9 +51,9 @@ namespace Bot.SlashCommands.Organizations
 
             // Check if the name option contains a valid value.
             string? newLegionName = nameOption.Value.ToString();
-            if (newLegionName == null || newLegionName.Length < LegionConstants.MIN_LEGION_NAME_LENGTH)
+            if (newLegionName == null || newLegionName.Length < Legion.DEFAULT_MIN_NAME_LENGTH)
             {
-                return $"Please provide a new name that is at least {LegionConstants.MIN_LEGION_NAME_LENGTH} characters long for the legion.";
+                return $"Please provide a new name that is at least {Legion.DEFAULT_MIN_NAME_LENGTH} characters long for the legion.";
             }
             newLegionName = newLegionName.Trim();
 

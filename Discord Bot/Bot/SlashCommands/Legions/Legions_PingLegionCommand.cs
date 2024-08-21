@@ -59,7 +59,7 @@ namespace Bot.SlashCommands.Organizations
                 if (user == null)
                     return "Could not find user info.";
               
-                bool isAdmin = (user.Roles.FirstOrDefault(x => x.Name == LegionConstants.MODERATOR_ROLE) == null);
+                bool isAdmin = (user.Roles.FirstOrDefault(x => x.Name == Legion.MODERATOR_ROLE) == null);
 
                 // Check if the user that invoked this command is a member of a legion.
                 LegionMember? legionMember = await UserDataUtils.CheckIfUserIsInALegion(command.User.Id, context);
@@ -139,7 +139,7 @@ namespace Bot.SlashCommands.Organizations
 
 
                     // Add the members ping list for this organization to the embed.
-                    embedBuilder.AddField($"Organization:  { org.Name}", OrgDataUtils.GetMemberPingsList(command.User.Id, orgMembers) + "_\n");
+                    embedBuilder.AddField($"Organization:  { org.Name}", OrgDataUtils.GetMemberPingsList(command.User.Id, client, orgMembers) + "_\n");
 
                 } // end foreach
 

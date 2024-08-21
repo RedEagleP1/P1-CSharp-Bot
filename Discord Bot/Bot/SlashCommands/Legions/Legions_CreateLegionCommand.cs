@@ -42,7 +42,7 @@ namespace Bot.SlashCommands.Legions
                 using var context = DBContextFactory.GetNewContext();
 
                 // Check if the user is already a legion leader.
-                if (!LegionConstants.ALLOW_ORG_TO_JOIN_MULTIPLE_LEGIONS)
+                if (!Legion.ALLOW_ORG_TO_JOIN_MULTIPLE_LEGIONS)
                 {
                     Legion? tempLegion = UserDataUtils.CheckIfUserIsALegionLeader(command.User.Id, context).Result;
                     if (tempLegion != null)
@@ -64,9 +64,9 @@ namespace Bot.SlashCommands.Legions
 
                 // Check if the name option contains a valid value.
                 string? legionName = nameOption.Value.ToString();
-                if (legionName == null || legionName.Length < LegionConstants.MIN_LEGION_NAME_LENGTH)
+                if (legionName == null || legionName.Length < Legion.DEFAULT_MIN_NAME_LENGTH)
                 {
-                    return $"Please provide a name that is at least {LegionConstants.MIN_LEGION_NAME_LENGTH} characters long for the new legion.";
+                    return $"Please provide a name that is at least {Legion.DEFAULT_MIN_NAME_LENGTH} characters long for the new legion.";
                 }
                 legionName = legionName.Trim();
 
@@ -87,16 +87,28 @@ namespace Bot.SlashCommands.Legions
                 else
                     guildId = (ulong) command.GuildId;
 
-             
-                // First, add the new legion to the legions table.
-                Legion newLegion = new Legion();
+
+				// Get the relevant team settings record.
+				TeamSettings? teamSettings = TeamSettingsUtils.GetTeamSettingsForGuild(guildId, context);
+				bool createdNewTeamSettings = false;
+				if (teamSettings == null)
+				{
+					createdNewTeamSettings = true;
+					teamSettings = TeamSettings.CreateDefault(guildId);
+				}
+
+				// First, add the new legion to the legions table.
+				Legion newLegion = new Legion();
                 newLegion.Name = legionName.Trim();
                 newLegion.LeaderID = command.User.Id;
                 newLegion.GuildId = guildId;
-                newLegion.MaxMembers = LegionConstants.MAX_LEGION_MEMBERS;
                 context.Legions.Add(newLegion);
 
-                await context.SaveChangesAsync();
+				// If we created a new team settings record, then add it to the database.
+				if (createdNewTeamSettings)
+					context.TeamSettings.Add(teamSettings);
+
+				await context.SaveChangesAsync();
 
 
                 // Get the id of the new legion.

@@ -60,7 +60,7 @@ namespace Bot.SlashCommands.Organizations
                 if (user == null)
                     return "Could not find user info.";
 
-                bool isAdmin = (user.Roles.FirstOrDefault(x => x.Name == OrganizationConstants.MODERATOR_ROLE) == null);
+                bool isAdmin = (user.Roles.FirstOrDefault(x => x.Name == Organization.MODERATOR_ROLE) == null);
 
 
                 // Check if the user that invoked this command is a member of a organization.
@@ -116,7 +116,7 @@ namespace Bot.SlashCommands.Organizations
                 EmbedBuilder embedBuilder = new EmbedBuilder()
                     .WithAuthor(command.User.Username, command.User.GetAvatarUrl() ?? command.User.GetDefaultAvatarUrl())
                     .WithTitle($"{org.Name} Members:")
-                    .WithDescription(OrgDataUtils.GetMemberPingsList(command.User.Id, members, true)) // This adds the members list into the embed.
+                    .WithDescription(OrgDataUtils.GetMemberPingsList(command.User.Id, client, members, true)) // This adds the members list into the embed.
                     .WithColor(Color.Blue)
                     .WithCurrentTimestamp();
 

@@ -1,4 +1,5 @@
 ﻿using Discord;
+using Discord.WebSocket;
 using Microsoft.EntityFrameworkCore;
 using Models;
 using System;
@@ -11,43 +12,45 @@ namespace Bot.SlashCommands.DbUtils
 {
     static public class OrgDataUtils
     {
-        /// <summary>
-        /// Builds a string containing a ping list of all members in the organization.
-        /// </summary>
-        /// <param name="userId">The Id of the user who invoked the command that called this function.</param>
-        /// <param name="members">A list of all the organization's members.</param>
-        /// <param name="excludeUser">Whether or not to exclude the user that invoked the command that calle this function. For example, this is set to true when this function is called from the ping command.</param>
-        /// <param name="alphabetized">Whether or not the returned list should be alphabetized.</param>
-        /// <returns>A string containing a ping list of all members in the organization or null if the organization is not found or has no members.</returns>
-        public static string GetMemberPingsList(ulong userId, List<OrganizationMember>? members, bool excludeUser = false, bool alphabetized = true)
+		/// <summary>
+		/// Builds a string containing a ping list of all members in the organization.
+		/// </summary>
+		/// <param name="userId">The Id of the user who invoked the command that called this function.</param>
+        /// <param name="client">The discord socket client.</param>
+		/// <param name="members">A list of all the organization's members.</param>
+		/// <param name="excludeUser">Whether or not to exclude the user that invoked the command that calle this function. For example, this is set to true when this function is called from the ping command.</param>
+		/// <param name="alphabetized">Whether or not the returned list should be alphabetized.</param>
+		/// <returns>A string containing a ping list of all members in the organization or null if the organization is not found or has no members.</returns>
+		public static string GetMemberPingsList(ulong userId, DiscordSocketClient client, List<OrganizationMember>? members, bool excludeUser = false, bool alphabetized = true)
         {
             if (members == null || members.Count < 1)
                 return "[No Members]";
 
 
-            List<string> memberNames = new();
+			// If alphabetized is true, then sort the list by username.
+			if (alphabetized)
+            {
+                members.Sort(delegate (OrganizationMember a, OrganizationMember b)
+                {
+                    string nameA = client.GetUser(a.UserId).Username;
+                    string nameB = client.GetUser(b.UserId).Username;
 
+                    return nameA.CompareTo(nameB);
+                });
+            }
+
+
+            List<string> memberNames = new();
 
             // Get the names of all members of the organization.
             foreach (OrganizationMember orgMember in members)
                 memberNames.Add("<@" + orgMember.UserId + ">\n");
 
-            // Sort the list.
-            if (alphabetized)
-                memberNames.Sort();
 
             // Add the members' names to the org description string.
             StringBuilder b = new();
-            int j = 0;
-            foreach (OrganizationMember orgMember in members)
-            {
-                if (orgMember != null)
-                {
-                    b.Append(memberNames[j]);
-
-                    j++;
-                }
-            } // end foreach
+            for (int i = 0; i < memberNames.Count; i++)
+                b.Append(memberNames[i]);
 
 
             // If the string builder is still empty, we need to append something. Otherwise, Discord will hang if a null, empty or whitespace string
@@ -68,19 +71,15 @@ namespace Bot.SlashCommands.DbUtils
         /// </summary>
         /// <param name="leaderId">The Id of the team lead whose organization is to be retrieved.</param>
         /// <param name="context">The database context</param>
-        /// <returns>The organization of the specified team lead, or a dummy Organization object with an error message in the name field and -1 in the MaxMembers field.</returns>
-        public static async Task<Organization> GetOrgFromLeaderId(ulong leaderId, ApplicationDbContext context)
+        /// <returns>The organization of the specified team lead, or null if the organization was not found.</returns>
+        public static async Task<Organization?> GetOrgFromLeaderId(ulong leaderId, ApplicationDbContext context)
         {
             // Find the organization.
             Organization? org = await context.Organizations.FirstAsync(o => o.LeaderID == leaderId);
             if (org == null)
             {
                 Console.WriteLine($"ERROR: Could not find the organization with LeaderId={leaderId}!");
-                return new Organization() 
-                { 
-                    Name = "[ERROR: COULD NOT FIND ORGANIZATION!]",
-                    MaxMembers = -1,
-                };
+                return null;
             }
 
 
@@ -136,5 +135,9 @@ namespace Bot.SlashCommands.DbUtils
             return components.Build();
         }
 
+        public static TeamSettings GetTeamSettingsForGuild(ulong guildId, ApplicationDbContext context)
+		{
+			return context.TeamSettings.First(t => t.GuildId == guildId);
+		}
     }
 }

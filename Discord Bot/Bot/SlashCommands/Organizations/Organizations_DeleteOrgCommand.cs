@@ -51,7 +51,7 @@ namespace Bot.SlashCommands.Organizations
             var user = client.GetGuild(Settings.P1RepublicGuildId)?.GetUser(command.User.Id);
             if (user == null)
                 return "Could not find user info.";
-            else if (user.Roles.FirstOrDefault(x => x.Name == OrganizationConstants.MODERATOR_ROLE) == null)
+            else if (user.Roles.FirstOrDefault(x => x.Name == Organization.MODERATOR_ROLE) == null)
                 return "You do not have permission to use this command.";
 
 

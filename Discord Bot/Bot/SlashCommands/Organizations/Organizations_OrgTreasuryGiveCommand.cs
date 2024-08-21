@@ -101,7 +101,7 @@ namespace Bot.SlashCommands.Organizations
 
 
                 // Find the owned currency data for this user.
-                CurrencyOwned? currencyOwned = context.CurrenciesOwned.Count() > 0 ? await context.CurrenciesOwned.FirstOrDefaultAsync(x => x.OwnerId == targetUser.Id && x.CurrencyId == OrganizationConstants.CURRENCY_ID)
+                CurrencyOwned? currencyOwned = context.CurrenciesOwned.Count() > 0 ? await context.CurrenciesOwned.FirstOrDefaultAsync(x => x.OwnerId == targetUser.Id && x.CurrencyId == Organization.DEFAULT_CURRENCY_ID)
                                                                                    : null;
          
                 // Update the organization's treasury amount.
@@ -119,7 +119,7 @@ namespace Bot.SlashCommands.Organizations
                 {
                     currencyOwned = new CurrencyOwned();
                     currencyOwned.OwnerId = targetUser.Id;
-                    currencyOwned.CurrencyId = OrganizationConstants.CURRENCY_ID;
+                    currencyOwned.CurrencyId = Organization.DEFAULT_CURRENCY_ID;
                     currencyOwned.Amount = amountToGive;
                     context.CurrenciesOwned.Add(currencyOwned);
                 }
@@ -130,10 +130,10 @@ namespace Bot.SlashCommands.Organizations
             
 
                 // Get the currency name.
-                Currency? currency = context.Currencies.Count() > 0 ? await context.Currencies.FirstOrDefaultAsync(c => c.Id == OrganizationConstants.CURRENCY_ID)
+                Currency? currency = context.Currencies.Count() > 0 ? await context.Currencies.FirstOrDefaultAsync(c => c.Id == Organization.DEFAULT_CURRENCY_ID)
                                                                     : null;
                 if (currency == null)
-                    return $"Could not find the currency with Id {OrganizationConstants.CURRENCY_ID}.";
+                    return $"Could not find the currency with Id {Organization.DEFAULT_CURRENCY_ID}.";
 
                 // Return a messaage.
                 return $"The organization \"{org.Name}\" gave {amountToGive} {currency.Name} to ({targetUser.Username})!";

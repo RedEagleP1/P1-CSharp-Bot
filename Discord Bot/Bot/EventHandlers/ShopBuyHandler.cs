@@ -59,34 +59,35 @@ namespace Bot.EventHandlers
                         //Check if they have enough
                         if (ShopItem.Cost <= TotalCurrency.Amount)
                         {
-                            await component.RespondAsync($"You have purchased {ShopItem.ItemName} and now have {TotalCurrency.Amount} {CurrencyName.Name}");
-
-							//ItemInventory addItem = await context.ItemInventories.FirstAsync(x => x.userId == component.User.Id && x.guildId == ShopItem.GuildId && x.itemId == ShopItem.Id);
-
-                            //if (addItem != null)
+                            try
                             {
-                                //addItem.amount += 1;
-                            }
-                            //else
-
-							ItemInventory newItem = new ItemInventory()
-							{
-								itemId = ShopItem.Id,
-								userId = component.User.Id,
-								guildId = ShopItem.GuildId,
-								amount = 1,
-							};
-
-							context.ItemInventories.Add(newItem);
+								ItemInventory addItem = await context.ItemInventories.FirstAsync(x => x.userId == component.User.Id && x.guildId == ShopItem.GuildId && x.itemId == ShopItem.Id);
+								addItem.amount += 1;
+							}
+                            catch
+                            {
+								ItemInventory newItem = new ItemInventory()
+								{
+									itemId = ShopItem.Id,
+									userId = component.User.Id,
+									guildId = ShopItem.GuildId,
+									amount = 1,
+								};
+								context.ItemInventories.Add(newItem);
+							}
 
                             try
                             {
+								TotalCurrency.Amount -= ShopItem.Cost;
+
 								await context.SaveChangesAsync();
+								await component.RespondAsync($"You have purchased {ShopItem.ItemName} and now have {TotalCurrency.Amount} {CurrencyName.Name}");
 							}
                             catch (Exception ex)
                             {
                                 Console.WriteLine($"{ex.Message}\n {ex.InnerException}\n");
-                            }
+								await component.RespondAsync($"There was a problem purchasing this item.");
+							}
 						}
                         else
                         {

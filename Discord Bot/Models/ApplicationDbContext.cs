@@ -26,7 +26,8 @@ namespace Models
 		public DbSet<Automation> Automations { get; set; }
 		public DbSet<IdAuto> IdAutos { get; set; }
         public DbSet<ShopItem> ShopItems { get; set; }
-        public DbSet<VoiceChannelTrack> VoiceChannelTracks { get; set; }
+		public DbSet<ItemInventory> ItemInventories { get; set; }
+		public DbSet<VoiceChannelTrack> VoiceChannelTracks { get; set; }
         public DbSet<TextChannelMessageValidation> TextChannelMessageValidation { get; set; }
         public DbSet<MessageValidationSuccessTrack> MessageValidationSuccessTracks { get; set; }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
@@ -200,7 +201,13 @@ namespace Models
                 .WithMany()
                 .HasForeignKey(o => o.OrganizationId);
 
-            base.OnModelCreating(modelBuilder);
+			modelBuilder.Entity<ItemInventory>()
+				.HasOne<Guild>()
+				.WithMany()
+				.HasForeignKey(o => o.guildId)
+				.IsRequired(false);
+
+			base.OnModelCreating(modelBuilder);
         }
     }
 }

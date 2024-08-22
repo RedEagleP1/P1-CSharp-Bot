@@ -8,7 +8,7 @@ namespace Models
 {
 	public class ShopItem
 	{
-		public int? Id { get; set; }
+		public ulong? Id { get; set; }
 		public ulong GuildId { get; set; }
         public string ItemName { get; set; }
         public string emojiId { get; set; }

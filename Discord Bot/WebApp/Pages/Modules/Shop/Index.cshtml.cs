@@ -49,6 +49,7 @@ namespace WebApp.Pages.Modules.Shop
                     Cost = 0,
                     Description = "No description",
 					CurrencyId = AllCurrencies[0].Id,
+					emojiId = "star",
 				};
 
                 _db.ShopItems.Add(tempItem);
@@ -71,6 +72,7 @@ namespace WebApp.Pages.Modules.Shop
 				Cost = 0,
 				Description = "No description",
 				CurrencyId = AllCurrencies[0].Id,
+				emojiId = "star",
 			};
 			_db.ShopItems.Add(tempItem);
 

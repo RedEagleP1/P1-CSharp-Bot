@@ -42,7 +42,7 @@ namespace Bot.EventHandlers
 					Console.WriteLine(parts[1]);
 
 					using var context = DBContextFactory.GetNewContext();
-					var ShopItem = await context.ShopItems.FirstAsync(x => x.Id == int.Parse(parts[1]));
+					var ShopItem = await context.ShopItems.FirstAsync(x => x.Id == ulong.Parse(parts[1]));
 
 					Console.WriteLine(ShopItem.ItemName);
 
@@ -50,16 +50,50 @@ namespace Bot.EventHandlers
 
 					Console.WriteLine(CurrencyName.Name);
 
-					var TotalCurrency = await context.CurrenciesOwned.FirstAsync(x => x.OwnerId == component.User.Id && x.CurrencyId == ShopItem.CurrencyId);
-
-					Console.WriteLine(TotalCurrency.Amount);
-
-					//Check if they have enough
-					if (ShopItem.Cost <= TotalCurrency.Amount)
+                    try
                     {
-						await component.RespondAsync($"You have purchased {ShopItem.ItemName} and now have {TotalCurrency.Amount} {CurrencyName.Name}");
-					}
-                    else
+                        var TotalCurrency = await context.CurrenciesOwned.FirstAsync(x => x.OwnerId == component.User.Id && x.CurrencyId == ShopItem.CurrencyId);
+
+                        Console.WriteLine(TotalCurrency.Amount);
+
+                        //Check if they have enough
+                        if (ShopItem.Cost <= TotalCurrency.Amount)
+                        {
+                            await component.RespondAsync($"You have purchased {ShopItem.ItemName} and now have {TotalCurrency.Amount} {CurrencyName.Name}");
+
+							//ItemInventory addItem = await context.ItemInventories.FirstAsync(x => x.userId == component.User.Id && x.guildId == ShopItem.GuildId && x.itemId == ShopItem.Id);
+
+                            //if (addItem != null)
+                            {
+                                //addItem.amount += 1;
+                            }
+                            //else
+
+							ItemInventory newItem = new ItemInventory()
+							{
+								itemId = ShopItem.Id,
+								userId = component.User.Id,
+								guildId = ShopItem.GuildId,
+								amount = 1,
+							};
+
+							context.ItemInventories.Add(newItem);
+
+                            try
+                            {
+								await context.SaveChangesAsync();
+							}
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine($"{ex.Message}\n {ex.InnerException}\n");
+                            }
+						}
+                        else
+                        {
+                            await component.RespondAsync($"You don't have enough {CurrencyName.Name}");
+                        }
+                    }
+                    catch (Exception ex)
                     {
 						await component.RespondAsync($"You don't have enough {CurrencyName.Name}");
 					}

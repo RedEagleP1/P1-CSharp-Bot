@@ -2,6 +2,7 @@
 using Discord.WebSocket;
 using Microsoft.EntityFrameworkCore;
 using Models;
+using Models.Migrations;
 
 namespace Bot.SlashCommands.Shop
 {
@@ -57,44 +58,54 @@ namespace Bot.SlashCommands.Shop
 
                 var embedBuilder = new EmbedBuilder();
 
-                List<ShopItem> itemReferences = await context.ShopItems.Where(x => x.GuildId == command.GuildId).ToListAsync();
-
-                var index = 0;
-				var CurrencyRef = await context.Currencies.FirstAsync(x => x.Id == itemReferences[index].CurrencyId);
-                var EditedDesc = itemReferences[index].Description;
-
-                if (EditedDesc.Length > 20)
+                try
                 {
-                    EditedDesc = EditedDesc.Substring(0, 20);
-                    EditedDesc += "...";
+                    List<ShopItem> itemReferences = await context.ShopItems.Where(x => x.GuildId == command.GuildId).ToListAsync();
+
+                    var index = 0;
+                    var CurrencyRef = await context.Currencies.FirstAsync(x => x.Id == itemReferences[index].CurrencyId);
+                    var EditedDesc = itemReferences[index].Description;
+
+                    if (EditedDesc.Length > 20)
+                    {
+                        EditedDesc = EditedDesc.Substring(0, 20);
+                        EditedDesc += "...";
+                    }
+
+                    embedBuilder
+                        .WithAuthor(command.User.Username, command.User.GetAvatarUrl() ?? command.User.GetDefaultAvatarUrl())
+                        .WithTitle($"{itemReferences[index].ItemName} :{itemReferences[index].emojiId}:")
+                        .WithDescription($"**ID:** {itemReferences[index].Id} \n " +
+                                         $"**Currency Type:** {CurrencyRef.Name} \n " +
+                                         $"**Cost:** {itemReferences[index].Cost} \n " +
+                                         $"**Description:** {EditedDesc}")
+                        .WithColor(Color.Blue)
+                        .WithCurrentTimestamp();
+
+
+                    // Create the buttons
+
+                    var onlyOne = itemReferences.Count > 0 ? true : false;
+
+                    var buttonBuilder = new ComponentBuilder()
+                        .WithButton(customId: $"shopBtn_{index - 1}", emote: new Emoji("⬅"), disabled: true)
+                        .WithButton(customId: $"shopBtn_{index + 1}", emote: new Emoji("➡️"), disabled:onlyOne)
+                        .WithButton(customId: $"buyBtn_{itemReferences[index].Id}", emote: new Emoji("🛒"), style: ButtonStyle.Success);
+
+
+					// Insert it into the response
+					await command.ModifyOriginalResponseAsync(response =>
+                    {
+                        response.Content = "";
+                        response.Embed = embedBuilder.Build();
+                        response.Components = buttonBuilder.Build();
+                        response.Flags = MessageFlags.Ephemeral;
+                    });
                 }
-
-				embedBuilder
-                    .WithAuthor(command.User.Username, command.User.GetAvatarUrl() ?? command.User.GetDefaultAvatarUrl())
-					.WithTitle($"{itemReferences[index].ItemName} :{itemReferences[index].emojiId}:")
-					.WithDescription($"**ID:** {itemReferences[index].Id} \n " +
-									 $"**Currency Type:** {CurrencyRef.Name} \n " +
-                                     $"**Cost:** {itemReferences[index].Cost} \n " +
-                                     $"**Description:** {EditedDesc}")
-                    .WithColor(Color.Blue)
-                    .WithCurrentTimestamp();
-
-
-                // Create the buttons
-                var buttonBuilder = new ComponentBuilder()
-					.WithButton(customId: $"shopBtn_{index-1}", emote: new Emoji("⬅"), disabled:true)
-	                .WithButton(customId: $"shopBtn_{index+1}", emote: new Emoji("➡️"));
-
-
-				// Insert it into the response
-				await command.ModifyOriginalResponseAsync(response =>
+                catch (Exception ex)
                 {
-                    response.Content = "";
-                    response.Embed = embedBuilder.Build();
-                    response.Components = buttonBuilder.Build();
-					response.Flags = MessageFlags.Ephemeral;
-                });
-
+                    return "There are no shop items, please contact the server owner.";
+                }
 
                 // This causes the message content to be set to null. We don't need it since we are using an embed for the content.
                 return "";

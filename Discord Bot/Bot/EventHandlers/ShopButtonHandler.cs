@@ -93,7 +93,8 @@ namespace Bot.EventHandlers
 
 				var buttonBuilder = new ComponentBuilder()
 					.WithButton(customId: $"shopBtn_{index - 1}", emote: new Emoji("⬅"), disabled: backCap)
-					.WithButton(customId: $"shopBtn_{index + 1}", emote: new Emoji("➡️"), disabled: frontCap);
+					.WithButton(customId: $"shopBtn_{index + 1}", emote: new Emoji("➡️"), disabled: frontCap)
+					.WithButton(customId: $"buyBtn_{itemReferences[index].Id}", emote: new Emoji("🛒"), style: ButtonStyle.Success);
 
 				await component.RespondAsync(embed: embedBuilder.Build(), components:buttonBuilder.Build());
 				await component.Message.DeleteAsync();

@@ -80,7 +80,8 @@ namespace Bot
                 // ----------------------------------------------------------------------------------------------------
                 new Shop_DisplayCommand(client),
                 new Shop_DisplayItemCommand(client),
-            };
+				new Shop_InventoryCommand(client),
+			};
 
             List<IEventHandler> eventHandlers = new()
             {

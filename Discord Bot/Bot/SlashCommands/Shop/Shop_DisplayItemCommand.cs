@@ -1,5 +1,6 @@
 ﻿
 using Bot.SlashCommands.ResponseHelpers;
+using Bot.SlashCommands.Shop;
 using Discord;
 using Discord.WebSocket;
 using Microsoft.EntityFrameworkCore;
@@ -62,28 +63,14 @@ namespace Bot.SlashCommands
             await DBReadWrite.LockReadWrite();
             try
             {
-				using var context = DBContextFactory.GetNewContext();
-				var shopItem = await context.ShopItems.FirstOrDefaultAsync(c => c.ItemName.ToLower() == optionValues.itemName.ToLower());
+				string[] temp = { "", "0" };
+				var buttonBuilder = new ComponentBuilder();
+				var embedBuilder = new EmbedBuilder();
 
-                //Get Shop Item
-                var embedBuilder = new EmbedBuilder();
-                var CurrencyRef = await context.Currencies.FirstAsync(x => x.Id == shopItem.CurrencyId);
+				await ShopManager.UpdateShop(command.GuildId, command.User, temp, embedBuilder, buttonBuilder,false,true);
 
-                embedBuilder
-                .WithAuthor(command.User.Username, command.User.GetAvatarUrl() ?? command.User.GetDefaultAvatarUrl())
-                .WithTitle($"{shopItem.ItemName} :{shopItem.emojiId}:")
-                    .WithDescription($"**ID:** {shopItem.Id} \n " +
-                                        $"**Currency Type:** {CurrencyRef.Name} \n " +
-                                        $"**Cost:** {shopItem.Cost} \n " +
-                                        $"**Description:** {shopItem.Description}")
-                    .WithColor(Color.Blue)
-                    .WithCurrentTimestamp();
-
-                var buttonBuilder = new ComponentBuilder()
-                    .WithButton(customId: $"buyBtn_{shopItem.Id}", emote: new Emoji("🛒"), style: ButtonStyle.Success);
-
-                //Create response
-                await command.ModifyOriginalResponseAsync(response =>
+				//Create response
+				await command.ModifyOriginalResponseAsync(response =>
                 {
                     response.Content = "";
                     response.Embed = embedBuilder.Build();

@@ -11,9 +11,9 @@ namespace Bot.SlashCommands.Shop
     /// <summary>
     /// This command displays shop items.
     /// </summary>
-    internal class Shop_DisplayCommand : ISlashCommand
+    internal class Shop_InventoryCommand : ISlashCommand
     {
-        const string name = "shop";
+        const string name = "inventory";
         readonly SlashCommandProperties properties = CreateNewProperties();
 
         private DiscordSocketClient client;
@@ -22,7 +22,7 @@ namespace Bot.SlashCommands.Shop
         public SlashCommandProperties Properties => properties;
 
 
-        public Shop_DisplayCommand(DiscordSocketClient client)
+        public Shop_InventoryCommand(DiscordSocketClient client)
         {
             this.client = client;
         }
@@ -64,7 +64,7 @@ namespace Bot.SlashCommands.Shop
 					var buttonBuilder = new ComponentBuilder();
 					var embedBuilder = new EmbedBuilder();
 
-					await ShopManager.UpdateShop(command.GuildId, command.User, temp, embedBuilder, buttonBuilder);
+					await ShopManager.UpdateShop(command.GuildId, command.User, temp, embedBuilder, buttonBuilder,true,true,false,true);
 
 					await command.ModifyOriginalResponseAsync(response =>
 					{
@@ -76,7 +76,7 @@ namespace Bot.SlashCommands.Shop
 				}
                 catch (Exception ex)
                 {
-                    return "There are no shop items, please contact the server owner.";
+                    return "You have no items, type /shop to buy some.";
                 }
 
                 // This causes the message content to be set to null. We don't need it since we are using an embed for the content.
@@ -97,7 +97,7 @@ namespace Bot.SlashCommands.Shop
 		{
 			return new SlashCommandBuilder()
 				.WithName(name)
-				.WithDescription("Look at all shop items.")
+				.WithDescription("Look at your inventory.")
 				.Build();
 		}
 	}

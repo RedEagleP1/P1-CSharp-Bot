@@ -114,28 +114,28 @@ namespace WebApp.Pages.Modules.Automations
 
 				var tempWhen = new IdAuto
 				{
-					SelectedOption = -1,
+					SelectedOption = 0,
 					Type = 0,
 					Value = "",
 					AutomationId = tempItem.Id
 				};
 				var tempIf = new IdAuto
 				{
-					SelectedOption = -1,
+					SelectedOption = 0,
 					Type = 1,
 					Value = "",
 					AutomationId = tempItem.Id
 				};
 				var tempDo = new IdAuto
 				{
-					SelectedOption = -1,
+					SelectedOption = 0,
 					Type = 2,
 					Value = "",
 					AutomationId = tempItem.Id
 				};
 				var tempAfter = new IdAuto
 				{
-					SelectedOption = -1,
+					SelectedOption = 0,
 					Type = 3,
 					Value = "",
 					AutomationId = tempItem.Id
@@ -190,28 +190,28 @@ namespace WebApp.Pages.Modules.Automations
 
 			var tempWhen = new IdAuto
 			{
-				SelectedOption = -1,
+				SelectedOption = 0,
 				Type = 0,
 				Value = "",
 				AutomationId = tempItem.Id
 			};
 			var tempIf = new IdAuto
 			{
-				SelectedOption = -1,
+				SelectedOption = 0,
 				Type = 1,
 				Value = "",
 				AutomationId = tempItem.Id
 			};
 			var tempDo = new IdAuto
 			{
-				SelectedOption = -1,
+				SelectedOption = 0,
 				Type = 2,
 				Value = "",
 				AutomationId = tempItem.Id
 			};
 			var tempAfter = new IdAuto
 			{
-				SelectedOption = -1,
+				SelectedOption = 0,
 				Type = 3,
 				Value = "",
 				AutomationId = tempItem.Id
@@ -249,7 +249,7 @@ namespace WebApp.Pages.Modules.Automations
 		{
 			var tempIdAuto = new IdAuto
 			{
-				SelectedOption = -1,
+				SelectedOption = 0,
 				Type = 1,
 				Value = "",
 				AutomationId = ReferenceAuto.Id
@@ -265,7 +265,7 @@ namespace WebApp.Pages.Modules.Automations
 		{
 			var tempIdAuto = new IdAuto
 			{
-				SelectedOption = -1,
+				SelectedOption = 0,
 				Type = 2,
 				Value = "",
 				AutomationId = ReferenceAuto.Id

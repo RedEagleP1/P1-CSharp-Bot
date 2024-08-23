@@ -60,7 +60,7 @@ namespace Bot.SlashCommands.Shop
 
 				try
                 {
-                    string[] temp = {"","0"};
+					string[] temp = { "", "0" };
 					var buttonBuilder = new ComponentBuilder();
 					var embedBuilder = new EmbedBuilder();
 
@@ -76,6 +76,7 @@ namespace Bot.SlashCommands.Shop
 				}
                 catch (Exception ex)
                 {
+                    Console.WriteLine($"{ex.Message}\n");
                     return "There are no shop items, please contact the server owner.";
                 }
 

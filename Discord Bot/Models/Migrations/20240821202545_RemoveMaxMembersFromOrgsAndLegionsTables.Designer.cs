@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Models;
 
@@ -10,9 +11,10 @@ using Models;
 namespace Models.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240821202545_RemoveMaxMembersFromOrgsAndLegionsTables")]
+    partial class RemoveMaxMembersFromOrgsAndLegionsTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -194,31 +196,6 @@ namespace Models.Migrations
                     b.HasIndex("AutomationId");
 
                     b.ToTable("IdAutos");
-                });
-
-            modelBuilder.Entity("Models.ItemInventory", b =>
-                {
-                    b.Property<ulong?>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint unsigned");
-
-                    b.Property<int>("amount")
-                        .HasColumnType("int");
-
-                    b.Property<ulong>("guildId")
-                        .HasColumnType("bigint unsigned");
-
-                    b.Property<ulong?>("itemId")
-                        .HasColumnType("bigint unsigned");
-
-                    b.Property<ulong>("userId")
-                        .HasColumnType("bigint unsigned");
-
-                    b.HasKey("id");
-
-                    b.HasIndex("guildId");
-
-                    b.ToTable("ItemInventories");
                 });
 
             modelBuilder.Entity("Models.Legion", b =>
@@ -542,40 +519,6 @@ namespace Models.Migrations
                     b.ToTable("RoleSurveyRoleSurveyTriggers");
                 });
 
-            modelBuilder.Entity("Models.ShopItem", b =>
-                {
-                    b.Property<ulong?>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint unsigned");
-
-                    b.Property<int>("Cost")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CurrencyId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<ulong>("GuildId")
-                        .HasColumnType("bigint unsigned");
-
-                    b.Property<string>("ItemName")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("emojiId")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("GuildId");
-
-                    b.ToTable("ShopItems");
-                });
-
             modelBuilder.Entity("Models.TaskCompletionRecord", b =>
                 {
                     b.Property<int>("Id")
@@ -872,13 +815,6 @@ namespace Models.Migrations
                         .HasForeignKey("AutomationId");
                 });
 
-            modelBuilder.Entity("Models.ItemInventory", b =>
-                {
-                    b.HasOne("Models.Guild", null)
-                        .WithMany()
-                        .HasForeignKey("guildId");
-                });
-
             modelBuilder.Entity("Models.Legion", b =>
                 {
                     b.HasOne("Models.Guild", null)
@@ -1012,11 +948,6 @@ namespace Models.Migrations
                         .HasForeignKey("RoleSurveyOptionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Models.ShopItem", b =>
-                {
-
                 });
 
             modelBuilder.Entity("Models.TeamSettings", b =>

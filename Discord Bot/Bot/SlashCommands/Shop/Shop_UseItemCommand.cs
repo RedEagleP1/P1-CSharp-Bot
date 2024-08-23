@@ -18,9 +18,9 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Bot.SlashCommands
 {
-    internal class Shop_DisplayItemCommand : ISlashCommand
+    internal class Shop_UseItemCommand : ISlashCommand
     {
-        const string name = "item";
+        const string name = "use";
         readonly SlashCommandProperties properties = CreateNewProperties();
 
         private DiscordSocketClient client;
@@ -28,7 +28,7 @@ namespace Bot.SlashCommands
         public string Name => name;
         public SlashCommandProperties Properties => properties;
 
-        public Shop_DisplayItemCommand(DiscordSocketClient client)
+        public Shop_UseItemCommand(DiscordSocketClient client)
         {
             this.client = client;
         }
@@ -44,7 +44,7 @@ namespace Bot.SlashCommands
                 }
                 catch (Exception e)
                 {
-                    await command.ModifyOriginalResponseAsync(response => response.Content = "Could not find that item, make sure you type the name exactly.");
+                    await command.ModifyOriginalResponseAsync(response => response.Content = "Could not find that item in your inventory, make sure you type the name exactly.");
                     Console.WriteLine(e.Message);
                 }
             });
@@ -65,33 +65,12 @@ namespace Bot.SlashCommands
             {
 				using var context = DBContextFactory.GetNewContext();
 
-                var itemReferences = context.ShopItems
-					.Where(x => x.GuildId == command.GuildId)
-					.ToList();
+				//Find the item in the inventory
+                var shopItem = await context.ShopItems.FirstAsync(x => x.ItemName == optionValues.itemName);
+                var itemRef = await context.ItemInventories.FirstAsync(x => x.userId == command.User.Id && x.guildId == command.GuildId && x.itemId == shopItem.Id);
 
-                int index = 0;
-                foreach ( var item in itemReferences )
-                {
-                    if (optionValues.itemName == item.ItemName)
-                    {
-                        index = itemReferences.IndexOf(item);
-                    }
-                }
-
-				string[] temp = { "", index.ToString() };
-				var buttonBuilder = new ComponentBuilder();
-				var embedBuilder = new EmbedBuilder();
-
-				await ShopManager.UpdateShop(command.GuildId, command.User, temp, embedBuilder, buttonBuilder,false,true);
-
-				//Create response
-				await command.ModifyOriginalResponseAsync(response =>
-                {
-                    response.Content = "";
-                    response.Embed = embedBuilder.Build();
-                    response.Flags = MessageFlags.Ephemeral;
-					response.Components = buttonBuilder.Build();
-				});
+                //Now check for automations for the item
+                //var itemAutos = await context.
 			}
             finally
             {

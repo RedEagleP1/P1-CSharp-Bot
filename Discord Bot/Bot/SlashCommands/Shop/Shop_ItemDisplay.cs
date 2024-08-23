@@ -85,16 +85,25 @@ namespace Bot.SlashCommands.Shop
 				{
 					frontCap = true;
 				}
-				else if (index == 0)
+				if (index == 0)
 				{
 					backCap = true;
 				}
 
 				if (swapItems && !buyItems)
 				{
-					buttonbuilderNew
-						.WithButton(customId: $"shopBtn_{index - 1}", emote: new Emoji("⬅"), disabled: backCap)
-						.WithButton(customId: $"shopBtn_{index + 1}", emote: new Emoji("➡️"), disabled: frontCap);
+					if (showInventory)
+					{
+						buttonbuilderNew
+							.WithButton(customId: $"invBtn_{index - 1}", emote: new Emoji("⬅"), disabled: backCap)
+							.WithButton(customId: $"invBtn_{index + 1}", emote: new Emoji("➡️"), disabled: frontCap);
+					}
+					else
+					{
+						buttonbuilderNew
+							.WithButton(customId: $"shopBtn_{index - 1}", emote: new Emoji("⬅"), disabled: backCap)
+							.WithButton(customId: $"shopBtn_{index + 1}", emote: new Emoji("➡️"), disabled: frontCap);
+					}
 				}
 				else if (buyItems && !swapItems)
 				{

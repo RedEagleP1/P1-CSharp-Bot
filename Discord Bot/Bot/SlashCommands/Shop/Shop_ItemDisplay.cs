@@ -48,29 +48,31 @@ namespace Bot.SlashCommands.Shop
 					EditedDesc += "...";
 				}
 
-				embedbuilderNew
-					.WithAuthor(user.Username, user.GetAvatarUrl() ?? user.GetDefaultAvatarUrl())
-					.WithTitle($"{itemReferences[index].ItemName} :{itemReferences[index].emojiId}:")
-					.WithDescription($"**ID:** {itemReferences[index].Id} \n " +
-									 $"**Currency Type:** {CurrencyRef.Name} \n " +
-									 $"**Cost:** {itemReferences[index].Cost} \n " +
-									 $"**Description:** {EditedDesc}")
-					.WithColor(Color.Blue)
-					.WithCurrentTimestamp();
-
 				if (showInventory)
 				{
 					var tempList = context.ItemInventories
 					.Where(x => x.userId == user.Id && x.guildId == guildId)
 					.ToList();
 					embedbuilderNew
-							.WithAuthor(user.Username, user.GetAvatarUrl() ?? user.GetDefaultAvatarUrl())
+						.WithAuthor(user.Username, user.GetAvatarUrl() ?? user.GetDefaultAvatarUrl())
 						.WithTitle($"{itemReferences[index].ItemName} :{itemReferences[index].emojiId}:")
 						.WithDescription($"**ID:** {itemReferences[index].Id} \n " +
 										 $"**Currency Type:** {CurrencyRef.Name} \n " +
 										 $"**Cost:** {itemReferences[index].Cost} \n " +
 										 $"**Description:** {EditedDesc} \n " +
 										 $"**Amount:** {tempList[index].amount}")
+						.WithColor(Color.Blue)
+						.WithCurrentTimestamp();
+				}
+				else
+				{
+					embedbuilderNew
+						.WithAuthor(user.Username, user.GetAvatarUrl() ?? user.GetDefaultAvatarUrl())
+						.WithTitle($"{itemReferences[index].ItemName} :{itemReferences[index].emojiId}:")
+						.WithDescription($"**ID:** {itemReferences[index].Id} \n " +
+										 $"**Currency Type:** {CurrencyRef.Name} \n " +
+										 $"**Cost:** {itemReferences[index].Cost} \n " +
+										 $"**Description:** {EditedDesc}")
 						.WithColor(Color.Blue)
 						.WithCurrentTimestamp();
 				}
@@ -85,23 +87,21 @@ namespace Bot.SlashCommands.Shop
 				}
 				else if (index == 0)
 				{
-					Console.WriteLine($"{index}");
 					backCap = true;
 				}
 
-				if (swapItems)
+				if (swapItems && !buyItems)
 				{
 					buttonbuilderNew
 						.WithButton(customId: $"shopBtn_{index - 1}", emote: new Emoji("⬅"), disabled: backCap)
 						.WithButton(customId: $"shopBtn_{index + 1}", emote: new Emoji("➡️"), disabled: frontCap);
 				}
-
-				if (buyItems && !swapItems)
+				else if (buyItems && !swapItems)
 				{
 					buttonbuilderNew
 						.WithButton(customId: $"buyBtn_{itemReferences[index].Id}", emote: new Emoji("🛒"), style: ButtonStyle.Success);
 				}
-				else if (buyItems)
+				else if (buyItems && swapItems)
 				{
 					buttonbuilderNew
 						.WithButton(customId: $"shopBtn_{index - 1}", emote: new Emoji("⬅"), disabled: backCap)

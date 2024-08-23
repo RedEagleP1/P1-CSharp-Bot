@@ -44,7 +44,16 @@ namespace Bot.EventHandlers
 					await component.RespondAsync(embed: embedBuilder.Build(), components: buttonBuilder.Build());
 					await component.Message.DeleteAsync();
 				}
-            }
+				else if (parts[0] == "invBtn")
+				{
+					var buttonBuilder = new ComponentBuilder();
+					var embedBuilder = new EmbedBuilder();
+
+					await ShopManager.UpdateShop(component.GuildId, component.User, parts, embedBuilder, buttonBuilder, true, true, false, true);
+					await component.RespondAsync(embed: embedBuilder.Build(), components: buttonBuilder.Build());
+					await component.Message.DeleteAsync();
+				}
+			}
             catch (Exception ex)
             {
                 Console.WriteLine($"ERROR: An error occurred while using a shop command.");

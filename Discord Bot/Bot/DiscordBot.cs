@@ -96,6 +96,7 @@ namespace Bot
                 new Shop_DisplayCommand(client),
                 new Shop_DisplayItemCommand(client),
 				new Shop_InventoryCommand(client),
+                new Shop_UseItemCommand(client),
                 };
 
             List<IEventHandler> eventHandlers = new()

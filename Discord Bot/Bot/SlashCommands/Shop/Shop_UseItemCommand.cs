@@ -6,6 +6,7 @@ using Discord.WebSocket;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Models;
+using OpenAI_API.Moderation;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -69,8 +70,47 @@ namespace Bot.SlashCommands
                 var shopItem = await context.ShopItems.FirstAsync(x => x.ItemName == optionValues.itemName);
                 var itemRef = await context.ItemInventories.FirstAsync(x => x.userId == command.User.Id && x.guildId == command.GuildId && x.itemId == shopItem.Id);
 
-                //Now check for automations for the item
-                //var itemAutos = await context.
+				//Now find the automation that has this shop item
+                var stringedRef = itemRef.itemId.ToString();
+				var RefAuto = await context.IdAutos.FirstAsync(x => x.Type == 0 && x.SelectedOption == 3 && x.Value == stringedRef);
+
+				var Automation = await context.Automations.FirstAsync(x => x.Id == RefAuto.AutomationId);
+
+				//Check the ifs
+				var IfAutos = await context.IdAutos.Where(x => x.AutomationId == Automation.Id && x.Type == 1).ToListAsync();
+
+				await command.ModifyOriginalResponseAsync(response =>
+				{
+					response.Content = "Item used.";
+				});
+
+				//If successful fire the dos
+				var DoAutos = await context.IdAutos.Where(x => x.AutomationId == Automation.Id && x.Type == 2).ToListAsync();
+				foreach (var item in DoAutos)
+				{
+					Console.WriteLine($"{item.Id} {item.Type} {item.Value} {item.AutomationId}");
+					switch (item.SelectedOption)
+					{
+						case 0: //Nothing
+							break;
+						case 1: //Send a message
+                            await command.FollowupAsync($"{item.Value}");
+							break;
+						case 2: //React
+                            Console.WriteLine(item.Value);
+							var reacted = await command.FollowupAsync("Reacted message");
+							var customEmote = new Emoji($"{item.Value}");
+							await reacted.AddReactionAsync(customEmote);
+							break;
+						case 3: //Give Role
+                            var role = user.Guild.Roles.FirstOrDefault(x => x.Id.ToString() == item.Value);
+                            await user.AddRoleAsync(role);
+							break;
+						default:
+							break;
+					}
+				}
+
 			}
             finally
             {

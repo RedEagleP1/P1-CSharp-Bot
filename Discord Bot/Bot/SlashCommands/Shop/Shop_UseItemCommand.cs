@@ -118,11 +118,18 @@ namespace Bot.SlashCommands
 					}
 				}
 
-				await command.ModifyOriginalResponseAsync(response =>
+				await command.ModifyOriginalResponseAsync(async response =>
 				{
                     if (ifPassed)
                     {
 						response.Content = "Item used.";
+
+                        itemRef.amount -= 1;
+                        if (itemRef.amount <= 0)
+                        {
+                            context.Remove(itemRef);
+                        }
+                        await context.SaveChangesAsync();
 					}
                     else
                     {

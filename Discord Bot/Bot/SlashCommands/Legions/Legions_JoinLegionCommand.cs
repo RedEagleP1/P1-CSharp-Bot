@@ -6,14 +6,14 @@ using Models;
 using System;
 using System.ComponentModel;
 
-namespace Bot.SlashCommands.Organizations
+namespace Bot.SlashCommands.Legions
 {
     /// <summary>
-    /// This command allows a user to request to join the specified organization.
+    /// This command allows a team lead to request to join the specified legion.
     /// </summary>
-    internal class Organizations_JoinOrgCommand : ISlashCommand
+    internal class Legions_JoinLegionCommand : ISlashCommand
     {
-        const string name = "join_org";
+        const string name = "join_legion";
         readonly SlashCommandProperties properties = CreateNewProperties();
 
         private DiscordSocketClient client;
@@ -24,7 +24,7 @@ namespace Bot.SlashCommands.Organizations
         private bool requestSent = false;
 
 
-        public Organizations_JoinOrgCommand(DiscordSocketClient client)
+        public Legions_JoinLegionCommand(DiscordSocketClient client)
         {
             this.client = client;
         }
@@ -68,32 +68,32 @@ namespace Bot.SlashCommands.Organizations
                 using var context = DBContextFactory.GetNewContext();
 
 
-                // Check if the user that invoked this command is already a member of an organization.
-                OrganizationMember? member = context.OrganizationMembers.Count() > 0 ? await context.OrganizationMembers.FirstOrDefaultAsync(x => x.UserId == command.User.Id)
-                                                                                     : null;
-                if (member != null)
-                    return "You are already in an organization so you cannot join another.";
+                // Check if the user that invoked this command is an organization leader.
+                Organization? org = await UserDataUtils.CheckIfUserIsAnOrgLeader(command.User.Id, context);
+                if (org == null)
+                    return "You are not a team lead so you cannot join your organization to a legion.";
 
 
                 // Try to get the id option.
                 SocketSlashCommandDataOption? idOption = command.Data.Options.FirstOrDefault(x => x.Name == "id");
-                ulong orgId = 0;
+                ulong legionId = 0;
                 if (idOption == null)
                 {
-                    return "Please provide the Id of the organization you wish to join.";
+                    return "Please provide the Id of the legion you wish to join.";
                 }
                 else
                 {
                     // This double cast looks silly, but when I casted directly to ulong it kept crashing with an invalid cast error for some reason.
-                    orgId = (ulong)(long)idOption.Value;
+                    legionId = (ulong)(long)idOption.Value;
                 }
 
 
-                // Check if there is an organization with this Id.
-                Organization? org = context.Organizations.Count() > 0 ? await context.Organizations.FirstOrDefaultAsync(x => x.Id == orgId)
+                // Check if there is an legion with this Id.
+                Legion? legion = context.Legions.Count() > 0 ? await context.Legions.FirstOrDefaultAsync(x => x.Id == legionId)
                                                                       : null;
-                if (org == null)
-                    return "There is no organization with this Id.";
+                if (legion == null)
+                    return "There is no legion with this Id.";
+
 
 
 				// Get the relevant team settings record.
@@ -102,43 +102,41 @@ namespace Bot.SlashCommands.Organizations
 				{
 					teamSettings = TeamSettings.CreateDefault(org.GuildId);
 
-                    // Add the new team settings record into the database.
-			        context.TeamSettings.Add(teamSettings);
-                    await context.SaveChangesAsync();
+					// Add the new team settings record into the database.
+					context.TeamSettings.Add(teamSettings);
+					await context.SaveChangesAsync();
 				}
 
 
-				// Check if the organization has room for a new member
-				List<OrganizationMember>? members = context.OrganizationMembers.Count() > 0 ? await context.OrganizationMembers.Where(x => x.OrganizationId == orgId).ToListAsync()
-                                                                                            : null;
-                if (members == null || members.Count == 0)
-                    return "This organization has no members. There must be an error in the database as this is normally not possible.";
-                if (members.Count >= teamSettings.MaxMembersPerOrg)
-                    return "Sorry, you cannot join as this organization is already full.";
+				// Check if the legion has room for a new member
+				List<LegionMember>? members = context.LegionMembers.Count() > 0 ? await context.LegionMembers.Where(x => x.LegionId == legionId).ToListAsync()
+                                                                                : null;
+                if (members != null && members.Count >= teamSettings.MaxOrgsPerLegion)
+                    return "Sorry, you cannot join as this legion is already full.";
 
 
-                // Find the organization leader
-                SocketUser leader = client.GetUser(org.LeaderID);
+                // Find the legion leader
+                SocketUser leader = client.GetUser(legion.LeaderID);
                 if (leader == null)
-                    return $"Could not find the user object for the leader of the \"{org.Name}\" organization.";
+                    return $"Could not find the user object for the leader of the \"{legion.Name}\" legion.";
 
-                // Send a DM to the organization's team lead so they can accept or deny this join request.
+                // Send a DM to the legion's leader so they can accept or deny this join request.
                 try
                 {
-                    await leader.SendMessageAsync($"<@{command.User.Id}> has requested to join your organization.", components: OrgDataUtils.CreateJoinRequest());
+                    await leader.SendMessageAsync($"<@{command.User.Id}> has requested to join their organization ({org.Name}) with your legion.", components: LegionDataUtils.CreateJoinRequest());
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"ERROR: An error occurred while trying to send a direct message to the leader of the organization, {leader.Username}:\n" +
+                    Console.WriteLine($"ERROR: An error occurred while trying to send a direct message to the leader of the legion, {leader.Username}:\n" +
                                 $"\"{ex.Message}\"\n" +
                                 $"Inner Exception: \"{(ex.InnerException != null ? ex.InnerException.Message : "")}\"");
 
-                    return $"An error occurred while trying to send a direct message to the leader of the organization, <@{leader.Id}>.";
+                    return $"An error occurred while trying to send a direct message to the leader of the legion, <@{leader.Id}>.";
                 }
 
 
                 // This causes the message content to be set to null. We don't need it since we are using an embed for the content.
-                return $"A join request notification has been sent to the \"{org.Name}\" organization's team lead, <@{leader.Id}>. You will receive a direct message once they accept or deny your join request.";
+                return $"A join request notification has been sent to the \"{legion.Name}\" legion's leader, <@{leader.Id}>. You will receive a direct message once they accept or deny your join request.";
             }
             catch (Exception ex)
             {
@@ -155,8 +153,8 @@ namespace Bot.SlashCommands.Organizations
         {
             return new SlashCommandBuilder()
                 .WithName(name)
-                .WithDescription("Sends a request to join the specified organization. The team lead will accept or deny it soon after.")
-                .AddOption("id", ApplicationCommandOptionType.Integer, "The Id of the organization to join", true)
+                .WithDescription("Sends a request to join the specified legion. The legion leader will accept or deny it soon after.")
+                .AddOption("id", ApplicationCommandOptionType.Integer, "The Id of the legion to join", true)
                 .Build();
         }
 

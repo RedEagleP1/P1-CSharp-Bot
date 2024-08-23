@@ -4,14 +4,16 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Models
 {
-	public class OrganizationMember
+	public class LegionMember
 	{
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public ulong Id { get; set; }
-        [Required]
-        public ulong UserId { get; set; }       
+     
         [Required]
         public ulong OrganizationId { get; set; }
+
+        [Required]
+        public ulong LegionId { get; set; }
 
     }
 }

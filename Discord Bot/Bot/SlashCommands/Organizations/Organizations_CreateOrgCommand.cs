@@ -1,4 +1,5 @@
-﻿using Discord;
+﻿using Bot.SlashCommands.DbUtils;
+using Discord;
 using Discord.WebSocket;
 using Microsoft.EntityFrameworkCore;
 using Models;
@@ -38,36 +39,31 @@ namespace Bot.SlashCommands.Organizations
             await DBReadWrite.LockReadWrite();
             try
             {
-                // Check if the user is already in an organization.
-                if (!OrganizationConstants.ALLOW_USER_TO_JOIN_MULTIPLE_ORGS)
-                {
-                    ulong? id = CheckIfUserIsInAnOrg(command).Result;
-                    if (id != null)
-                        return "You are already in an organization so you cannot create a new one.";
-                }
+                using var context = DBContextFactory.GetNewContext();
+
+                OrganizationMember? memberTest = await UserDataUtils.CheckIfUserIsInAnOrg(command.User.Id, context);
+                if (!Organization.ALLOW_USER_TO_JOIN_MULTIPLE_ORGS && memberTest != null)
+                    return "You are already in an organization so you cannot create a new one.";
+
 
                 // Try to get the name option.
-                SocketSlashCommandDataOption nameOption = command.Data.Options.FirstOrDefault(x => x.Name == "name");
+                SocketSlashCommandDataOption? nameOption = command.Data.Options.FirstOrDefault(x => x.Name == "name");
                 if (nameOption == null)
-                {
                     return "Please provide a name for the new organization.";
-                }
 
                 // Check if the name option contains a valid value.
                 string? orgName = nameOption.Value.ToString();
-                if (orgName == null || orgName.Length < OrganizationConstants.MIN_ORG_NAME_LENGTH)
-                {
-                    return $"Please provide a name that is at least {OrganizationConstants.MIN_ORG_NAME_LENGTH} characters long for the new organization.";
-                }
+                if (orgName == null || orgName.Length < Organization.DEFAULT_MIN_ORG_NAME_LENGTH)
+                    return $"Please provide a name that is at least {Organization.DEFAULT_MIN_ORG_NAME_LENGTH} characters long for the new organization.";
+
                 orgName = orgName.Trim();
             
+
                 // Check if there is already an organization with this name.
-                using var context = DBContextFactory.GetNewContext();
-                Organization? org = await context.Organizations.AsNoTracking().FirstOrDefaultAsync(x => x.Name == orgName);
+                Organization? org = context.Organizations.Count() > 0 ? await context.Organizations.AsNoTracking().FirstOrDefaultAsync(x => x.Name == orgName)
+                                                                      : null;
                 if (org != null)
-                {
                     return "An organization with this name already exists.";
-                }
 
 
                 // Get the guild Id.
@@ -77,20 +73,35 @@ namespace Bot.SlashCommands.Organizations
                 else
                     guildId = (ulong) command.GuildId;
 
-             
+
+                // Get the relevant team settings record.
+                TeamSettings? teamSettings = TeamSettingsUtils.GetTeamSettingsForGuild(guildId, context);
+                bool createdNewTeamSettings = false;
+                if (teamSettings == null)
+                {
+                    createdNewTeamSettings = true;
+                    teamSettings = TeamSettings.CreateDefault(guildId);
+                }
+
                 // First, add the new organization to the orgs table.
                 Organization newOrg = new Organization();
                 newOrg.Name = orgName.Trim();
                 newOrg.LeaderID = command.User.Id;
-                newOrg.CurrencyId = OrganizationConstants.CURRENCY_ID;
+                newOrg.CurrencyId = Organization.DEFAULT_CURRENCY_ID;
                 newOrg.GuildId = guildId;
-                newOrg.MaxMembers = OrganizationConstants.MAX_ORG_MEMBERS;
                 context.Organizations.Add(newOrg);
 
+                // If we created a new team settings record, then add it to the database.
+                if (createdNewTeamSettings)
+                    context.TeamSettings.Add(teamSettings);
+
+                // Save changes to the database.
                 await context.SaveChangesAsync();
 
+
                 // Get the id of the new org.
-                Organization result = await context.Organizations.FirstOrDefaultAsync(x => x.Name == orgName);
+                Organization? result = context.Organizations.Count() > 0 ? await context.Organizations.FirstOrDefaultAsync(x => x.Name == orgName)
+                                                                        : null;                                                                           
                 if (result == null)
                     return $"Failed to create new organization \"{orgName}\".";
 
@@ -103,7 +114,7 @@ namespace Bot.SlashCommands.Organizations
                 // Save changes to database.
                 await context.SaveChangesAsync();
 
-                return $"Created new organization \"{orgName}\" led by you.";
+                return $"Created the new organization \"{orgName}\", with you as the leader.";
 
             }
             catch (Exception ex)
@@ -117,31 +128,12 @@ namespace Bot.SlashCommands.Organizations
             }
 
         }
-        
-        /// <summary>
-        /// Checks if the user is in an organization.
-        /// </summary>
-        /// <param name="command">The command object.</param>
-        /// <returns>null if the user is not in an organization, or the id of the organization they are in.</returns>
-        async Task<ulong?> CheckIfUserIsInAnOrg(SocketSlashCommand command)
-        {
-            using var context = DBContextFactory.GetNewContext();
-            OrganizationMember? member = await context.OrganizationMembers.FirstOrDefaultAsync(x => x.UserId == command.User.Id);
-            if (member == null)
-            {
-                return null;
-            }
-            else
-            {
-                return member.OrganizationId;
-            }
-        }
 
         static SlashCommandProperties CreateNewProperties()
         {
             return new SlashCommandBuilder()
                 .WithName(name)
-                .WithDescription("Create a new organization with you as its leader")
+                .WithDescription("Creates a new organization with you as its leader")
                 .AddOption("name", ApplicationCommandOptionType.String, "The name of the new organization", true)
                 .Build();
         }

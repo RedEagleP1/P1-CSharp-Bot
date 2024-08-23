@@ -14,6 +14,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Channels;
 using System.Threading.Tasks;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
@@ -34,12 +35,16 @@ namespace Bot.SlashCommands
             this.client = client;
         }
 
+        private string response;
+
         public async Task HandleCommand(SocketSlashCommand command)
         {
             await command.DeferAsync(true);
             _ = Task.Run(async () =>
             {
-                try
+                response = "Could not find that item in your inventory, make sure you type the name exactly.";
+
+				try
                 {
                     await HandleResponse(command);
                 }
@@ -72,42 +77,85 @@ namespace Bot.SlashCommands
 
 				//Now find the automation that has this shop item
                 var stringedRef = itemRef.itemId.ToString();
-				var RefAuto = await context.IdAutos.FirstAsync(x => x.Type == 0 && x.SelectedOption == 3 && x.Value == stringedRef);
+                IdAuto RefAuto = new IdAuto();
+
+                try
+                {
+					RefAuto = await context.IdAutos.FirstAsync(x => x.Type == 0 && x.SelectedOption == 3 && x.Value == stringedRef);
+				}
+                catch
+                {
+                    response = "This item has no effect.";
+                }
 
 				var Automation = await context.Automations.FirstAsync(x => x.Id == RefAuto.AutomationId);
 
 				//Check the ifs
 				var IfAutos = await context.IdAutos.Where(x => x.AutomationId == Automation.Id && x.Type == 1).ToListAsync();
-
-				await command.ModifyOriginalResponseAsync(response =>
-				{
-					response.Content = "Item used.";
-				});
-
-				//If successful fire the dos
-				var DoAutos = await context.IdAutos.Where(x => x.AutomationId == Automation.Id && x.Type == 2).ToListAsync();
-				foreach (var item in DoAutos)
-				{
-					Console.WriteLine($"{item.Id} {item.Type} {item.Value} {item.AutomationId}");
+                bool ifPassed = true;
+                string failureMessage = "";
+				foreach (var item in IfAutos)
+                {
 					switch (item.SelectedOption)
 					{
 						case 0: //Nothing
 							break;
-						case 1: //Send a message
-                            await command.FollowupAsync($"{item.Value}");
+						case 1: //Correct role
+							var role = user.Guild.Roles.FirstOrDefault(x => x.Id.ToString() == item.Value);
+							if (!user.Roles.Contains(role))
+                            {
+                                ifPassed = false;
+								failureMessage += $" You need have {role.Name} role to use this item;";
+							}
 							break;
-						case 2: //React
-                            Console.WriteLine(item.Value);
-							var reacted = await command.FollowupAsync("Reacted message");
-							var customEmote = new Emoji($"{item.Value}");
-							await reacted.AddReactionAsync(customEmote);
+						case 2: //Correct channel
+							if (command.ChannelId.ToString() != item.Value)
+                            {
+                                ifPassed = false;
+                                failureMessage += $" You need to be in https://discord.com/channels/{command.GuildId}/{item.Value} to use this item;";
+                            }
 							break;
-						case 3: //Give Role
-                            var role = user.Guild.Roles.FirstOrDefault(x => x.Id.ToString() == item.Value);
-                            await user.AddRoleAsync(role);
-							break;
-						default:
-							break;
+					}
+				}
+
+				await command.ModifyOriginalResponseAsync(response =>
+				{
+                    if (ifPassed)
+                    {
+						response.Content = "Item used.";
+					}
+                    else
+                    {
+                        response.Content = "Item failed to be used used: "+failureMessage;
+                    }
+				});
+
+				//If successful fire the dos
+                if (ifPassed)
+                {
+					var DoAutos = await context.IdAutos.Where(x => x.AutomationId == Automation.Id && x.Type == 2).ToListAsync();
+					foreach (var item in DoAutos)
+					{
+						switch (item.SelectedOption)
+						{
+							case 0: //Nothing
+								break;
+							case 1: //Send a message
+								await command.FollowupAsync($"{item.Value}");
+								break;
+							case 2: //React
+								Console.WriteLine(item.Value);
+								var reacted = await command.FollowupAsync("Reacted message");
+								var customEmote = new Emoji($"{item.Value}");
+								await reacted.AddReactionAsync(customEmote);
+								break;
+							case 3: //Give Role
+								var role = user.Guild.Roles.FirstOrDefault(x => x.Id.ToString() == item.Value);
+								await user.AddRoleAsync(role);
+								break;
+							default:
+								break;
+						}
 					}
 				}
 

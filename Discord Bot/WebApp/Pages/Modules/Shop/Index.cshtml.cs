@@ -107,6 +107,11 @@ namespace WebApp.Pages.Modules.Shop
 				return BadRequest();
 			}
 
+			if (SavedItem.Cost < 0)
+			{
+				return RedirectToPage("Index", "WithAlert", new { guildId = SavedItem.GuildId, message = $"Can not make an item be negative cost." });
+			}
+
             updateItem.Id = SavedItem.Id;
 			updateItem.GuildId = SavedItem.GuildId;
 			updateItem.ItemName = SavedItem.ItemName;

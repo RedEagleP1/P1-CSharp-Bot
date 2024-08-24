@@ -12,6 +12,8 @@ using Bot.OneTimeRegister;
 using Bot.PeriodicEvents;
 using Bot.SlashCommands;
 using Bot.SlashCommands.Organizations;
+using Bot.SlashCommands.Shop;
+using Bot.PeriodicEvents;
 using Bot.SlashCommands.Legions;
 
 namespace Bot
@@ -84,10 +86,18 @@ namespace Bot
                 new Organizations_LeaveOrgCommand(),
                 new Organizations_OrgInfoCommand(client),
                 new Organizations_OrgTreasuryGiveCommand(),
-                new Organizations_PingOrgCommand(client),
-                new Organizations_PromoteOrgMemberCommand(),
-                new Organizations_RenameOrgCommand(),
-};
+				new Organizations_PingOrgCommand(client),
+				new Organizations_PromoteOrgMemberCommand(),
+				new Organizations_RenameOrgCommand(),
+
+                // ----------------------------------------------------------------------------------------------------
+                // Shop Commands
+                // ----------------------------------------------------------------------------------------------------
+                new Shop_DisplayCommand(client),
+                new Shop_DisplayItemCommand(client),
+				new Shop_InventoryCommand(client),
+                new Shop_UseItemCommand(client),
+                };
 
             List<IEventHandler> eventHandlers = new()
             {
@@ -97,8 +107,10 @@ namespace Bot
                 new LegionJoinRequestHandler(client),
                 new MemberUpdateHandler(client),
                 new MessageUpdateHandler(client),
-                new OrganizationJoinRequestHandler(client),
-                new RoleSurveyHandler(client),
+				new ShopButton(client),
+                new ShopBuyButton(client),
+				new OrganizationJoinRequestHandler(client),
+				new RoleSurveyHandler(client),
                 new SlashCommandHandler(client, slashCommands),
                 new VoiceStateUpdateHandler(client),
             };

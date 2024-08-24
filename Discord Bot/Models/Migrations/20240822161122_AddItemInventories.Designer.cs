@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Models;
 
@@ -10,9 +11,10 @@ using Models;
 namespace Models.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240822161122_AddItemInventories")]
+    partial class AddItemInventories
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -221,48 +223,6 @@ namespace Models.Migrations
                     b.ToTable("ItemInventories");
                 });
 
-            modelBuilder.Entity("Models.Legion", b =>
-                {
-                    b.Property<ulong>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint unsigned");
-
-                    b.Property<ulong>("GuildId")
-                        .HasColumnType("bigint unsigned");
-
-                    b.Property<ulong>("LeaderID")
-                        .HasColumnType("bigint unsigned");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("GuildId");
-
-                    b.ToTable("Legions");
-                });
-
-            modelBuilder.Entity("Models.LegionMember", b =>
-                {
-                    b.Property<ulong>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint unsigned");
-
-                    b.Property<ulong>("LegionId")
-                        .HasColumnType("bigint unsigned");
-
-                    b.Property<ulong>("OrganizationId")
-                        .HasColumnType("bigint unsigned");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("LegionId");
-
-                    b.ToTable("LegionMembers");
-                });
-
             modelBuilder.Entity("Models.MessageValidationSuccessTrack", b =>
                 {
                     b.Property<int>("Id")
@@ -297,6 +257,9 @@ namespace Models.Migrations
 
                     b.Property<ulong>("LeaderID")
                         .HasColumnType("bigint unsigned");
+
+                    b.Property<int>("MaxMembers")
+                        .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -632,28 +595,6 @@ namespace Models.Migrations
                     b.ToTable("TaskCompletionRecords");
                 });
 
-            modelBuilder.Entity("Models.TeamSettings", b =>
-                {
-                    b.Property<ulong>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint unsigned");
-
-                    b.Property<ulong>("GuildId")
-                        .HasColumnType("bigint unsigned");
-
-                    b.Property<int>("MaxMembersPerOrg")
-                        .HasColumnType("int");
-
-                    b.Property<int>("MaxOrgsPerLegion")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("GuildId");
-
-                    b.ToTable("TeamSettings");
-                });
-
             modelBuilder.Entity("Models.TextChannelMessageValidation", b =>
                 {
                     b.Property<int>("Id")
@@ -879,24 +820,6 @@ namespace Models.Migrations
                         .HasForeignKey("guildId");
                 });
 
-            modelBuilder.Entity("Models.Legion", b =>
-                {
-                    b.HasOne("Models.Guild", null)
-                        .WithMany()
-                        .HasForeignKey("GuildId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Models.LegionMember", b =>
-                {
-                    b.HasOne("Models.Legion", null)
-                        .WithMany()
-                        .HasForeignKey("LegionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Models.Organization", b =>
                 {
                     b.HasOne("Models.Guild", null)
@@ -1015,11 +938,6 @@ namespace Models.Migrations
                 });
 
             modelBuilder.Entity("Models.ShopItem", b =>
-                {
-
-                });
-
-            modelBuilder.Entity("Models.TeamSettings", b =>
                 {
                     b.HasOne("Models.Guild", null)
                         .WithMany()

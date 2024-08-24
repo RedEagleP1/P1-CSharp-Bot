@@ -1,0 +1,108 @@
+﻿@page
+@using WebApp.Pages.Partials
+@model WebApp.Pages.Modules.Shop.IndexModel
+@{
+}
+@Html.AntiForgeryToken()
+<nav class="nav">
+    <a class="nav-link active" aria-current="page" asp-page="/Home/Guilds">Guilds</a>
+	<a class="nav-link active" aria-current="page" asp-page="/Home/Modules" asp-route-id="@Model.Guild.Id" asp-route-name="@Model.Guild.Name">Modules</a>
+</nav>
+<br />
+<div>
+	<h2 class="text-primary">Global Rewards</h2>
+</div>
+<br /><br />
+<div class="container p-3">
+	<table class="table table-bordered table-striped" style="width:100%">
+		<thead>
+			<tr>
+				<th>
+					Name
+				</th>
+				<th>
+					Currency Type
+				</th>
+				<th>
+					Cost
+				</th>
+				<th>
+					Emoji Name
+				</th>
+				<th>
+					Description
+				</th>
+			</tr>
+		</thead>
+		<tbody id="TableRows">
+			@{
+				int index = 0;
+				foreach (var item in Model.ShopItems)
+				{
+					<form method="post">
+					<tr>
+						<input asp-for="@Model.SavedItem.Id" value="@item.Id" hidden>
+						<input asp-for="@Model.SavedItem.GuildId" value="@item.GuildId" hidden>
+						<th>
+							<input asp-for="@Model.SavedItem.ItemName" value="@item.ItemName">
+						</th>
+						<th>
+							<div id="Display">
+								<input asp-for="@Model.SavedItem.CurrencyId" value="@item.CurrencyId" id="curr" hidden>
+									@await Html.PartialAsync("/Pages/Partials/_CurrencyDropdown.cshtml", new CurrencyDropdownPartialModel() { ButtonName = Model.AllCurrencies[@item.CurrencyId-1].Name, Currencies = Model.AllCurrencies, AddNoneOption = true })
+							</div>
+						</th>
+						<th>
+							<input asp-for="@Model.SavedItem.Cost" value="@item.Cost">
+						</th>
+						<th>
+							<input asp-for="@Model.SavedItem.emojiId" value=@item.emojiId>
+						</th>
+						<th>
+							<input asp-for="@Model.SavedItem.Description" value=@item.Description>
+						</th>
+						<th>
+							<button asp-page-handler="Save" type="submit" class="btn btn-primary mx-2">Save</button>
+							<button asp-page-handler="Delete" type="submit" class="btn btn-danger mx-2">Delete</button>
+						</th>
+					</tr>
+					</form>
+					index++;
+				}
+			}
+		</tbody>
+		<form method="post">
+			<input asp-for="@Model.guildId" value="@Model.Guild.Id" hidden>
+			<button asp-page-handler="CreateNewItem" type="submit" class="btn-btn-success">Create New Shop Item</button>
+		</form>
+	</table>
+</div>
+
+@section Scripts
+	{
+	@if (ViewData["Message"] != null)
+	{
+		<script>
+			window.onload = function () {
+				alert("@ViewData["Message"]");
+			};
+		</script>
+	}
+
+	<script>
+		$(document).on("click", ".DropdownSelectedCurrency", function () {
+			var Id = $(this).val();
+			var Name = $(this).text();
+
+			var Div = $(this).closest("#Display");
+
+			if (Div.length !== 0) {
+				Div.find("#curr").val(Id);
+
+				Div.find("#dropdownMenuButton").text(Name);
+
+				console.log("Selected Currency: " + Name);
+			}
+		});
+	</script>
+}

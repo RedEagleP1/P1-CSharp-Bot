@@ -46,6 +46,7 @@ namespace Bot.EventHandlers
             {
                 using var context = DBContextFactory.GetNewContext();
                 
+                // legion = IUseCaseReturnObject.Execute();
                 legion = await LegionDataUtils.GetLegionFromLeaderId(component.User.Id, context);
                 org = await OrgDataUtils.GetOrgFromLeaderId(sender.Id, context);
 

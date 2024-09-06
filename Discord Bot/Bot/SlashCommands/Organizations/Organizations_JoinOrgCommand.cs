@@ -1,4 +1,5 @@
-﻿using Discord;
+﻿using Bot.SlashCommands.DbUtils;
+using Discord;
 using Discord.WebSocket;
 using Microsoft.EntityFrameworkCore;
 using Models;
@@ -68,9 +69,10 @@ namespace Bot.SlashCommands.Organizations
 
 
                 // Check if the user that invoked this command is already a member of an organization.
-                OrganizationMember? member = await context.OrganizationMembers.FirstOrDefaultAsync(x => x.UserId == command.User.Id);
-                //if (member != null)
-                //    return "You are already in an organization so you cannot join another.";
+                OrganizationMember? member = context.OrganizationMembers.Count() > 0 ? await context.OrganizationMembers.FirstOrDefaultAsync(x => x.UserId == command.User.Id)
+                                                                                     : null;
+                if (member != null)
+                    return "You are already in an organization so you cannot join another.";
 
 
                 // Try to get the id option.
@@ -88,16 +90,30 @@ namespace Bot.SlashCommands.Organizations
 
 
                 // Check if there is an organization with this Id.
-                Organization? org = await context.Organizations.FirstOrDefaultAsync(x => x.Id == orgId);
+                Organization? org = context.Organizations.Count() > 0 ? await context.Organizations.FirstOrDefaultAsync(x => x.Id == orgId)
+                                                                      : null;
                 if (org == null)
                     return "There is no organization with this Id.";
 
 
-                // Check if the organization has room for a new member
-                List<OrganizationMember> members = await context.OrganizationMembers.Where(x => x.OrganizationId == orgId).ToListAsync();
+				// Get the relevant team settings record.
+				TeamSettings? teamSettings = TeamSettingsUtils.GetTeamSettingsForGuild(org.GuildId, context);
+				if (teamSettings == null)
+				{
+					teamSettings = TeamSettings.CreateDefault(org.GuildId);
+
+                    // Add the new team settings record into the database.
+			        context.TeamSettings.Add(teamSettings);
+                    await context.SaveChangesAsync();
+				}
+
+
+				// Check if the organization has room for a new member
+				List<OrganizationMember>? members = context.OrganizationMembers.Count() > 0 ? await context.OrganizationMembers.Where(x => x.OrganizationId == orgId).ToListAsync()
+                                                                                            : null;
                 if (members == null || members.Count == 0)
                     return "This organization has no members. There must be an error in the database as this is normally not possible.";
-                if (members.Count >= org.MaxMembers)
+                if (members.Count >= teamSettings.MaxMembersPerOrg)
                     return "Sorry, you cannot join as this organization is already full.";
 
 
@@ -109,11 +125,11 @@ namespace Bot.SlashCommands.Organizations
                 // Send a DM to the organization's team lead so they can accept or deny this join request.
                 try
                 {
-                    await leader.SendMessageAsync($"<@{command.User.Id}> has requested to join your organization.", components: CreateJoinRequest());
+                    await leader.SendMessageAsync($"<@{command.User.Id}> has requested to join your organization.", components: OrgDataUtils.CreateJoinRequest());
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"ERROR: An error occurred while trying to send a direct message to the leader of the organization, leader.Name:\n" +
+                    Console.WriteLine($"ERROR: An error occurred while trying to send a direct message to the leader of the organization, {leader.Username}:\n" +
                                 $"\"{ex.Message}\"\n" +
                                 $"Inner Exception: \"{(ex.InnerException != null ? ex.InnerException.Message : "")}\"");
 
@@ -122,7 +138,7 @@ namespace Bot.SlashCommands.Organizations
 
 
                 // This causes the message content to be set to null. We don't need it since we are using an embed for the content.
-                return $"A request notification has been sent to the \"{org.Name}\" organization's team lead, <@{leader.Id}>. You will receive a direct message once they accept or deny your join request.";
+                return $"A join request notification has been sent to the \"{org.Name}\" organization's team lead, <@{leader.Id}>. You will receive a direct message once they accept or deny your join request.";
             }
             catch (Exception ex)
             {
@@ -135,28 +151,11 @@ namespace Bot.SlashCommands.Organizations
             }
         }
 
-        /// <summary>
-        /// This function creates the join request we will send to the organization's team lead.
-        /// </summary>
-        /// <returns>The join request message to send to the team lead.</returns>
-        private static MessageComponent CreateJoinRequest()
-        {
-            // Build the join request we will send to the team lead
-            ActionRowBuilder row1Builder = new ActionRowBuilder()
-                .WithButton("Accept", "accept_join_org", ButtonStyle.Primary)
-                .WithButton("Deny", "deny_join_org", ButtonStyle.Secondary);                
-
-            ComponentBuilder components = new ComponentBuilder()
-                .WithRows(new List<ActionRowBuilder>() { row1Builder });
-
-            return components.Build();
-        }
-
         static SlashCommandProperties CreateNewProperties()
         {
             return new SlashCommandBuilder()
                 .WithName(name)
-                .WithDescription("Sends a request to join the specified information. The team lead will accept or deny it soon after.")
+                .WithDescription("Sends a request to join the specified organization. The team lead will accept or deny it soon after.")
                 .AddOption("id", ApplicationCommandOptionType.Integer, "The Id of the organization to join", true)
                 .Build();
         }

@@ -1,4 +1,5 @@
-﻿using Discord;
+﻿using Bot.SlashCommands.DbUtils;
+using Discord;
 using Discord.WebSocket;
 using Microsoft.EntityFrameworkCore;
 using Models;
@@ -40,30 +41,10 @@ namespace Bot.SlashCommands.Organizations
                 using var context = DBContextFactory.GetNewContext();
 
 
-                // Check if the user that invoked this command is a member of an organization.
-                OrganizationMember? member = await context.OrganizationMembers.FirstOrDefaultAsync(x => x.UserId == command.User.Id);
-                if (member == null)
-                    return "You are not in an organization.";
-
-
-                // Find the organization.
-                Organization? org = null;
-                try
-                {
-                    org = await context.Organizations.FirstOrDefaultAsync(o => o.Id == member.OrganizationId);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"ERROR: An error occurred:\n\"{ex.Message}\"\n    Inner Exception: \"{(ex.InnerException != null ? ex.InnerException.Message : "")}\"");
-                    return "An error occurred while finding the organization.";
-                }
+                // Check if the user that invoked this command is an organization leader.
+                Organization? org = await OrgDataUtils.GetOrgFromLeaderId(command.User.Id, context);
                 if (org == null)
-                    return "Could not find your organization.";
-
-
-                // Check if this command was invoked by the organization's leader.
-                if (command.User.Id != org.LeaderID)
-                    return "Only the leader of your organization may use this command.";
+                    return "You are not an organization leader.";
 
                 
                 // Try to get the specified user.
@@ -85,20 +66,10 @@ namespace Bot.SlashCommands.Organizations
 
 
                 // Check if the specified user is a member of this organization.
-                OrganizationMember? memberInfo = null;
-                try
-                {
-                    memberInfo = context.OrganizationMembers.FirstOrDefault(x => x.UserId == targetUser.Id &&
-                                                                                 x.OrganizationId == org.Id);
-
-                    if (memberInfo == null)
-                        return $"The specified user is not a member of your organization ({org.Name}).";
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"ERROR: An error occurred:\n\"{ex.Message}\"\n    Inner Exception: \"{(ex.InnerException != null ? ex.InnerException.Message : "")}\"");
-                    return $"An error occurred while checking if the target user is a member of the \"{org.Name}\" organization.";
-                }
+                OrganizationMember? memberInfo = context.OrganizationMembers.Count() > 0 ? await context.OrganizationMembers.FirstOrDefaultAsync(x => x.UserId == targetUser.Id && x.OrganizationId == org.Id)
+                                                                                         : null;
+                if (memberInfo == null)
+                    return $"The specified user is not a member of your organization ({org.Name}).";
 
 
                 if (memberInfo.UserId == org.LeaderID)

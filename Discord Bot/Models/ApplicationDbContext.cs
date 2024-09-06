@@ -13,6 +13,9 @@ namespace Models
         public DbSet<Currency> Currencies { get; set; }
         public DbSet<CurrencyOwned> CurrenciesOwned { get; set; }
         public DbSet<CurrencyAwardLimit> CurrencyAwardLimits { get; set; }
+        public DbSet<Legion> Legions { get; set; }
+        public DbSet<LegionMember> LegionMembers { get; set; }
+
         public DbSet<Organization> Organizations { get; set; }
         public DbSet<OrganizationMember> OrganizationMembers { get; set; }
         public DbSet<RoleCostAndReward> RolesCostAndReward { get; set; }
@@ -25,7 +28,10 @@ namespace Models
         public DbSet<CurrencyReset> CurrencyResets { get; set; }
 		public DbSet<Automation> Automations { get; set; }
 		public DbSet<IdAuto> IdAutos { get; set; }
+        public DbSet<ShopItem> ShopItems { get; set; }
+		public DbSet<ItemInventory> ItemInventories { get; set; }
 		public DbSet<VoiceChannelTrack> VoiceChannelTracks { get; set; }
+        public DbSet<TeamSettings> TeamSettings { get; set; }
         public DbSet<TextChannelMessageValidation> TextChannelMessageValidation { get; set; }
         public DbSet<MessageValidationSuccessTrack> MessageValidationSuccessTracks { get; set; }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
@@ -144,13 +150,23 @@ namespace Models
                 .WithMany()
                 .HasForeignKey(v => v.GuildId);
 
-			modelBuilder.Entity<IdAuto>()
-				.HasOne<Automation>()
-				.WithMany()
-				.HasForeignKey(v => v.AutomationId)
+            modelBuilder.Entity<IdAuto>()
+                .HasOne<Automation>()
+                .WithMany()
+                .HasForeignKey(v => v.AutomationId)
                 .IsRequired(false);
 
-			modelBuilder.Entity<CurrencyReset>()
+            modelBuilder.Entity<ShopItem>()
+                .HasOne<Guild>()
+                .WithMany()
+                .HasForeignKey(v => v.GuildId);
+            modelBuilder.Entity<CurrencyReset>()
+                .HasOne<Currency>()
+                .WithMany()
+                .HasForeignKey(v => v.CurrencyId)
+                .IsRequired(false);
+
+            modelBuilder.Entity<CurrencyReset>()
                 .HasOne<Currency>()
                 .WithMany()
                 .HasForeignKey(v => v.CurrencyId)
@@ -160,6 +176,11 @@ namespace Models
                 .HasOne<Guild>()
                 .WithMany()
                 .HasForeignKey(v => v.GuildId);
+
+            modelBuilder.Entity<TeamSettings>()
+                .HasOne<Guild>()
+                .WithMany()
+                .HasForeignKey(ts => ts.GuildId);
 
             modelBuilder.Entity<TextChannelMessageValidation>()
                 .HasOne<Guild>()
@@ -188,11 +209,28 @@ namespace Models
                 .HasOne<Guild>()
                 .WithMany()
                 .HasForeignKey(o => o.GuildId);
-                
+
             modelBuilder.Entity<OrganizationMember>()
                 .HasOne<Organization>()
                 .WithMany()
                 .HasForeignKey(o => o.OrganizationId);
+
+			modelBuilder.Entity<ItemInventory>()
+				.HasOne<Guild>()
+				.WithMany()
+				.HasForeignKey(o => o.guildId)
+				.IsRequired(false);
+
+			base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<Legion>()
+                .HasOne<Guild>()
+                .WithMany()
+                .HasForeignKey(o => o.GuildId);
+
+            modelBuilder.Entity<LegionMember>()
+                .HasOne<Legion>()
+                .WithMany()
+                .HasForeignKey(o => o.LegionId);
 
             base.OnModelCreating(modelBuilder);
         }

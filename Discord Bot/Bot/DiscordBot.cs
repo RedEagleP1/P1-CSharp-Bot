@@ -9,9 +9,12 @@ using Models;
 
 using Bot.EventHandlers;
 using Bot.OneTimeRegister;
+using Bot.PeriodicEvents;
 using Bot.SlashCommands;
 using Bot.SlashCommands.Organizations;
+using Bot.SlashCommands.Shop;
 using Bot.PeriodicEvents;
+using Bot.SlashCommands.Legions;
 
 namespace Bot
 {
@@ -50,40 +53,64 @@ namespace Bot
 
             List<ISlashCommand> slashCommands = new()
             {
+                new AccountBackupCommand(client),
+                new AccountCommand(client),
                 new AwardCommand(client),
                 new BuyRoleCommand(),
                 new CurrencyCommand(),
                 //new DebugCommand(client),
-                new AccountCommand(client),
-                new AccountBackupCommand(client),
                 new ReviewCommand(client),
 				new SendCommand(client),
+
+                // ----------------------------------------------------------------------------------------------------
+                // Legion Commands
+                // ----------------------------------------------------------------------------------------------------
+                new Legions_CreateLegionCommand(),
+                new Legions_DeleteLegionCommand(client),
+                new Legions_JoinLegionCommand(client),
+                new Legions_KickLegionOrgCommand(),
+                new Legions_LeaveLegionCommand(),
+                new Legions_LegionInfoCommand(client),
+                new Legions_PingLegionCommand(client),
+                new Legions_PromoteLegionMemberCommand(),
+                new Legions_RenameLegionCommand(),
 
                 // ----------------------------------------------------------------------------------------------------
                 // Organizations Commands
                 // ----------------------------------------------------------------------------------------------------
                 new Organizations_CreateOrgCommand(),
-                new Organizations_DonateToOrgCommand(),
-                new Organizations_OrgInfoCommand(client),
-                new Organizations_JoinOrgCommand(client),
-                new Organizations_LeaveOrgCommand(),
-                new Organizations_PingOrgCommand(),
-                new Organizations_PromoteOrgMemberCommand(),
                 new Organizations_DeleteOrgCommand(client),
+                new Organizations_DonateToOrgCommand(),
+                new Organizations_JoinOrgCommand(client),
                 new Organizations_KickOrgMemberCommand(),
-                new Organizations_RenameOrgCommand(),
+                new Organizations_LeaveOrgCommand(),
+                new Organizations_OrgInfoCommand(client),
                 new Organizations_OrgTreasuryGiveCommand(),
-            };
+				new Organizations_PingOrgCommand(client),
+				new Organizations_PromoteOrgMemberCommand(),
+				new Organizations_RenameOrgCommand(),
+
+                // ----------------------------------------------------------------------------------------------------
+                // Shop Commands
+                // ----------------------------------------------------------------------------------------------------
+                new Shop_DisplayCommand(client),
+                new Shop_DisplayItemCommand(client),
+				new Shop_InventoryCommand(client),
+                new Shop_UseItemCommand(client),
+                };
 
             List<IEventHandler> eventHandlers = new()
             {
                 new ChannelUpdateHandler(client),
                 new CurrentGuildsUpdateHandler(client, slashCommands),
                 new GuildRolesChangeHandler(client),
+                new LegionJoinRequestHandler(client),
                 new MemberUpdateHandler(client),
                 new MessageUpdateHandler(client),
-                new OrganizationJoinRequestHandler(client),
-                new RoleSurveyHandler(client),
+				new ShopButton(client),
+                new ShopBuyButton(client),
+				new OrganizationJoinRequestHandler(client),
+				new RoleSurveyHandler(client),
                 new SlashCommandHandler(client, slashCommands),
                 new VoiceStateUpdateHandler(client),
             };

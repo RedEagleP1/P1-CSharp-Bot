@@ -31,6 +31,7 @@ namespace Bot.PeriodicEvents
                 await RefreshCurrencyAwardLimit();
                 SetRoleMessageAndSurveyRepeatForToday();
                 ResetCurrencyLogic();
+                
             });            
         }
 

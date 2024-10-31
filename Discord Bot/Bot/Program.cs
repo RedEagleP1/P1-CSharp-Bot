@@ -1,17 +1,22 @@
-﻿using Bot;
-using Microsoft.Extensions.Configuration;
-using Models;
-using Microsoft.EntityFrameworkCore;
-using Bot.PeriodicEvents;
+﻿// See https://aka.ms/new-console-template for more information
 
-// Get values from the config given their key and their target type.
-Settings.Init();
-var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-    .UseMySql(Settings.ConnectionString, ServerVersion.AutoDetect(Settings.ConnectionString))    
-    .Options;
+using Discord;
+using Discord.WebSocket;
+using Microsoft.Extensions.DependencyInjection;
+using BotInfrastructure.HttpClients;
 
-DBContextFactory.Init(options);
-DiscordBot bot = new DiscordBot();
-await bot.StartBot();
+var services = new ServiceCollection()
+    .AddHttpClient()
+    .AddTransient<IHttpClient, BotHttpClient>()
+    .BuildServiceProvider();
+
+var discordSocket = new DiscordSocketClient(new DiscordSocketConfig()
+{
+    GatewayIntents = GatewayIntents.All,
+});
+
+
+await discordSocket.LoginAsync(TokenType.Bot, "YOUR_BOT_TOKEN");
+await discordSocket.StartAsync();
 
 await Task.Delay(-1);

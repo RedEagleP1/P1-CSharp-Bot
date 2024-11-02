@@ -4,6 +4,10 @@ using System.Threading.Tasks;
 
 namespace Bot.Commands
 {
+    // TODO This needs to be written as a static factory class similar to the dynamic builders
+    // CAP
+    // MF 
+
     public class DynamicCommandResponseBuilder
     {
         private readonly SocketInteraction _interaction;

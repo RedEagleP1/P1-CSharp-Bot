@@ -7,7 +7,6 @@ using BotInfrastructure.HttpClients;
 
 var services = new ServiceCollection()
     .AddHttpClient()
-    .AddTransient<IHttpClient, BotHttpClient>()
     .BuildServiceProvider();
 
 var discordSocket = new DiscordSocketClient(new DiscordSocketConfig()

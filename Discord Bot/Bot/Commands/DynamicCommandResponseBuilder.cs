@@ -4,12 +4,25 @@ using System.Threading.Tasks;
 
 namespace Bot.Commands
 {
-    // TODO This needs to be written as a static factory class similar to the dynamic builders
     // CAP
     // MF 
 
-    public class DynamicCommandResponseBuilder
+    public static class DynamicCommandResponseBuilder
     {
+        public static DynamicCommandResponse CreateResponse(SocketInteraction socketInteraction, string title, string description, string content = "", Color? color = null, bool isEphemeral = false, bool isTTS = false)
+        {
+            EmbedBuilder embedBuilder = new EmbedBuilder()
+                .WithTitle(title)
+                .WithDescription(description);
+
+            if (color != null)
+                embedBuilder.WithColor((Color)color);
+
+            return new DynamicCommandResponse(socketInteraction, embedBuilder, content, isEphemeral, isTTS);
+        }
+
+
+        /*
         private readonly SocketInteraction _interaction;
         private readonly EmbedBuilder _embedBuilder;
         private bool _isEphemeral;
@@ -25,7 +38,7 @@ namespace Bot.Commands
             _isTTS = false;
         }
 
-        public DynamicCommandResponseBuilder WithTitle(string title)
+        public DynamicCommandResponseBuilder WithTitle(string title)Bot/Commands/DynamicCommandResponseBuilder.cs
         {
             _embedBuilder.WithTitle(title);
             return this;
@@ -67,5 +80,39 @@ namespace Bot.Commands
 
             await _interaction.RespondAsync(text: _content, embed: embed, ephemeral: _isEphemeral, isTTS: _isTTS);
         }
+
+        */
+    }
+}
+
+
+public class DynamicCommandResponse
+{
+    private SocketInteraction _socketInteraction;
+    private EmbedBuilder _embedBuilder;
+    private string _content = string.Empty;
+    private bool _isEphemeral;
+    private bool _isTTS;
+
+
+
+    public DynamicCommandResponse(SocketInteraction socketInteraction, EmbedBuilder embedBuilder, string content = "", bool isEphemeral = false, bool isTTS = false)
+    {
+        _socketInteraction = socketInteraction;
+        _embedBuilder = embedBuilder;
+        _content = content;
+        _isEphemeral = isEphemeral;
+        _isTTS = isTTS;
+    }
+
+
+    public async Task RespondAsync()
+    {
+        var embed = _embedBuilder.Build();
+
+        await _socketInteraction.RespondAsync(text: _content,
+                                              embed: embed,
+                                              ephemeral: _isEphemeral,
+                                              isTTS: _isTTS);
     }
 }

@@ -26,6 +26,7 @@ namespace Bot.Commands
                     CommandBuilder.AddOption(optionToAdd);
                 }
             }
+            CommandBuilder.Build();
 
             return CommandBuilder;
         }

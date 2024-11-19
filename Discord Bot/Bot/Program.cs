@@ -7,6 +7,7 @@ using Microsoft.Extensions.Hosting;
 using System.Diagnostics;
 using BotInfrastructure.HttpClients;
 using Bot.Commands;
+using Discord.Interactions;
 
 // Create a new instance of a host
 using IHost host = Host.CreateApplicationBuilder(args).Build();
@@ -17,9 +18,11 @@ var services = new ServiceCollection();
 // Add the required services for the application here
 services.AddSingleton<DiscordSocketClient>();
 services.AddSingleton<IDiscordBot, DiscordBot>();
+services.AddSingleton(x => new InteractionService(x.GetRequiredService<DiscordSocketClient>()));
 
 services.AddTransient<IHttpClient, BotHttpClient>();
-services.AddTransient<ICreateDynamicCommands, CreateDynamicCommands>();
+services.AddSingleton<ICreateDynamicCommands, CreateDynamicCommands>();
+services.AddSingleton<CommandContextContainer>();
 
 // Configuration
 // Make sure you follow the conventions for naming env variables to be read by the configuration properly. <section>__<key>
@@ -37,5 +40,5 @@ var serviceProvider = services.BuildServiceProvider();
 
 var bot = serviceProvider.GetRequiredService<DiscordBot>();
 
-await bot.Start();
+await bot.StartAsync();
 

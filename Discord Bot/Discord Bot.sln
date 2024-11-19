@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bot-Infrastructure", "Bot-I
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bot", "Bot\Bot.csproj", "{CE2AE534-0BDE-40F4-9A7D-80B4A0DCBBDE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bot_Tests", "Bot_Tests\Bot_Tests.csproj", "{16038E94-2406-4EA9-879F-7DFE09D256C6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,6 +37,10 @@ Global
 		{CE2AE534-0BDE-40F4-9A7D-80B4A0DCBBDE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CE2AE534-0BDE-40F4-9A7D-80B4A0DCBBDE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CE2AE534-0BDE-40F4-9A7D-80B4A0DCBBDE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{16038E94-2406-4EA9-879F-7DFE09D256C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{16038E94-2406-4EA9-879F-7DFE09D256C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{16038E94-2406-4EA9-879F-7DFE09D256C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16038E94-2406-4EA9-879F-7DFE09D256C6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,0 +1,17 @@
+# Ignore build directories
+**/bin
+**/obj
+
+# Ignore configuration files
+*.config
+
+# Ignore logs
+*.log
+
+# Ignore Docker files
+Dockerfile
+docker-compose.yml
+
+# Ignore environment files
+.env
+.env.*

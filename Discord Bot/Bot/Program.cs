@@ -1,21 +1,41 @@
 ﻿// See https://aka.ms/new-console-template for more information
-
-using Discord;
+using Bot;
 using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
+using System.Diagnostics;
 using BotInfrastructure.HttpClients;
+using Bot.Commands;
 
-var services = new ServiceCollection()
-    .AddHttpClient()
-    .BuildServiceProvider();
+// Create a new instance of a host
+using IHost host = Host.CreateApplicationBuilder(args).Build();
 
-var discordSocket = new DiscordSocketClient(new DiscordSocketConfig()
-{
-    GatewayIntents = GatewayIntents.All,
-});
+// Create a new instance of a service collection
+var services = new ServiceCollection();
 
+// Add the required services for the application here
+services.AddSingleton<DiscordSocketClient>();
+services.AddSingleton<IDiscordBot, DiscordBot>();
 
-await discordSocket.LoginAsync(TokenType.Bot, "YOUR_BOT_TOKEN");
-await discordSocket.StartAsync();
+services.AddTransient<IHttpClient, BotHttpClient>();
+services.AddTransient<ICreateDynamicCommands, CreateDynamicCommands>();
 
-await Task.Delay(-1);
+// Configuration
+// Make sure you follow the conventions for naming env variables to be read by the configuration properly. <section>__<key>
+var config = new ConfigurationBuilder()
+.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+.AddEnvironmentVariables()
+.Build();
+
+// Add the configuration to the service collection
+//todo This is not working
+services.Configure<BotConfigurationModel>(config.GetSection("Configuration"));
+
+// build the service provider
+var serviceProvider = services.BuildServiceProvider();
+
+var bot = serviceProvider.GetRequiredService<DiscordBot>();
+
+await bot.Start();
+

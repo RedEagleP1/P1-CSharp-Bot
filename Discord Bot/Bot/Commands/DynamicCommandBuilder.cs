@@ -7,21 +7,27 @@ namespace Bot.Commands
 {
     public static class DynamicCommandBuilder
     {
-        public static SlashCommandBuilder CreateCommand(string name, string description, List<SlashCommandOptionBuilder> options = null)
+        public static SlashCommandBuilder CommandBuilder { get; set; }
+
+        static DynamicCommandBuilder(){
+            CommandBuilder = new SlashCommandBuilder();
+        }
+
+        public static SlashCommandBuilder CreateCommand(string name, string description, List<DiscordCommandOption> options = null)
         {
-            var commandBuilder = new SlashCommandBuilder()
-                .WithName(name)
+            CommandBuilder.WithName(name)
                 .WithDescription(description);
 
             if (options != null)
             {
                 foreach (var option in options)
                 {
-                    commandBuilder.AddOption(option);
+                    var optionToAdd = DynamicCommandOptionBuilder.CreateOption(option.Name, option.Description, option.Type, option.Required, option.Options);
+                    CommandBuilder.AddOption(optionToAdd);
                 }
             }
 
-            return commandBuilder;
+            return CommandBuilder;
         }
 
     }

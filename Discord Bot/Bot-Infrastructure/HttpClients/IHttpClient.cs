@@ -1,7 +1,7 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace BotInfrastructure.HttpClients
+namespace Bot_Infrastructure.HttpClients
 {
     public interface IHttpClient
     {

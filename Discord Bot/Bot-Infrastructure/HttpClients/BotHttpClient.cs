@@ -4,7 +4,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace BotInfrastructure.HttpClients
+namespace Bot_Infrastructure.HttpClients
 {
     public class BotHttpClient : IHttpClient
     {

@@ -3,17 +3,17 @@ using Discord.Commands.Builders;
 using Discord.WebSocket;
 using System.Collections.Generic;
 
-namespace Bot.Commands
+namespace Bot_Application.Commands
 {
     public static class DynamicCommandBuilder
     {
-        public static SlashCommandBuilder CommandBuilder { get; set; }
+        public static SlashCommandBuilder CommandBuilder { get; }
 
         static DynamicCommandBuilder(){
             CommandBuilder = new SlashCommandBuilder();
         }
 
-        public static SlashCommandBuilder CreateCommand(string name, string description, List<DiscordCommandOption> options = null)
+        public static SlashCommandBuilder CreateCommand(string name, string? description = null, List<DiscordCommandOption>? options = null)
         {
             CommandBuilder.WithName(name)
                 .WithDescription(description);

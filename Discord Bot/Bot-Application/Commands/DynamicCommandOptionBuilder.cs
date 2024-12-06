@@ -1,6 +1,6 @@
 using Discord;
 
-namespace Bot.Commands
+namespace Bot_Application.Commands
 {
     public static class DynamicCommandOptionBuilder
     {

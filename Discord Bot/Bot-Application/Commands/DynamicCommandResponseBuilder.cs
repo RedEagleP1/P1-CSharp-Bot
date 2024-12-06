@@ -2,11 +2,8 @@ using Discord;
 using Discord.WebSocket;
 using System.Threading.Tasks;
 
-namespace Bot.Commands
+namespace Bot_Application.Commands
 {
-    // CAP
-    // MF 
-
     public static class DynamicCommandResponseBuilder
     {
         public static DynamicCommandResponse CreateResponse(SocketInteraction socketInteraction, string title, string description, string content = "", Color? color = null, bool isEphemeral = false, bool isTTS = false)

@@ -4,7 +4,7 @@ namespace Bot_Application.Commands
 {
     public static class DynamicCommandOptionBuilder
     {
-        public static SlashCommandOptionBuilder CreateOption(string name, string description, ApplicationCommandOptionType type, bool required = false, List<DiscordCommandOption> options = null)
+        public static SlashCommandOptionBuilder CreateOption(string name, ApplicationCommandOptionType type, string? description = null, bool required = false, List<DiscordCommandOption>? options = null)
         {
             var optionBuilder = new SlashCommandOptionBuilder()
                 .WithName(name)
@@ -16,7 +16,7 @@ namespace Bot_Application.Commands
             {
                 foreach (var option in options)
                 {
-                    var optionToAdd = CreateOption(option.Name, option.Description, option.Type, option.Required, option.Options);
+                    var optionToAdd = CreateOption(option.Name, option.Type, option.Description, option.Required, option.Options);
                     optionBuilder.AddOption(optionToAdd);
                 }
             }

@@ -3,38 +3,12 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.3.32901.215
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{98413414-2D06-4B29-8FCF-3E398A5D42D6}"
-	ProjectSection(SolutionItems) = preProject
-		appsettings.Example_Bot.json = appsettings.Example_Bot.json
-		appsettings.Example_WebApp.json = appsettings.Example_WebApp.json
-		Developer's Guide.txt = Developer's Guide.txt
-		How to get started.txt = How to get started.txt
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bot-Application", "Bot-Application\Bot-Application.csproj", "{9A1307DA-15DF-4858-93B5-9D3511E181D6}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bot-Infrastructure", "Bot-Infrastructure\Bot-Infrastructure.csproj", "{0B23271D-3D67-4CDF-9991-8555540D3613}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Discord_Client", "Discord_Client\Discord_Client.csproj", "{0D0A0CCB-CB77-49C2-B1C4-268B52AC18BA}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{9A1307DA-15DF-4858-93B5-9D3511E181D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9A1307DA-15DF-4858-93B5-9D3511E181D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9A1307DA-15DF-4858-93B5-9D3511E181D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9A1307DA-15DF-4858-93B5-9D3511E181D6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0B23271D-3D67-4CDF-9991-8555540D3613}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0B23271D-3D67-4CDF-9991-8555540D3613}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0B23271D-3D67-4CDF-9991-8555540D3613}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0B23271D-3D67-4CDF-9991-8555540D3613}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0D0A0CCB-CB77-49C2-B1C4-268B52AC18BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0D0A0CCB-CB77-49C2-B1C4-268B52AC18BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0D0A0CCB-CB77-49C2-B1C4-268B52AC18BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0D0A0CCB-CB77-49C2-B1C4-268B52AC18BA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

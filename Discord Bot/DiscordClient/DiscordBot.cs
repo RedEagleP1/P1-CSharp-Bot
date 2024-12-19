@@ -1,9 +1,9 @@
 using System.Diagnostics;
 using Discord;
 using Discord.WebSocket;
+using DiscordBot.BotApplication.Commands;
 using DiscordClient.Config;
 using DiscordClient.Services;
-using DiscordBot.BotApplication.Commands;
 using Microsoft.Extensions.Options;
 
 namespace DiscordClient

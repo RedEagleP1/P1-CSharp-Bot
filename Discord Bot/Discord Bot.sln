@@ -3,12 +3,30 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.3.32901.215
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiscordClient", "DiscordClient\DiscordClient.csproj", "{0BE34382-757F-4FC4-9558-B37FF6E1996A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BotInfrastructure", "BotInfrastructure\BotInfrastructure.csproj", "{7BE265F8-FB8E-4476-8D7E-48BB6B700173}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BotApplication", "BotApplication\BotApplication.csproj", "{73564F15-F654-4269-BDA3-2038111927E2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0BE34382-757F-4FC4-9558-B37FF6E1996A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0BE34382-757F-4FC4-9558-B37FF6E1996A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0BE34382-757F-4FC4-9558-B37FF6E1996A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0BE34382-757F-4FC4-9558-B37FF6E1996A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7BE265F8-FB8E-4476-8D7E-48BB6B700173}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7BE265F8-FB8E-4476-8D7E-48BB6B700173}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7BE265F8-FB8E-4476-8D7E-48BB6B700173}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7BE265F8-FB8E-4476-8D7E-48BB6B700173}.Release|Any CPU.Build.0 = Release|Any CPU
+		{73564F15-F654-4269-BDA3-2038111927E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73564F15-F654-4269-BDA3-2038111927E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73564F15-F654-4269-BDA3-2038111927E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73564F15-F654-4269-BDA3-2038111927E2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
